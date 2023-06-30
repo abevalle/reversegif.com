@@ -1,0 +1,42 @@
+.container {
+  background-color: #FFF0EE;
+  font-family: quicksand;
+  min-height: 100vh;
+}
+
+.container > h1 {
+  color: #312626;
+}
+
+.webTitle {
+  text-align: center;
+}
+
+.dropToUpload { 
+  border: 2px;
+  border-style: dashed;
+  border-color: #312626;
+  background-color: #D9D9D9;
+  border-radius: 20px;
+  min-height: 85vh;
+}
+
+.dropToUpload > h1 { 
+  font-weight: 400;
+  text-align: center;
+  margin-top: 30vh;
+  color: rgb(93,79,76,.54)
+}
+
+.footerText {
+  position: fixed;
+  bottom: 0;
+}
+
+.footerText > p {
+  text-align: center;
+}
+
+.fileUploader[type="file"] {
+  display: none;
+}
