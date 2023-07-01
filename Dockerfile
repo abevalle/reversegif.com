@@ -9,4 +9,4 @@ COPY . .
 
 RUN yarn install
 
-ENTRYPOINT [ "yarn start" ]
+CMD [ "yarn", "start" ]
