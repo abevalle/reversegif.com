@@ -4,7 +4,6 @@ services:
     build:
       context: .
     restart: always
-    stdin_open: true
 
     volumes:
       - ./:/var/www
