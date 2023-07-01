@@ -1,4 +1,4 @@
-FROM node:20.3.1-bookworm
+FROM node:18-bookworm
 LABEL name="reversegif.com"
 LABEL version="latest"
 
