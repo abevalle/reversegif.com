@@ -8,7 +8,8 @@ RUN apt update -y && apt upgrade -y
 # RUN . ~/.nvm/nvm.sh
 RUN apt install nodejs -y 
 SHELL ["/bin/sh", "-c"]
-RUN npm install -g yarn
+# RUN npm install -g yarn
+RUN npm -v
 
 
 WORKDIR /var/www/
