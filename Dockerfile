@@ -10,4 +10,3 @@ COPY . .
 RUN yarn install
 
 ENTRYPOINT [ "yarn start" ]
-CMD ["bash"]
