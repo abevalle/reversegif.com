@@ -7,6 +7,7 @@ RUN apt update -y && apt upgrade -y
 # RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
 # RUN . ~/.nvm/nvm.sh
 RUN apt install nodejs -y 
+SHELL ["/bin/sh", "-c"]
 RUN npm install -g yarn
 
 
