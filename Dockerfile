@@ -1,5 +1,5 @@
 FROM node:20-bookworm
-LABEL nane="reversegif.com"
+LABEL name="reversegif.com"
 LABEL version="latest"
 
 WORKDIR /var/www/
