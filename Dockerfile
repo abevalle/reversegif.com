@@ -6,7 +6,7 @@ SHELL ["/bin/bash", "--login", "-c"]
 RUN apt update -y && apt upgrade -y
 RUN apt install curl -y
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-RUN bash && nvm install
+RUN . ~/.nvm/nvm.sh && nvm install node
 RUN npm install -g yarn
 
 
