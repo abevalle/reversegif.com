@@ -5,8 +5,6 @@ LABEL version="latest"
 WORKDIR /var/www/
 COPY . .
 
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-RUN nvm install node
 RUN npm install -g yarn
 
 RUN yarn config set "@fortawesome:registry" https://npm.fontawesome.com/
