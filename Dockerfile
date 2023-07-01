@@ -8,8 +8,7 @@ WORKDIR /var/www/
 COPY . .
 
 RUN yarn install
+RUN yarn build
 
 ENTRYPOINT [ "yarn start" ]
 CMD ["bash"]
-
-RUN EXIT 0
