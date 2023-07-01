@@ -1,6 +1,13 @@
-FROM node:20-bookworm
+FROM ubuntu:20.04
 LABEL name="reversegif.com"
 LABEL version="latest"
+
+RUN apt update -y && apt upgrade
+RUN apt install curl
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+RUN nvm install
+RUN npm install -g yarn
+
 
 WORKDIR /var/www/
 COPY . .
