@@ -59,8 +59,10 @@ if (files) return (
 
             </Row>
             <Row>
-                <Col md={{span: 1, offset: 5}}>
-                    <Button onClick={reverseGif} size="lg" variant="outline-light" style={{"font-family": "quicksand"}}>Reverse Gif(s)</Button>
+                <Col md={{span: 4, offset: 4}}>
+                    <div className="text-center">
+                        <Button onClick={reverseGif} size="lg" variant="outline-light" style={{"font-family": "quicksand"}}>Reverse Gif(s)</Button>
+                    </div>
                 </Col>
             </Row>
         </Container>

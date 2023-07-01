@@ -21,8 +21,8 @@ export default function Home() {
         <Row>
           <Col md={{span: 1, offset: 5}}>
               <div className={styles.footerText}>
-                <Col>
-                  {/* <p>reversegif.com by <a href="abevalle.com">AbeValle</a></p> */}
+                <Col className='text-center'>
+                  <p>reversegif.com by <a href="abevalle.com">AbeValle</a></p>
                 </Col>
               </div>
           </Col>
