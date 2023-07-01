@@ -4,7 +4,4 @@ services:
     build:
       context: .
     restart: always
-
-    volumes:
-      - ./:/var/www
     network_mode: host
