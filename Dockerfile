@@ -1,16 +1,14 @@
-FROM ubuntu:20.04
+FROM node:20-bullseye
 LABEL name="reversegif.com"
 LABEL version="latest"
 
-RUN apt update -y && apt upgrade -y
-RUN apt install curl -y
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-RUN . ~/.nvm/nvm.sh
+# RUN apt update -y && apt upgrade -y
+# RUN apt install curl -y
+# RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+# RUN . ~/.nvm/nvm.sh
 # RUN apt install nodejs -y 
 # SHELL ["/bin/sh", "-c"]
-# RUN npm install -g yarn
-RUN npm -v
-
+RUN npm install -g yarn
 
 WORKDIR /var/www/
 COPY . .
