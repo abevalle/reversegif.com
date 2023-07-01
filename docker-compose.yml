@@ -1,0 +1,11 @@
+version: '3'
+services:
+  reversegif.com:
+    build:
+      context: .
+    restart: always
+    stdin_open: true
+
+    volumes:
+      - ./:/var/www
+      network_mode: host
