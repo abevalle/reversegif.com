@@ -3,6 +3,8 @@ LABEL nane="reversegif.com"
 LABEL version="latest"
 
 RUN apt update -y
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+RUN nvm install node
 RUN npm install -g yarn
 
 WORKDIR /var/www/
