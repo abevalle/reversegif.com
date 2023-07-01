@@ -5,8 +5,8 @@ import React, { useState, useRef, useEffect } from 'react'
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css'
 import { Row, Col, Container, Button } from 'react-bootstrap'
 // import { library } from '@fortawesome/fontawesome-svg-core'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faGif, faLight } from '@fortawesome/pro-solid-svg-icons'
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+// import { faGif, faLight } from '@fortawesome/pro-solid-svg-icons'
 
 
 const DropZone = () => {
@@ -78,7 +78,7 @@ return ready ? (
                     <div className={styles.dropToUpload} onDragOver={handleDragOver} onDrop={handleDrop} onClick={() => {inputRef.current.click();}}>
                         <input type="file" onChange={(event) => {setFiles(event.target.files?.item(0))}} hidden ref={inputRef} accept=".gif"/>
                         <h1>drop your gif/click here.</h1>
-                        <FontAwesomeIcon icon={faGif} className={styles.centerGif}/>
+                        {/* <FontAwesomeIcon icon={faGif} className={styles.centerGif}/> */}
                     </div>
                     </Col>
                 </Row>

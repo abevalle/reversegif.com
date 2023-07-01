@@ -5,12 +5,14 @@ LABEL version="latest"
 WORKDIR /var/www/
 COPY . .
 
-RUN npm config set "@fortawesome:registry" https://npm.fontawesome.com/
-RUN npm config set "//npm.fontawesome.com/:_authToken" C479FDFF-6447-4009-A7BE-006E063376A5
-RUN npm install
-RUN npm run build
+RUN yarn install
 
-ENTRYPOINT [ "npm run start" ]
+RUN yarn config set "@fortawesome:registry" https://npm.fontawesome.com/
+RUN yarn config set "//npm.fontawesome.com/:_authToken" C479FDFF-6447-4009-A7BE-006E063376A5
+RUN yarn install
+RUN yarn build
+
+ENTRYPOINT [ "yarn start" ]
 CMD ["bash"]
 
 RUN EXIT 0
