@@ -2,7 +2,6 @@ FROM ubuntu:20.04
 LABEL name="reversegif.com"
 LABEL version="latest"
 
-SHELL ["/bin/bash", "--login", "-c"]
 RUN apt update -y && apt upgrade -y
 RUN apt install curl -y
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
