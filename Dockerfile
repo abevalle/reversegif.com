@@ -7,10 +7,7 @@ RUN npm install -g yarn --force
 WORKDIR /var/www/
 COPY . .
 
-RUN yarn install --lts
-
 RUN yarn install
-RUN yarn build
 
 ENTRYPOINT [ "yarn start" ]
 CMD ["bash"]
