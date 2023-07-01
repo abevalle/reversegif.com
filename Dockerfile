@@ -7,4 +7,4 @@ RUN npm install -g yarn --force
 WORKDIR /var/www/
 COPY . .
 
-CMD [ "yarn", "start" ]
+ENTRYPOINT [ "yarn start" ]
