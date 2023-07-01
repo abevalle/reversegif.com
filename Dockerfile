@@ -4,9 +4,9 @@ LABEL version="latest"
 
 RUN apt update -y && apt upgrade -y
 RUN apt install curl -y
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-RUN . ~/.nvm/nvm.sh
-RUN nvm install node
+# RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+# RUN . ~/.nvm/nvm.sh
+RUN apt install node
 RUN npm install -g yarn
 
 
