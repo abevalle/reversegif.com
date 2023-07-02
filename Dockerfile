@@ -7,4 +7,3 @@ ENV PATH "$PATH:/opt/yarn/bin"
 
 WORKDIR /var/www/
 COPY . .
-
