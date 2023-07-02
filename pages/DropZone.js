@@ -85,7 +85,7 @@ return ready ? (
                 </Container>
             )}
         </>
-  ) : (<p>loading</p>)
+  ) : (<p style={{color: '#FFF', fontSize: '4em', textAlign: 'center', marginTop: '30vh'}}>loading</p>)
 }
 
 export default DropZone;

@@ -22,7 +22,7 @@ export default function Home() {
           <Col md={{span: 1, offset: 5}}>
               <div className={styles.footerText}>
                 <Col className='text-center'>
-                  <p>reversegif.com by <a href="abevalle.com">AbeValle</a></p>
+                  <p>reversegif.com by <a style={{color: 'white'}} href="https://abevalle.com">AbeValle</a></p>
                 </Col>
               </div>
           </Col>
