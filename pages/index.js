@@ -4,13 +4,14 @@ import { Row, Col, Container, Button } from 'react-bootstrap'
 import DropZone from './DropZone.js';
 import Reverse from './reverse.js'
 
+
 export default function Home() {
   return (
     <div className={styles.container}>
-      {/* <head>
+      <head>
         <title>reverse gif for free</title>
         <meta name="description" content="Free reverse gif tool! Alwaysfree and your files never touch our servers, for complete privacy" key="desc "/>
-      </head> */}
+      </head>
       <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
       <link href="https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&display=swap" rel="stylesheet"/> 
         <Container fluid>

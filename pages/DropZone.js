@@ -4,10 +4,13 @@ import styles from '../styles/Home.module.css';
 import React, { useState, useRef, useEffect } from 'react'
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css'
 import { Row, Col, Container, Button } from 'react-bootstrap'
+import useAnalyticsEventTracker from './useAnalyticsEventTracker';
 // import { library } from '@fortawesome/fontawesome-svg-core'
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 // import { faGif, faLight } from '@fortawesome/pro-solid-svg-icons'
-
+import ReactGA from 'react-ga'
+const TRACKING_ID = process.env.TRACKING_ID
+ReactGA.initialize(TRACKING_ID);
 
 const DropZone = () => {
     const [files, setFiles, setSelectedImage, selectedImage] = useState()
@@ -16,6 +19,11 @@ const DropZone = () => {
     const [reversed, setReversed] = useState()
     const [reversedName, setReversedName] = useState()
     const [reversedSize, setReversedSize] = useState()
+    const [tooManyFiles, setTooManyFiles] = useState()
+    const [fileType, setFileType] = useState()
+
+  const gaEventTracker = useAnalyticsEventTracker('Main')
+
 
     const load = async () => {
         await ffmpeg.load();
@@ -29,14 +37,27 @@ const DropZone = () => {
     const handleDragOver = (event) => {
         event.preventDefault();
     }
+
+    const deleteFiles = () => {
+        setFiles(null)
+    }
+
     const handleDrop = (event) => {
         event.preventDefault();
-        setFiles(event.dataTransfer.files?.item(0))
-        console.log(event.dataTransfer.files)
-
+        gaEventTracker('File Upload')
+        if(event.dataTransfer.files.length == 1) {
+            setFiles(event.dataTransfer.files?.item(0))
+            let fileExtension = event.dataTransfer.files?.item(0).name.split('.').pop()
+            setFileType(fileExtension)
+            console.log(event.dataTransfer.files?.item(0).name.split('.').pop())    
+        } else {
+            setTooManyFiles(true)
+            console.log('too many files')
+        }
     };
 
     const reverseGif = async () => {
+        gaEventTracker('Gif Reversed')
         ffmpeg.FS('writeFile', 'test.gif', await fetchFile(files))
         await ffmpeg.run('-i', 'test.gif', '-vf', 'reverse', `reversed-${files.name}`)
         const data = ffmpeg.FS('readFile', `reversed-${files.name}`)
@@ -51,7 +72,7 @@ if (files) return (
     <div className={styles.uploads}>
         <Container fluid style={{'margin-top':'50px'}}>
             <Row>
-                <Col md={{span: 4, offset: 4}}>
+                <Col md={{span: 6, offset: 3}}>
                     {/* {Array.from(files).map((file, idx) => <div className={styles.upload}><Row><Col md={{span: 3}}><img src={URL.createObjectURL(file)} className={styles.uploadImg}/></Col><Col md={9}><h3>{file.name}</h3><p>{Math.round((file.size/1024/1024)*100)/100} MB</p></Col></Row></div>)} */}
                     <div className={styles.upload}><Row><Col md={{span: 3}}><img src={URL.createObjectURL(files)} className={styles.uploadImg}/></Col><Col md={9}><h3>{files.name}</h3><p>{Math.round((files.size/1024/1024)*100)/100} MB</p></Col></Row></div>
                     {reversed && <div className={styles.upload}><Row><Col md={{span: 3}}><img src={reversed} className={styles.uploadImg}></img></Col><Col md={9}><h3>{reversedName}</h3><p>{Math.round((files.size/1024/1024)*100)/100} MB</p></Col></Row></div>}
@@ -62,6 +83,7 @@ if (files) return (
                 <Col md={{span: 4, offset: 4}}>
                     <div className="text-center">
                         <Button onClick={reverseGif} size="lg" variant="outline-light" style={{"font-family": "quicksand"}}>Reverse Gif(s)</Button>
+                        <Button onClick={deleteFiles} size="lg" variant="outline-light" style={{'font-family': "quicksand"}}>Convert more</Button>
                     </div>
                 </Col>
             </Row>
@@ -78,6 +100,7 @@ return ready ? (
                     <div className={styles.dropToUpload} onDragOver={handleDragOver} onDrop={handleDrop} onClick={() => {inputRef.current.click();}}>
                         <input type="file" onChange={(event) => {setFiles(event.target.files?.item(0))}} hidden ref={inputRef} accept=".gif"/>
                         <h1>drop your gif/click here.</h1>
+                        {tooManyFiles && <h1 style={{marginTop: '0', color: '#d06a6a'}}>You added to many files. Please upload one at a time</h1>}
                         {/* <FontAwesomeIcon icon={faGif} className={styles.centerGif}/> */}
                     </div>
                     </Col>

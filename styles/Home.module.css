@@ -67,6 +67,7 @@
   display: block;
   margin-bottom: 15px;
   word-wrap: break-word;
+  text-align: right;
 }
 
 .uploadImg {
