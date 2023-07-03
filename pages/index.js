@@ -3,9 +3,21 @@ import '../node_modules/bootstrap/dist/css/bootstrap.min.css'
 import { Row, Col, Container, Button } from 'react-bootstrap'
 import DropZone from './DropZone.js';
 import Reverse from './reverse.js'
+import ReactGA from 'react-ga4'
+const gaCode = process.env.TRACKING_ID
+ReactGA.initialize("G-MHJ39LXW6P");
 
 
 export default function Home() {
+
+  const gaEvent = (cat, act) => {
+    ReactGA.event({
+        category: cat,
+        action: act,
+        nonInteraction: false
+    })
+} 
+
   return (
     <div className={styles.container}>
       <head>
@@ -17,7 +29,7 @@ export default function Home() {
         <Container fluid>
           <Row>
               <Col md={{span: 2, offset: 5}} >
-                  <h1 className={styles.webTitle}><a href="/">reversegif.com</a></h1>
+                  <h1 className={styles.webTitle}><a href="/" onClick={gaEvent('header-click', 'header-click')}>reversegif.com</a></h1>
               </Col>
           </Row>
           <DropZone></DropZone>
@@ -27,7 +39,7 @@ export default function Home() {
           <Col md={{span: 1, offset: 5}}>
               <div className={styles.footerText}>
                 <Col className='text-center'>
-                  <p>reversegif.com by <a style={{color: 'white'}} href="https://abevalle.com">AbeValle</a></p>
+                  <p>reversegif.com by <a style={{color: 'white'}} onClick={gaEvent('abevalle-click', 'abevalle-click')} href="https://abevalle.com">AbeValle</a></p>
                 </Col>
               </div>
           </Col>

@@ -64,7 +64,7 @@ const DropZone = () => {
     };
 
     const reverseGif = async () => {
-        gaEvent("gif_Reversed", "gif-reverse")
+        gaEvent("gif-Reversed", "gif-reverse")
         ffmpeg.FS('writeFile', 'test.gif', await fetchFile(files))
         await ffmpeg.run('-i', 'test.gif', '-vf', 'reverse', `reversed-${files.name}`)
         const data = ffmpeg.FS('readFile', `reversed-${files.name}`)
