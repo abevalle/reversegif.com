@@ -1,3 +1,5 @@
+![Vercel](https://vercelbadge.vercel.app/api/abevalle/reversegif-com)
+
 # 🔄 reversegif.com
 
 This NextJS application is a learning expierence for me as well as a terrible finacial dicesion, lol. This document will walk you through the project, its features, and setup instructions. 
