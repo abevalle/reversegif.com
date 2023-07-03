@@ -35,7 +35,7 @@ export default function Home() {
           </Row>
           <DropZone></DropZone>
           {/* <Reverse/> */}
-        </Container>
+        </Container> 
         <Row>
           <Col md={{span: 1, offset: 5}}>
               <div className={styles.footerText}>
