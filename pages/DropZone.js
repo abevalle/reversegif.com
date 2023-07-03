@@ -31,11 +31,12 @@ const DropZone = () => {
     }
     const handleDrop = (event) => {
         event.preventDefault();
-        setFiles(event.dataTransfer.files)
+        setFiles(event.dataTransfer.files?.item(0))
         console.log(event.dataTransfer.files)
 
     };
 
+    
     const reverseGif = async () => {
         ffmpeg.FS('writeFile', 'test.gif', await fetchFile(files))
         await ffmpeg.run('-i', 'test.gif', '-vf', 'reverse', `reversed-${files.name}`)
