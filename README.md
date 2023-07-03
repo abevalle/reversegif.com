@@ -22,13 +22,13 @@ To set up the ReverseGIF.com Next.js web app on your local machine, follow these
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/your-username/reversegif-nextjs.git
+git clone git@github.com:abevalle/reversegif.com.git
 ```
 
 2. Navigate to the project directory:
 
 ```bash
-cd reversegif-nextjs
+cd reversegif.com
 ```
 
 3. Install the project dependencies:
