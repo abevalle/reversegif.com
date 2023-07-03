@@ -1,0 +1,9 @@
+version: '3'
+services:
+  reversegif.com:
+    build:
+      context: .
+    tty: true
+    stdin_open: true
+    restart: always
+    network_mode: host
