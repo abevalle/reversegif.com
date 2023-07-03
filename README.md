@@ -2,7 +2,8 @@
 
 # 🔄 reversegif.com
 
-This NextJS application is a learning expierence for me as well as a terrible finacial dicesion, lol. This document will walk you through the project, its features, and setup instructions. 
+This NextJS application is a learning experience for me and a terrible financial decision, lol. This document will walk you through the project, features, and setup instructions. 
+
 
 ## Features
 * Upload and process GIF files to reverse their playback.
