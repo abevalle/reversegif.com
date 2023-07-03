@@ -1,0 +1,78 @@
+.container {
+  background-color: #276A79;
+  font-family: 'Cherry Bomb One';
+  min-height: 100vh;
+}
+
+.webTitle {
+  text-align: center;
+  color: #fff;
+  line-height: 2;
+}
+
+.webTitle > a {
+  text-decoration: none;
+  color: #fff;
+}
+
+.dropToUpload { 
+  border: 2px;
+  border-style: dashed;
+  border-color: #0F5261;
+  background-color: #95C7D2;
+  border-radius: 20px;
+  min-height: 85vh;
+  cursor: pointer;
+}
+
+.dropToUpload > h1 { 
+  font-weight: 400;
+  text-align: center;
+  margin-top: 30vh;
+  color: #0F5261
+}
+
+.footerText {
+  position: absolute;
+  bottom: 0;
+  color: #fff;
+  text-align: center;
+}
+
+.footerText > p {
+  text-align: center;
+}
+
+.footerText > p > a {
+  color: #fff !important;
+}
+
+.fileUploader[type="file"] {
+  display: none;
+}
+
+.centerGif {
+  margin: auto;
+  display: block;
+  font-size: 10em;
+  color: #7EAEB9
+}
+
+.upload {
+  font-family: Quicksand;
+  background-color: #95C7D2;
+  padding: 35px;
+  border-radius: 7px;
+  color: #fff;
+  display: block;
+  margin-bottom: 15px;
+  word-wrap: break-word;
+}
+
+.uploadImg {
+  /* height: 15vh; */
+  display: block;
+  max-width: 100%;  
+  margin: auto;
+  border-radius: 5px;
+}
