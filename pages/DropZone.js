@@ -22,7 +22,6 @@ const DropZone = () => {
     const [tooManyFiles, setTooManyFiles] = useState()
     const [fileType, setFileType] = useState()
 
-  const gaEventTracker = useAnalyticsEventTracker('Main')
 
 
     const load = async () => {
@@ -42,9 +41,17 @@ const DropZone = () => {
         setFiles(null)
     }
 
+    const gaEvent = (type) => {
+        ReactGA.event({
+            category: 'Event',
+            action: type,
+            nonInteraction: false
+        })
+    } 
+
     const handleDrop = (event) => {
         event.preventDefault();
-        gaEventTracker('File Upload')
+        gaEvent('File Upload')
         if(event.dataTransfer.files.length == 1) {
             setFiles(event.dataTransfer.files?.item(0))
             let fileExtension = event.dataTransfer.files?.item(0).name.split('.').pop()
@@ -57,7 +64,7 @@ const DropZone = () => {
     };
 
     const reverseGif = async () => {
-        gaEventTracker('Gif Reversed')
+        gaEvent("Gif Reversed")
         ffmpeg.FS('writeFile', 'test.gif', await fetchFile(files))
         await ffmpeg.run('-i', 'test.gif', '-vf', 'reverse', `reversed-${files.name}`)
         const data = ffmpeg.FS('readFile', `reversed-${files.name}`)
