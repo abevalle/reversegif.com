@@ -4,7 +4,6 @@ import styles from '../styles/Home.module.css';
 import React, { useState, useRef, useEffect } from 'react'
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css'
 import { Row, Col, Container, Button } from 'react-bootstrap'
-import useAnalyticsEventTracker from './useAnalyticsEventTracker';
 // import { library } from '@fortawesome/fontawesome-svg-core'
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 // import { faGif, faLight } from '@fortawesome/pro-solid-svg-icons'
@@ -21,6 +20,7 @@ const DropZone = () => {
     const [reversedSize, setReversedSize] = useState()
     const [tooManyFiles, setTooManyFiles] = useState()
     const [fileType, setFileType] = useState()
+    const [loading, setLoading] = useState(false)
 
 
 
@@ -64,6 +64,7 @@ const DropZone = () => {
     };
 
     const reverseGif = async () => {
+        setLoading(true)
         gaEvent("gif-Reversed", "gif-reverse")
         ffmpeg.FS('writeFile', 'test.gif', await fetchFile(files))
         await ffmpeg.run('-i', 'test.gif', '-vf', 'reverse', `reversed-${files.name}`)
@@ -73,6 +74,7 @@ const DropZone = () => {
         setReversed(url)
         setReversedName(`reversed-${files.name}`)
         setReversedSize(data.size/1024/1024)
+        setLoading(false)
     }
 
 if (files) return (
@@ -81,11 +83,12 @@ if (files) return (
             <Row>
                 <Col md={{span: 6, offset: 3}}>
                     {/* {Array.from(files).map((file, idx) => <div className={styles.upload}><Row><Col md={{span: 3}}><img src={URL.createObjectURL(file)} className={styles.uploadImg}/></Col><Col md={9}><h3>{file.name}</h3><p>{Math.round((file.size/1024/1024)*100)/100} MB</p></Col></Row></div>)} */}
-                    <div className={styles.upload}><Row><Col md={{span: 3}}><img src={URL.createObjectURL(files)} className={styles.uploadImg}/></Col><Col md={9}><h3>{files.name}</h3><p>{Math.round((files.size/1024/1024)*100)/100} MB</p></Col></Row></div>
-                    {reversed && <div className={styles.upload}><Row><Col md={{span: 3}}><img src={reversed} className={styles.uploadImg}></img></Col><Col md={9}><h3>{reversedName}</h3><p>{Math.round((files.size/1024/1024)*100)/100} MB</p><a href={reversed} download>Download</a></Col></Row></div>}
+                    <div className={styles.upload}><Row><Col md={{span: 4}}><img src={URL.createObjectURL(files)} className={styles.uploadImg}/></Col><Col md={8}><h3>{files.name}</h3><p>{Math.round((files.size/1024/1024)*100)/100} MB</p></Col></Row></div>
+                    {reversed && <div className={styles.upload}><Row><Col md={{span: 4}}><img src={reversed} className={styles.uploadImg}></img></Col><Col md={8}><h3>{reversedName}</h3><p>{Math.round((files.size/1024/1024)*100)/100} MB</p><a href={reversed} download>Download</a></Col></Row></div>}
                 </Col>
 
             </Row>
+            {loading ? (<h1 style={{color: 'white', 'text-align':'center', 'margin-top': '50px','margin-bottom': '50px'}}>Rrversing Gif</h1>) : (<></>)}
             <Row>
                 <Col md={{span: 4, offset: 4}}>
                     <div className="text-center">
