@@ -8,9 +8,9 @@ import useAnalyticsEventTracker from './useAnalyticsEventTracker';
 // import { library } from '@fortawesome/fontawesome-svg-core'
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 // import { faGif, faLight } from '@fortawesome/pro-solid-svg-icons'
-import ReactGA from 'react-ga'
-const TRACKING_ID = process.env.TRACKING_ID
-ReactGA.initialize(TRACKING_ID);
+import ReactGA from 'react-ga4'
+const gaCode = process.env.TRACKING_ID
+ReactGA.initialize("G-MHJ39LXW6P");
 
 const DropZone = () => {
     const [files, setFiles, setSelectedImage, selectedImage] = useState()
