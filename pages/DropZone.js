@@ -82,7 +82,7 @@ if (files) return (
                 <Col md={{span: 6, offset: 3}}>
                     {/* {Array.from(files).map((file, idx) => <div className={styles.upload}><Row><Col md={{span: 3}}><img src={URL.createObjectURL(file)} className={styles.uploadImg}/></Col><Col md={9}><h3>{file.name}</h3><p>{Math.round((file.size/1024/1024)*100)/100} MB</p></Col></Row></div>)} */}
                     <div className={styles.upload}><Row><Col md={{span: 3}}><img src={URL.createObjectURL(files)} className={styles.uploadImg}/></Col><Col md={9}><h3>{files.name}</h3><p>{Math.round((files.size/1024/1024)*100)/100} MB</p></Col></Row></div>
-                    {reversed && <div className={styles.upload}><Row><Col md={{span: 3}}><img src={reversed} className={styles.uploadImg}></img></Col><Col md={9}><h3>{reversedName}</h3><p>{Math.round((files.size/1024/1024)*100)/100} MB</p></Col></Row></div>}
+                    {reversed && <div className={styles.upload}><Row><Col md={{span: 3}}><img src={reversed} className={styles.uploadImg}></img></Col><Col md={9}><h3>{reversedName}</h3><p>{Math.round((files.size/1024/1024)*100)/100} MB</p><a href={reversed} download>Download</a></Col></Row></div>}
                 </Col>
 
             </Row>
