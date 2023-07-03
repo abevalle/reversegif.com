@@ -41,17 +41,17 @@ const DropZone = () => {
         setFiles(null)
     }
 
-    const gaEvent = (type) => {
+    const gaEvent = (cat, act) => {
         ReactGA.event({
-            category: 'Event',
-            action: type,
+            category: cat,
+            action: act,
             nonInteraction: false
         })
     } 
 
     const handleDrop = (event) => {
         event.preventDefault();
-        gaEvent('File Upload')
+        gaEvent('file-upload', 'file-upload')
         if(event.dataTransfer.files.length == 1) {
             setFiles(event.dataTransfer.files?.item(0))
             let fileExtension = event.dataTransfer.files?.item(0).name.split('.').pop()
@@ -64,7 +64,7 @@ const DropZone = () => {
     };
 
     const reverseGif = async () => {
-        gaEvent("Gif Reversed")
+        gaEvent("gif_Reversed", "gif-reverse")
         ffmpeg.FS('writeFile', 'test.gif', await fetchFile(files))
         await ffmpeg.run('-i', 'test.gif', '-vf', 'reverse', `reversed-${files.name}`)
         const data = ffmpeg.FS('readFile', `reversed-${files.name}`)
