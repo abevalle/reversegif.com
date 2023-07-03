@@ -1,6 +1,7 @@
 import styles from '../styles/Home.module.css';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css'
 import { Row, Col, Container, Button } from 'react-bootstrap'
+import React, { useState, useRef, useEffect } from 'react'
 import DropZone from './DropZone.js';
 import Reverse from './reverse.js'
 import ReactGA from 'react-ga4'
