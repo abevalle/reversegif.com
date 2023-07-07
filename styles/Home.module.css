@@ -6,6 +6,7 @@
 
 .webTitle {
   text-align: center;
+  display: block;
   color: #fff;
   line-height: 2;
 }

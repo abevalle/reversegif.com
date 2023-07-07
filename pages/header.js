@@ -20,7 +20,7 @@ export default function Header() {
 
   return (
     <Row>
-        <Col md={{span: 2, offset: 5}} >
+        <Col md={{span: 12}} >
             <h1 className={styles.webTitle}><a href="/" onClick={gaEvent('header-click', 'header-click')}>reversegif.com</a></h1>
         </Col>
     </Row>
