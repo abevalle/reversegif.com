@@ -66,8 +66,10 @@ const DropZone = () => {
     const reverseGif = async () => {
         setLoading(true)
         gaEvent("gif-Reversed", "gif-reverse")
+        ffmpeg.FS('writeFile', 'font.woff', await fetchFile('https://assets.nflxext.com/ffe/siteui/fonts/netflix-sans/v3/NetflixSans_W_Rg.woff'))
         ffmpeg.FS('writeFile', 'test.gif', await fetchFile(files))
-        await ffmpeg.run('-i', 'test.gif', '-vf', 'reverse', `reversed-${files.name}`)
+        await ffmpeg.run('-i', 'test.gif', '-vf', 'drawtext=fontfile=/font.woff:text=\'reversegif.com\':fontcolor=white:fontsize=20:bordercolor=black:borderw=2:x=w-tw:y=h-th,reverse', `reversed-${files.name}`)
+        // await ffmpeg.run('-i', 'test.gif', '-vf', 'reverse', `reversed-${files.name}`)
         const data = ffmpeg.FS('readFile', `reversed-${files.name}`)
 
         const url = URL.createObjectURL(new Blob([data.buffer], {type: 'image/gif'}))
