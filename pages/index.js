@@ -4,6 +4,9 @@ import { Row, Col, Container, Button } from 'react-bootstrap'
 import React, { useState, useRef, useEffect } from 'react'
 import DropZone from './DropZone.js';
 import ReactGA from 'react-ga4'
+import Header from './header.js'
+import Footer from './footer.js'
+import Head from 'next/head'
 const gaCode = process.env.TRACKING_ID
 ReactGA.initialize("G-MHJ39LXW6P");
 
@@ -20,30 +23,21 @@ export default function Home() {
 
   return (
     <div className={styles.container}>
-      <head>
-        <title>reverse gif for free</title>
-        <meta name="description" content="Free reverse gif tool! Alwaysfree and your files never touch our servers, for complete privacy" key="desc "/>
-      </head>
+      <Head>
+        <meta name="title" content="Reverse a gif for free | reversegif.com"/>
+        <meta name="description" content="reversegif.com: Easily reverse GIFs in 3 steps. Drag, drop, and click to reverse. Local secure video encoding. Try it now!"/>
+        <meta name="keywords" content="reversegif, reverse a gif, gif, backwards gif, rewind a gif, gif reverse, gifs reversed, reversing a gif"/>
+        <meta name="robots" content="index, follow"/>
+        <meta name="language" content="English"/>
+      </Head>
       <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
       <link href="https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&display=swap" rel="stylesheet"/> 
         <Container fluid>
-          <Row>
-              <Col md={{span: 2, offset: 5}} >
-                  <h1 className={styles.webTitle}><a href="/" onClick={gaEvent('header-click', 'header-click')}>reversegif.com</a></h1>
-              </Col>
-          </Row>
+          <Header></Header>
           <DropZone></DropZone>
           {/* <Reverse/> */}
+          <Footer></Footer>
         </Container> 
-        <Row>
-          <Col md={{span: 1, offset: 5}}>
-              <div className={styles.footerText}>
-                <Col className='text-center'>
-                  <p>reversegif.com by <a style={{color: 'white'}} onClick={gaEvent('abevalle-click', 'abevalle-click')} href="https://abevalle.com">AbeValle</a></p>
-                </Col>
-              </div>
-          </Col>
-        </Row>
     </div>
   )
 }
