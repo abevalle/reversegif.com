@@ -7,6 +7,7 @@ import ReactGA from 'react-ga4'
 import Header from './header.js'
 import Footer from './footer.js'
 import Head from 'next/head'
+import Script from 'next/script'
 const gaCode = process.env.TRACKING_ID
 ReactGA.initialize("G-MHJ39LXW6P");
 
@@ -29,7 +30,11 @@ export default function Home() {
         <meta name="keywords" content="reversegif, reverse a gif, gif, backwards gif, rewind a gif, gif reverse, gifs reversed, reversing a gif"/>
         <meta name="robots" content="index, follow"/>
         <meta name="language" content="English"/>
+<<<<<<< HEAD
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7359270153499473" crossorigin="anonymous"></script>
+=======
+        <Script type="text/javascript" src="/static/arial.ttf.js"/>
+>>>>>>> f880fa777496d5bfb1f0cc559108b5539c21d396
       </Head>
       <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
       <link href="https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&display=swap" rel="stylesheet"/> 
