@@ -30,6 +30,7 @@ export default function Home() {
         <meta name="keywords" content="reversegif, reverse a gif, gif, backwards gif, rewind a gif, gif reverse, gifs reversed, reversing a gif"/>
         <meta name="robots" content="index, follow"/>
         <meta name="language" content="English"/>
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7359270153499473" crossorigin="anonymous"></script>
         <Script type="text/javascript" src="/static/arial.ttf.js"/>
       </Head>
       <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
