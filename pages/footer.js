@@ -23,7 +23,7 @@ export default function Footer() {
     <Col md={{span: 12}}>
         <div className={styles.footerText}>
           <Col className='text-center'>
-            <p>reversegif.com by <a style={{color: 'white'}} onClick={gaEvent('abevalle-click', 'abevalle-click')} href="https://abevalle.com">AbeValle</a></p>
+            <p>reversegif.com by <a style={{color: 'white'}} onClick={gaEvent('abevalle-click', 'abevalle-click')} href="https://abevalle.com">AbeValle</a> | <a style={{color: 'white'}} href="https://reversegif.com/Privacy">Privacy</a></p>
           </Col>
         </div>
     </Col>
