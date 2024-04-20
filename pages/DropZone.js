@@ -96,6 +96,16 @@ if (files) return (
                     <div className="text-center">
                         <Button onClick={reverseGif} size="lg" variant="outline-light" style={{"font-family": "quicksand"}}>Reverse Gif(s)</Button>
                         <Button onClick={deleteFiles} size="lg" variant="outline-light" style={{'font-family': "quicksand"}}>Convert more</Button>
+                        <Script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7359270153499473"
+                            crossorigin="anonymous"></Script>
+                        <ins class="adsbygoogle"
+                            style="display:block"
+                            data-ad-format="autorelaxed"
+                            data-ad-client="ca-pub-7359270153499473"
+                            data-ad-slot="7296620564"></ins>
+                        <Script>
+                            (adsbygoogle = window.adsbygoogle || []).push({});
+                        </Script>
                     </div>
                 </Col>
             </Row>
