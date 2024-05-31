@@ -1,6 +1,7 @@
-.container {
-  background-color: #276A79;
-  font-family: 'Cherry Bomb One';
+.landingContainer {
+  /* background-color: #276A79; */
+  /* font-family: 'Cherry Bomb One'; */
+  font-family: 'Quicksand', sans-serif;
   min-height: 100vh;
 }
 
@@ -9,6 +10,8 @@
   display: block;
   color: #fff;
   line-height: 2;
+  font-family: 'Poppins', sans-serif;
+  font-size: bold;
 }
 
 .webTitle > a {
@@ -25,15 +28,25 @@
   border-color: #0F5261;
   background-color: #95C7D2;
   border-radius: 20px;
-  min-height: 85vh;
+  min-height: 35vh;
   cursor: pointer;
+  align-items: center;
+  text-align: center;
 }
 
 .dropToUpload > h1 { 
   font-weight: 400;
   text-align: center;
-  margin-top: 30vh;
   color: #0F5261
+}
+
+.selectFile {
+  background-color: #000;
+  background-color: #fff;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 300;
+  border-radius: 5px;
+  color: #000;
 }
 
 .footerText {
@@ -83,7 +96,7 @@
 
 .privacy {
   color: white;
-  background-color: #95C7D2;
+  /* background-color: #95C7D2; */
   padding: 2em;
   border-radius: 5px;
   font-family: sans-serif;
@@ -91,4 +104,27 @@
 
 .privacytext {
   margin: auto;
+}
+
+.landingText {
+  color: white;
+  align-items: center;
+  text-align: center;
+  margin: auto;
+}
+
+.landingImg {
+  border-radius: 15px;
+  width: 25em;
+}
+
+.gif {
+  display: inline-block;
+  margin: 5px;
+  width: 5em;
+  color: #7EAEB9;
+}
+
+.landingImage {
+  border-radius: 15px;
 }
