@@ -27,8 +27,11 @@ export default function Footer() {
             AbeValle
           </a>{' '}
           |{' '}
-          <a className="text-blue-400 hover:underline" href="https://reversegif.com/Privacy">
+          <a className="text-blue-400 hover:underline" href="/privacy">
             Privacy
+          </a>{' '}|{' '}
+          <a className="text-blue-400 hover:underline" href="/terms">
+            Terms
           </a>
         </p>
       </div>

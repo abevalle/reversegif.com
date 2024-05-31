@@ -41,7 +41,7 @@ export default function Home() {
         <div className="flex flex-wrap -mx-4">
           <div className="w-full md:w-1/2 px-4 flex flex-col items-center">
             <div className="mb-4">
-              <img src='./landing.webp' className="w-1/2 h-auto mx-auto" alt="Landing" />
+              <img src='./landing.webp' className="w-1/2 h-auto mx-auto landingImage" alt="Landing" />
             </div>
             <div className="text-center">
               <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Reverse Your Gifs</h1>
