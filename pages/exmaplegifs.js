@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 
 const ExampleGifs = () => {
   const gifs = [
@@ -17,7 +18,16 @@ const ExampleGifs = () => {
         </div>
         <div className="flex space-x-4">
           {gifs.map((gif, index) => (
-            <img key={index} src={gif} alt={`Example GIF ${index + 1}`} className="w-16 h-16 rounded-lg landingImg" />
+            <div key={index} className="w-16 h-16 relative rounded-lg overflow-hidden">
+              <Image
+                src={gif}
+                alt={`Example GIF ${index + 1}`}
+                fill
+                sizes="100px"
+                style={{ objectFit: 'cover' }}
+                className="rounded-lg"
+              />
+            </div>
           ))}
         </div>
       </div>

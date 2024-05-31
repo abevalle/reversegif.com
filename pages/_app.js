@@ -15,9 +15,6 @@ function MyApp({ Component, pageProps }) {
         <meta name="robots" content="index, follow" />
         <meta name="language" content="English" />
         <link rel="icon" href="/favicon.ico" />
-        <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&display=swap" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&family=Roboto&display=swap" rel="stylesheet" />
         {/* Open Graph Meta Tags */}
         <meta property="og:title" content="Reversegif.com | Reverse a Gif for FREE!" />
         <meta property="og:description" content="Easily reverse GIFs in 3 steps. Drag, drop, and click to reverse. Local secure video encoding. Try it now!" />
