@@ -21,22 +21,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-100 dark:bg-slate-900 text-gray-900 dark:text-gray-100">
-      <Head>
-        <title>Reversegif.com | Reverse a Gif for FREE!</title>
-        <meta name="title" content="Reverse a gif for free | reversegif.com" />
-        <meta name="description" content="reversegif.com: Easily reverse GIFs in 3 steps. Drag, drop, and click to reverse. Local secure video encoding. Try it now!" />
-        <meta name="keywords" content="reversegif, reverse a gif, gif, backwards gif, rewind a gif, gif reverse, gifs reversed, reversing a gif" />
-        <meta name="robots" content="index, follow" />
-        <meta name="language" content="English" />
-        <Script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7359270153499473" crossorigin="anonymous" />
-        <Script type="text/javascript" src="/static/arial.ttf.js" />
-      </Head>
-      <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-      <link href="https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&display=swap" rel="stylesheet" />
-      <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&family=Roboto&display=swap" rel="stylesheet" />
-
       <Header />
-
       <main className="flex-grow container mx-auto p-4">
         <div className="flex flex-wrap -mx-4">
           <div className="w-full md:w-1/2 px-4 flex flex-col items-center">
@@ -54,7 +39,6 @@ export default function Home() {
           </div>
         </div>
       </main>
-
       <Footer />
     </div>
   );

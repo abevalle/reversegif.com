@@ -21,20 +21,23 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col bg-slate-100 dark:bg-slate-900 text-gray-900 dark:text-gray-100">
       <Head>
-        <title>Reversegif.com | Reverse a Gif for FREE!</title>
-        <meta name="title" content="Reverse a gif for free | reversegif.com" />
-        <meta name="description" content="reversegif.com: Easily reverse GIFs in 3 steps. Drag, drop, and click to reverse. Local secure video encoding. Try it now!" />
-        <meta name="keywords" content="reversegif, reverse a gif, gif, backwards gif, rewind a gif, gif reverse, gifs reversed, reversing a gif" />
-        <meta name="robots" content="index, follow" />
-        <meta name="language" content="English" />
-        <Script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7359270153499473" crossorigin="anonymous" />
-        <Script type="text/javascript" src="/static/arial.ttf.js" />
+        <title>Privacy Policy | reversegif.com</title>
+        <meta name="title" content="Privacy Policy | reversegif.com" />
+        <meta name="description" content="Reversegif.com is privacy focused and has designed the tool so that files are never uploaded to our servers." />
+        {/* Open Graph Meta Tags */}
+        <meta property="og:title" content="Privacy Policy | reversegif.com" />
+        <meta property="og:description" content="Reversegif.com is privacy focused and has designed the tool so that files are never uploaded to our servers." />
+        <meta property="og:image" content="/metaimg.webp" />
+        <meta property="og:url" content="https://reversegif.com/privacy" />
+        <meta property="og:type" content="website" />
+        {/* Twitter Card Meta Tags */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Privacy Policy | reversegif.com" />
+        <meta name="twitter:description" content="Reversegif.com is privacy focused and has designed the tool so that files are never uploaded to our servers." />
+        <meta name="twitter:image" content="/metaimg.webp" />
+        <meta name="twitter:site" content="@yourtwitterhandle" />
       </Head>
-      <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-      <link href="https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&display=swap" rel="stylesheet" /> 
-
       <Header />
-
       <main className="flex-grow container mx-auto p-4">
         <div className="flex justify-center">
           <div className="w-full md:w-2/3 lg:w-1/2 bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md text-gray-900 dark:text-gray-100">

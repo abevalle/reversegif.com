@@ -11,6 +11,18 @@ const Terms = () => {
       <Head>
         <title>Terms of Service | reversegif.com</title>
         <meta name="description" content="Terms of Service for reversegif.com" />
+        {/* Open Graph Meta Tags */}
+        <meta property="og:title" content="Terms of Service | reversegif.com" />
+        <meta property="og:description" content="Terms of Service for reversegif.com" />
+        <meta property="og:image" content="/metaimg.webp" />
+        <meta property="og:url" content="https://reversegif.com/terms" />
+        <meta property="og:type" content="website" />
+        {/* Twitter Card Meta Tags */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Terms of Service | reversegif.com" />
+        <meta name="twitter:description" content="Terms of Service for reversegif.com" />
+        <meta name="twitter:image" content="/metaimg.webp" />
+        <meta name="twitter:site" content="@yourtwitterhandle" />
       </Head>
       <Header />
       <main className="flex-grow container mx-auto p-4">
