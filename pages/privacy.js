@@ -19,7 +19,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <div className="min-h-screen flex flex-col bg-slate-100 dark:bg-slate-900 text-gray-900 dark:text-gray-100">
       <Head>
         <title>Reversegif.com | Reverse a Gif for FREE!</title>
         <meta name="title" content="Reverse a gif for free | reversegif.com" />

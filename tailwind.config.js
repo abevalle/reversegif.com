@@ -7,7 +7,7 @@ module.exports = {
   theme: {
     extend: {},
   },
-  darkMode: 'media', // or 'class' if you want to toggle dark mode manually
+  darkMode: 'class', // or 'class' if you want to toggle dark mode manually
   theme: {
     extend: {},
   },

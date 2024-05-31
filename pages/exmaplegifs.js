@@ -17,7 +17,7 @@ const ExampleGifs = () => {
         </div>
         <div className="flex space-x-4">
           {gifs.map((gif, index) => (
-            <img key={index} src={gif} alt={`Example GIF ${index + 1}`} className="w-16 h-16 rounded-lg" />
+            <img key={index} src={gif} alt={`Example GIF ${index + 1}`} className="w-16 h-16 rounded-lg landingImg" />
           ))}
         </div>
       </div>

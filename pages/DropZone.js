@@ -84,7 +84,7 @@ const DropZone = () => {
     return ready ? (
         <div className="p-4">
             {!files ? (
-                <div className="bg-gray-800 p-4 rounded-lg mx-auto max-w-xl text-center border-dashed border-2" onDragOver={handleDragOver} onDrop={handleDrop} onClick={() => { inputRef.current.click(); gaEvent('file-select', 'File Select Click'); }}>
+                <div className="bg-gray-300 dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-4 rounded-lg mx-auto max-w-xl text-center border-dashed border-2" onDragOver={handleDragOver} onDrop={handleDrop} onClick={() => { inputRef.current.click(); gaEvent('file-select', 'File Select Click'); }}>
                     <input type="file" onChange={(event) => { setFiles(event.target.files?.item(0)); gaEvent('file-upload', 'File Uploaded via Click'); }} hidden ref={inputRef} accept=".gif" />
                     <FontAwesomeIcon icon="fa-solid fa-gif" className="text-white text-6xl mb-4" />
                     <h1 className="text-white text-2xl mb-2">Drop a File</h1>
@@ -94,21 +94,21 @@ const DropZone = () => {
                 </div>
             ) : (
                 <div className="mx-auto max-w-xl">
-                    <div className="bg-gray-800 p-4 rounded-lg mb-4">
+                    <div className="bg-gray-300 dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-4 rounded-lg mb-4">
                         <div className="flex items-center">
                             <img src={URL.createObjectURL(files)} className="w-32 h-32 object-cover rounded-lg mr-4" alt="Uploaded file" />
                             <div>
-                                <h3 className="text-xl text-white">{files.name}</h3>
+                                <h3 className="text-xl text-gray-500 dark:text-white">{files.name}</h3>
                                 <p className="text-gray-400">{(files.size / 1024 / 1024).toFixed(2)} MB</p>
                             </div>
                         </div>
                     </div>
                     {reversed && (
-                        <div className="bg-gray-800 p-4 rounded-lg mb-4">
+                        <div className="bg-gray-300 dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-4 rounded-lg mb-4">
                             <div className="flex items-center">
                                 <img src={reversed} className="w-32 h-32 object-cover rounded-lg mr-4" alt="Reversed file" />
                                 <div>
-                                    <h3 className="text-xl text-white">{reversedName}</h3>
+                                    <h3 className="text-xl text-gray-500 dark:text-white">{reversedName}</h3>
                                     <p className="text-gray-400">{reversedSize} MB</p>
                                     <a href={reversed} download={reversedName} className="text-blue-400">Download</a>
                                 </div>
@@ -126,7 +126,7 @@ const DropZone = () => {
             )}
         </div>
     ) : (
-        <p className="text-white text-4xl text-center mt-40">loading</p>
+        <p className="text-slate-900 dark:text-white text-4xl text-center mt-16 mb-16 align-middle">loading...</p>
     );
 };
 

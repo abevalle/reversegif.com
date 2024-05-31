@@ -7,7 +7,7 @@ import Footer from './footer.js';
 
 const Terms = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <div className="min-h-screen flex flex-col bg-slate-100 dark:bg-slate-900 text-gray-900 dark:text-gray-100">
       <Head>
         <title>Terms of Service | reversegif.com</title>
         <meta name="description" content="Terms of Service for reversegif.com" />
@@ -15,7 +15,7 @@ const Terms = () => {
       <Header />
       <main className="flex-grow container mx-auto p-4">
         <h1 className="text-3xl font-bold mb-4 text-center">Terms of Service</h1>
-        <div className="w-full md:w-2/3 lg:w-1/2 bg-gray dark:bg-gray-800 p-8 rounded-lg shadow-md text-gray-900 dark:text-gray-100">
+        <div className="w-full md:w-2/3 lg:w-1/2 bg-gray dark:bg-gray-800 p-8 rounded-lg shadow-md text-gray-900 dark:text-gray-100 mx-auto">
           <h2 className="text-2xl font-semibold mb-4">Last Updated: May 31 2024</h2>
           <p className="mb-4">Welcome to reversegif.com. By accessing or using our website, you agree to comply with and be bound by the following terms and conditions. Please review them carefully. If you do not agree to these terms, you should not use this website.</p>
           <h3 className="text-xl font-semibold mb-2">1. Acceptance of Terms</h3>

@@ -1,10 +1,13 @@
-import React from 'react';
+// components/Header.js
+import React, { useState } from 'react';
 import ReactGA from 'react-ga4';
+import ThemeToggle from './ThemeToggle';
 
 const gaCode = process.env.TRACKING_ID;
 ReactGA.initialize("G-MHJ39LXW6P");
 
 export default function Header() {
+  const [navOpen, setNavOpen] = useState(false);
 
   const gaEvent = (cat, act) => {
     ReactGA.event({
@@ -15,9 +18,9 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-gray-800 text-white">
-      <div className="container mx-auto flex justify-between items-center p-4">
-        <h1 className="text-3xl font-bold">
+    <header className="bg-gray-800 text-white py-4">
+      <div className="container mx-auto flex flex-col items-center p-4 md:flex-row md:justify-between">
+        <h1 className="text-3xl font-bold mb-2 md:mb-0">
           <a 
             href="/" 
             onClick={() => gaEvent('header-click', 'header-click')}
@@ -26,36 +29,61 @@ export default function Header() {
             reversegif.com
           </a>
         </h1>
-        {/* <nav className="flex space-x-4">
-          <a 
-            href="/" 
-            className="text-white hover:text-blue-400"
-            onClick={() => gaEvent('nav-home-click', 'nav-home-click')}
+        <div className="md:hidden">
+          <button
+            onClick={() => setNavOpen(!navOpen)}
+            className="text-white focus:outline-none"
           >
-            Home
-          </a>
-          <a 
-            href="/about" 
-            className="text-white hover:text-blue-400"
-            onClick={() => gaEvent('nav-about-click', 'nav-about-click')}
-          >
-            About
-          </a>
-          <a 
-            href="/contact" 
-            className="text-white hover:text-blue-400"
-            onClick={() => gaEvent('nav-contact-click', 'nav-contact-click')}
-          >
-            Contact
-          </a>
-          <a 
-            href="/privacy" 
-            className="text-white hover:text-blue-400"
-            onClick={() => gaEvent('nav-privacy-click', 'nav-privacy-click')}
-          >
-            Privacy
-          </a>
-        </nav> */}
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              {navOpen ? (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              ) : (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4 6h16M4 12h16m-7 6h7"
+                />
+              )}
+            </svg>
+          </button>
+        </div>
+        <nav
+          className={`${
+            navOpen ? 'block' : 'hidden'
+          } md:flex md:space-x-4 md:items-center w-full md:w-auto`}
+        >
+          <div className="flex flex-col md:flex-row md:space-x-4 items-center">
+            <a 
+              href="/" 
+              className="block md:inline-block text-white hover:text-blue-400 p-2"
+              onClick={() => gaEvent('nav-home-click', 'nav-home-click')}
+            >
+              Home
+            </a>
+            <a 
+              href="/privacy" 
+              className="block md:inline-block text-white hover:text-blue-400 p-2"
+              onClick={() => gaEvent('nav-privacy-click', 'nav-privacy-click')}
+            >
+              Privacy
+            </a>
+          </div>
+          <div className="flex items-center justify-center p-2 md:justify-end">
+            <ThemeToggle />
+          </div>
+        </nav>
       </div>
     </header>
   );
