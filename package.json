@@ -7,6 +7,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@awesome.me/kit-dc49e6a1c7": "^1.0.4",
     "@ffmpeg/core": "^0.11.0",
     "@ffmpeg/ffmpeg": "^0.11.6",
     "@fortawesome/fontawesome-svg-core": "^6.5.2",
