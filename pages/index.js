@@ -5,6 +5,7 @@ import Header from './header.js';
 import Footer from './footer.js';
 import Head from 'next/head';
 import Script from 'next/script';
+import ExampleGifs from './exmaplegifs.js';
 
 const gaCode = process.env.TRACKING_ID;
 ReactGA.initialize("G-MHJ39LXW6P");
@@ -49,6 +50,7 @@ export default function Home() {
           </div>
           <div className="w-full md:w-1/2 px-4">
             <DropZone />
+            <ExampleGifs />
           </div>
         </div>
       </main>
