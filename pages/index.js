@@ -33,6 +33,7 @@ export default function Home() {
               <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300">100% Automatic & FREE</h3>
               <h4 className="text-lg font-medium text-gray-700 dark:text-gray-300">Other Free Tools</h4>
               <h4><a href="https://thepasswordgenerator.com">ThePasswordGenerator.com</a></h4>
+              <h4><a href="https://zipmyfile.com">ZipMyFile.com</a></h4>
             </div>
           </div>
           <div className="w-full md:w-1/2 px-4">
