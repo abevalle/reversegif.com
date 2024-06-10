@@ -3,10 +3,12 @@ import { ThemeProvider } from 'next-themes';
 import '../fontawesome'; // Adjust the path as needed
 import '../styles/globals.css'
 import Head from 'next/head';
+import { Analytics } from "@vercel/analytics/react"
 
 function MyApp({ Component, pageProps }) {
   return (
     <ThemeProvider attribute="class">
+      <Analytics/>
       <Head>
         <title>Reversegif.com | Reverse a Gif for FREE!</title>
         <meta name="title" content="Reverse a gif for free | reversegif.com" />
