@@ -1,15 +1,15 @@
 import React from 'react';
+import { useRouter } from 'next/router';
+import { useQuery, gql } from '@apollo/client';
 import Header from '../../components/header';
 import Footer from '../../components/footer';
 import Head from 'next/head';
-import { useRouter } from 'next/router';
-import { useQuery, gql } from '@apollo/client';
 import PostMetadata from '../../components/PostMetadata';
 import stripHtmlTags from '../../lib/utils';
 
 const GET_POST = gql`
   query GetPost($slug: String!) {
-    postBySlug(slug: $slug) {
+    postBy(slug: $slug) {
       title
       excerpt
       content
@@ -39,7 +39,7 @@ export default function Post() {
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
 
-  const { postBySlug: post } = data;
+  const post = data?.postBy;
 
   if (!post) return <p>Post not found</p>;
 
@@ -49,13 +49,11 @@ export default function Post() {
         <title>{post.title} | reversegif.com</title>
         <meta name="title" content={`${post.title} | reversegif.com`} />
         <meta name="description" content={stripHtmlTags(post.excerpt)} />
-        {/* Open Graph Meta Tags */}
         <meta property="og:title" content={`${post.title} | reversegif.com`} />
         <meta property="og:description" content={stripHtmlTags(post.excerpt)} />
         <meta property="og:image" content="/metaimg.webp" />
         <meta property="og:url" content={`https://reversegif.com/blog/${slug}`} />
         <meta property="og:type" content="article" />
-        {/* Twitter Card Meta Tags */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={`${post.title} | reversegif.com`} />
         <meta name="twitter:description" content={stripHtmlTags(post.excerpt)} />
@@ -69,7 +67,7 @@ export default function Post() {
             <PostMetadata 
               author={post.author.node.name} 
               date={post.date} 
-              tags={post.tags.nodes} 
+              tags={post.tags.nodes || []} 
             />
             <h1 className="text-2xl font-bold mb-4">{post.title}</h1>
             <div className="prose dark:prose-dark max-w-none">
