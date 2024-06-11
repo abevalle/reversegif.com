@@ -1,28 +1,26 @@
-import { useRouter } from 'next/router';
-import { useQuery, gql } from '@apollo/client';
-import { ApolloProvider } from '@apollo/client/react';
-import client from '../../lib/apollo-client';
+import React from 'react';
 import Header from '../../components/header';
 import Footer from '../../components/footer';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
+import { useQuery, gql } from '@apollo/client';
 import PostMetadata from '../../components/PostMetadata';
 import stripHtmlTags from '../../lib/utils';
 
 const GET_POST = gql`
   query GetPost($slug: String!) {
-    postBy(slug: $slug) {
+    postBySlug(slug: $slug) {
       title
       excerpt
-      slug
-      date
       content
-      featuredImage {
-        node {
-          sourceUrl
-        }
-      }
+      date
       author {
         node {
+          name
+        }
+      }
+      tags {
+        nodes {
           name
         }
       }
@@ -30,7 +28,7 @@ const GET_POST = gql`
   }
 `;
 
-const Post = () => {
+export default function Post() {
   const router = useRouter();
   const { slug } = router.query;
 
@@ -39,9 +37,11 @@ const Post = () => {
   });
 
   if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error :(</p>;
+  if (error) return <p>Error: {error.message}</p>;
 
-  const post = data.postBy;
+  const { postBySlug: post } = data;
+
+  if (!post) return <p>Post not found</p>;
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-100 dark:bg-slate-900 text-gray-900 dark:text-gray-100">
@@ -53,7 +53,7 @@ const Post = () => {
         <meta property="og:title" content={`${post.title} | reversegif.com`} />
         <meta property="og:description" content={stripHtmlTags(post.excerpt)} />
         <meta property="og:image" content="/metaimg.webp" />
-        <meta property="og:url" content={`https://reversegif.com/blog/${post.slug}`} />
+        <meta property="og:url" content={`https://reversegif.com/blog/${slug}`} />
         <meta property="og:type" content="article" />
         {/* Twitter Card Meta Tags */}
         <meta name="twitter:card" content="summary_large_image" />
@@ -69,6 +69,7 @@ const Post = () => {
             <PostMetadata 
               author={post.author.node.name} 
               date={post.date} 
+              tags={post.tags.nodes} 
             />
             <h1 className="text-2xl font-bold mb-4">{post.title}</h1>
             <div className="prose dark:prose-dark max-w-none">
@@ -80,12 +81,4 @@ const Post = () => {
       <Footer />
     </div>
   );
-};
-
-const PostPage = () => (
-  <ApolloProvider client={client}>
-    <Post />
-  </ApolloProvider>
-);
-
-export default PostPage;
+}
