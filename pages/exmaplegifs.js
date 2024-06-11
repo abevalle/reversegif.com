@@ -1,13 +1,36 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 
 const ExampleGifs = () => {
-  const gifs = [
+  const allGifs = [
     'https://media.giphy.com/media/5GoVLqeAOo6PK/giphy.gif',
     'https://media.giphy.com/media/11sBLVxNs7v6WA/giphy.gif',
     'https://media.giphy.com/media/3o7TKMt1VVNkHV2PaE/giphy.gif',
     'https://media.giphy.com/media/l0HlUOry8A07NfL5q/giphy.gif',
+    'https://media.giphy.com/media/13CoXDiaCcCoyk/giphy.gif',
+    'https://media.giphy.com/media/26ufdipQqU2lhNA4g/giphy.gif',
+    'https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif',
+    'https://media.giphy.com/media/l0HlNQ03J5JxX6lva/giphy.gif',
   ];
+
+  const [selectedGifs, setSelectedGifs] = useState([]);
+
+  useEffect(() => {
+    const shuffleArray = (array) => {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    };
+
+    const selectRandomGifs = () => {
+      const gifsToDisplay = [...allGifs];
+      shuffleArray(gifsToDisplay);
+      return gifsToDisplay.slice(0, 4); // Select 4 random GIFs
+    };
+
+    setSelectedGifs(selectRandomGifs());
+  }, []);
 
   return (
     <div className="text-center p-4">
@@ -17,7 +40,7 @@ const ExampleGifs = () => {
           <p className="text-lg text-gray-900 dark:text-gray-100">Try one of these:</p>
         </div>
         <div className="flex space-x-4">
-          {gifs.map((gif, index) => (
+          {selectedGifs.map((gif, index) => (
             <div key={index} className="w-16 h-16 relative rounded-lg overflow-hidden">
               <Image
                 src={gif}

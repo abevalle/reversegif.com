@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactGA from 'react-ga4';
-import Header from './header.js';
-import Footer from './footer.js';
+import Header from '../../components/header.js';
+import Footer from '../../components/footer.js';
 import Head from 'next/head';
 import Script from 'next/script';
 
