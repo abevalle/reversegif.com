@@ -2,8 +2,9 @@
 
 import React from 'react';
 import Head from 'next/head';
-import Header from './header.js';
-import Footer from './footer.js';
+import Header from '../components/header.js';
+import Footer from '../components/footer.js';
+
 
 const Terms = () => {
   return (

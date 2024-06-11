@@ -1,7 +1,10 @@
-if (!process.env.FONTAWESOME_AUTH_TOKEN) {
-    console.error('Error: FontAwesome auth token not set in environment variables');
-    process.exit(1);
-  } else {
-    console.log('FontAwesome auth token is set');
-  }
-  
+require('dotenv').config();
+
+console.log('FONT_AWESOME_AUTH_TOKEN:', process.env.FONT_AWESOME_AUTH_TOKEN);
+
+if (!process.env.FONT_AWESOME_AUTH_TOKEN) {
+    throw new Error('FontAwesome auth token not set in environment variables');
+}
+
+// Your prebuild logic here
+console.log('Prebuild script running...');
