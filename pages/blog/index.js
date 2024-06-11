@@ -1,9 +1,11 @@
+// pages/blog/index.js
 import React from 'react';
 import Header from '../../components/header';
 import Footer from '../../components/footer';
 import Head from 'next/head';
-import Link from 'next/link';
 import { useQuery, gql } from '@apollo/client';
+import Hero from '../../components/Hero';
+import BlogPostCard from '../../components/BlogPostCard';
 
 const GET_ALL_POSTS = gql`
   query GetAllPosts {
@@ -46,24 +48,13 @@ export default function Blog() {
       </Head>
       <Header />
       <main className="flex-grow container mx-auto p-4">
-        <div className="flex justify-center">
-          <div className="w-full md:w-2/3 lg:w-1/2 bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md text-gray-900 dark:text-gray-100">
-            <h1 className="text-2xl font-bold mb-4">Blog</h1>
-            {posts.length === 0 ? (
-              <p>No posts found.</p>
-            ) : (
-              posts.map((post) => (
-                <div key={post.slug} className="mb-4">
-                  <h2 className="text-xl font-bold">
-                    <Link href={`/blog/${post.slug}`}>
-                      <a>{post.title}</a>
-                    </Link>
-                  </h2>
-                  <p>{post.excerpt}</p>
-                </div>
-              ))
-            )}
-          </div>
+        <Hero title="Our Blog" description="We use an agile approach to test assumptions and connect with the needs of your audience early and often." />
+        <div className="grid gap-8 lg:grid-cols-2 mt-8">
+          {posts.length === 0 ? (
+            <p>No posts found.</p>
+          ) : (
+            posts.map((post) => <BlogPostCard key={post.slug} post={post} />)
+          )}
         </div>
       </main>
       <Footer />

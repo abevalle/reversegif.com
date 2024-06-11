@@ -11,27 +11,23 @@ const GET_POST = gql`
   query GetPost($slug: String!) {
     postBy(slug: $slug) {
       title
-      excerpt
       content
       date
       author {
         node {
           name
-        }
-      }
-      tags {
-        nodes {
-          name
+          avatar {
+            url
+          }
         }
       }
     }
   }
 `;
 
-export default function Post() {
+const BlogPost = () => {
   const router = useRouter();
   const { slug } = router.query;
-
   const { loading, error, data } = useQuery(GET_POST, {
     variables: { slug },
   });
@@ -41,42 +37,45 @@ export default function Post() {
 
   const post = data?.postBy;
 
-  if (!post) return <p>Post not found</p>;
-
   return (
-    <div className="min-h-screen flex flex-col bg-slate-100 dark:bg-slate-900 text-gray-900 dark:text-gray-100">
+    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 antialiased">
       <Head>
         <title>{post.title} | reversegif.com</title>
-        <meta name="title" content={`${post.title} | reversegif.com`} />
-        <meta name="description" content={stripHtmlTags(post.excerpt)} />
-        <meta property="og:title" content={`${post.title} | reversegif.com`} />
-        <meta property="og:description" content={stripHtmlTags(post.excerpt)} />
-        <meta property="og:image" content="/metaimg.webp" />
-        <meta property="og:url" content={`https://reversegif.com/blog/${slug}`} />
-        <meta property="og:type" content="article" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={`${post.title} | reversegif.com`} />
-        <meta name="twitter:description" content={stripHtmlTags(post.excerpt)} />
-        <meta name="twitter:image" content="/metaimg.webp" />
-        <meta name="twitter:site" content="@yourtwitterhandle" />
+        <meta name="description" content={post.title} />
       </Head>
       <Header />
-      <main className="flex-grow container mx-auto p-4">
-        <div className="flex justify-center">
-          <div className="w-full md:w-2/3 lg:w-1/2 bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md text-gray-900 dark:text-gray-100">
-            <PostMetadata 
-              author={post.author.node.name} 
-              date={post.date} 
-              tags={post.tags.nodes || []} 
-            />
-            <h1 className="text-2xl font-bold mb-4">{post.title}</h1>
-            <div className="prose dark:prose-dark max-w-none">
+      <main className="pt-8 pb-16 lg:pt-16 lg:pb-24 bg-white dark:bg-gray-900 antialiased">
+        <div className="flex justify-between px-4 mx-auto max-w-screen-xl">
+          <article className="mx-auto w-full max-w-2xl">
+            <header className="mb-4 lg:mb-6">
+              <address className="flex items-center mb-6 not-italic">
+                <div className="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white">
+                  <img className="mr-4 w-16 h-16 rounded-full" src={post.author.node.avatar.url} alt={post.author.node.name} />
+                  <div>
+                    <a href="#" rel="author" className="text-xl font-bold text-gray-900 dark:text-white">{post.author.node.name}</a>
+                    <p className="text-base text-gray-500 dark:text-gray-400"><time pubdate datetime={post.date}>{new Date(post.date).toLocaleDateString()}</time></p>
+                  </div>
+                </div>
+              </address>
+              <h1 className="mb-4 text-3xl font-extrabold leading-tight text-gray-900 lg:mb-6 lg:text-4xl dark:text-white">{post.title}</h1>
+            </header>
+            <div className="prose dark:prose-dark">
               <div dangerouslySetInnerHTML={{ __html: post.content }} />
             </div>
-          </div>
+          </article>
         </div>
       </main>
+      <aside aria-label="Related articles" className="py-8 lg:py-24 bg-gray-50 dark:bg-gray-800">
+        <div className="px-4 mx-auto max-w-screen-xl">
+          <h2 className="mb-8 text-2xl font-bold text-gray-900 dark:text-white">Related articles</h2>
+          <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-4">
+            {/* Related articles component can go here */}
+          </div>
+        </div>
+      </aside>
       <Footer />
     </div>
   );
-}
+};
+
+export default BlogPost;
