@@ -5,3 +5,33 @@
 .landingImage {
     border-radius: 15px;
   }
+
+  /* global styles or in a specific css file */
+.prose code {
+  background-color: rgba(27, 31, 35, 0.05);
+  padding: 0.2em 0.4em;
+  border-radius: 0.3em;
+}
+
+.prose {
+  @apply text-gray-800 dark:text-gray-100;
+}
+
+.prose h1,
+.prose h2,
+.prose h3 {
+  @apply text-gray-900 dark:text-gray-100;
+}
+
+.prose a {
+  @apply text-blue-600 dark:text-blue-400;
+}
+
+.prose code {
+  @apply text-pink-600 bg-gray-100 dark:text-pink-400 dark:bg-gray-800;
+}
+
+.prose pre code {
+  @apply bg-gray-900 text-white dark:bg-gray-800;
+}
+

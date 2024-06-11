@@ -1,7 +1,7 @@
 // components/Header.js
 import React, { useState } from 'react';
 import ReactGA from 'react-ga4';
-import ThemeToggle from './ThemeToggle';
+import ThemeToggle from '../pages/ThemeToggle';
 
 const gaCode = process.env.TRACKING_ID;
 ReactGA.initialize("G-MHJ39LXW6P");
@@ -73,11 +73,25 @@ export default function Header() {
               Home
             </a>
             <a 
-              href="/privacy" 
+              href="/about" 
               className="block md:inline-block text-white hover:text-blue-400 p-2"
-              onClick={() => gaEvent('nav-privacy-click', 'nav-privacy-click')}
+              onClick={() => gaEvent('nav-about-click', 'nav-about-click')}
             >
-              Privacy
+              About
+            </a>
+            <a 
+              href="/blog" 
+              className="block md:inline-block text-white hover:text-blue-400 p-2"
+              onClick={() => gaEvent('nav-blog-click', 'nav-blog-click')}
+            >
+              Blog
+            </a>
+            <a 
+              href="/faq" 
+              className="block md:inline-block text-white hover:text-blue-400 p-2"
+              onClick={() => gaEvent('nav-faq-click', 'nav-faq-click')}
+            >
+              FAQ
             </a>
           </div>
           <div className="flex items-center justify-center p-2 md:justify-end">
