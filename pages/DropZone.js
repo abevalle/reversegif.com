@@ -1,6 +1,5 @@
 import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
 import React, { useState, useRef, useEffect } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ReactGA from 'react-ga4';
 
 const ffmpeg = createFFmpeg({ log: true, corePath: "https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js" });
@@ -86,7 +85,6 @@ const DropZone = () => {
             {!files ? (
                 <div className="bg-gray-300 dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-4 rounded-lg mx-auto max-w-xl text-center border-dashed border-2" onDragOver={handleDragOver} onDrop={handleDrop} onClick={() => { inputRef.current.click(); gaEvent('file-select', 'File Select Click'); }}>
                     <input type="file" onChange={(event) => { setFiles(event.target.files?.item(0)); gaEvent('file-upload', 'File Uploaded via Click'); }} hidden ref={inputRef} accept=".gif" />
-                    <FontAwesomeIcon icon="fa-solid fa-gif" className="text-white text-6xl mb-4" />
                     <h1 className="text-white text-2xl mb-2">Drop a File</h1>
                     <h1 className="text-white text-xl mb-4">or</h1>
                     <button className="bg-blue-500 text-white px-4 py-2 rounded-lg">Select a File</button>

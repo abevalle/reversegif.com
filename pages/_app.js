@@ -1,6 +1,5 @@
 // pages/_app.js
 import { ThemeProvider } from 'next-themes';
-import '../fontawesome'; // Adjust the path as needed
 import '../styles/globals.css'
 import Head from 'next/head';
 import { Analytics } from "@vercel/analytics/react"
