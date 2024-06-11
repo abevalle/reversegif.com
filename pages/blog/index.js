@@ -48,7 +48,7 @@ export default function Blog() {
       </Head>
       <Header />
       <main className="flex-grow container mx-auto p-4">
-        <Hero title="Our Blog" description="We use an agile approach to test assumptions and connect with the needs of your audience early and often." />
+        <Hero title="Our Blog" description="Free Reverse Gif For All" />
         <div className="grid gap-8 lg:grid-cols-2 mt-8">
           {posts.length === 0 ? (
             <p>No posts found.</p>
