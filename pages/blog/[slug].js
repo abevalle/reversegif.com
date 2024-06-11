@@ -6,6 +6,7 @@ import Footer from '../../components/footer';
 import Head from 'next/head';
 import PostMetadata from '../../components/PostMetadata';
 import stripHtmlTags from '../../lib/utils';
+import BlogList from '../../components/BlogList';
 
 const GET_POST = gql`
   query GetPost($slug: String!) {
@@ -68,8 +69,8 @@ const BlogPost = () => {
       <aside aria-label="Related articles" className="py-8 lg:py-24 bg-gray-50 dark:bg-gray-800">
         <div className="px-4 mx-auto max-w-screen-xl">
           <h2 className="mb-8 text-2xl font-bold text-gray-900 dark:text-white">Related articles</h2>
-          <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-4">
-            {/* Related articles component can go here */}
+          <div className="grid gap-12 sm:grid-cols-2">
+            <BlogList/>
           </div>
         </div>
       </aside>
