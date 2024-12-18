@@ -81,50 +81,98 @@ const DropZone = () => {
     };
 
     return ready ? (
-        <div className="p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-none md:rounded-xl shadow-lg">
             {!files ? (
-                <div className="bg-gray-300 dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-4 rounded-lg mx-auto max-w-xl text-center border-dashed border-2" onDragOver={handleDragOver} onDrop={handleDrop} onClick={() => { inputRef.current.click(); gaEvent('file-select', 'File Select Click'); }}>
+                <div 
+                    className="p-4 md:p-8 text-center border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-none md:rounded-xl transition-all duration-200 hover:border-blue-500 dark:hover:border-blue-400 cursor-pointer min-h-[200px] flex items-center justify-center"
+                    onDragOver={handleDragOver}
+                    onDrop={handleDrop}
+                    onClick={() => { inputRef.current.click(); gaEvent('file-select', 'File Select Click'); }}
+                >
                     <input type="file" onChange={(event) => { setFiles(event.target.files?.item(0)); gaEvent('file-upload', 'File Uploaded via Click'); }} hidden ref={inputRef} accept=".gif" />
-                    <h1 className="text-white text-2xl mb-2">Drop a File</h1>
-                    <h1 className="text-white text-xl mb-4">or</h1>
-                    <button className="bg-blue-500 text-white px-4 py-2 rounded-lg">Select a File</button>
-                    {tooManyFiles && <h1 className="text-red-500 mt-4">You added too many files. Please upload one at a time.</h1>}
+                    <div className="flex flex-col items-center justify-center space-y-4 w-full">
+                        <svg className="w-10 h-10 md:w-12 md:h-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
+                        <h1 className="text-xl md:text-2xl font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                            Drop your GIF here
+                        </h1>
+                        <p className="text-gray-500 dark:text-gray-400">or</p>
+                        <button className="w-full md:w-auto px-6 py-4 md:py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all duration-200 touch-target-size">
+                            Select a File
+                        </button>
+                        {tooManyFiles && (
+                            <p className="mt-4 text-red-500 dark:text-red-400 text-sm md:text-base">
+                                Please upload one file at a time
+                            </p>
+                        )}
+                    </div>
                 </div>
             ) : (
-                <div className="mx-auto max-w-xl">
-                    <div className="bg-gray-300 dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-4 rounded-lg mb-4">
-                        <div className="flex items-center">
-                            <img src={URL.createObjectURL(files)} className="w-32 h-32 object-cover rounded-lg mr-4" alt="Uploaded file" />
-                            <div>
-                                <h3 className="text-xl text-gray-500 dark:text-white">{files.name}</h3>
-                                <p className="text-gray-400">{(files.size / 1024 / 1024).toFixed(2)} MB</p>
+                <div className="p-4 md:p-6 space-y-4 md:space-y-6">
+                    <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 md:p-4">
+                        <div className="flex items-center space-x-3 md:space-x-4">
+                            <img src={URL.createObjectURL(files)} className="w-20 h-20 md:w-24 md:h-24 object-cover rounded-lg shadow-md" alt="Uploaded file" />
+                            <div className="flex-1 min-w-0">
+                                <h3 className="text-base md:text-lg font-medium text-gray-900 dark:text-gray-100 truncate">{files.name}</h3>
+                                <p className="text-sm md:text-base text-gray-500 dark:text-gray-400">{(files.size / 1024 / 1024).toFixed(2)} MB</p>
                             </div>
                         </div>
                     </div>
+
                     {reversed && (
-                        <div className="bg-gray-300 dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-4 rounded-lg mb-4">
-                            <div className="flex items-center">
-                                <img src={reversed} className="w-32 h-32 object-cover rounded-lg mr-4" alt="Reversed file" />
-                                <div>
-                                    <h3 className="text-xl text-gray-500 dark:text-white">{reversedName}</h3>
-                                    <p className="text-gray-400">{reversedSize} MB</p>
-                                    <a href={reversed} download={reversedName} className="text-blue-400">Download</a>
+                        <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 md:p-4">
+                            <div className="flex items-center space-x-3 md:space-x-4">
+                                <img src={reversed} className="w-20 h-20 md:w-24 md:h-24 object-cover rounded-lg shadow-md" alt="Reversed file" />
+                                <div className="flex-1 min-w-0">
+                                    <h3 className="text-base md:text-lg font-medium text-gray-900 dark:text-gray-100 truncate">{reversedName}</h3>
+                                    <p className="text-sm md:text-base text-gray-500 dark:text-gray-400">{reversedSize} MB</p>
+                                    <a 
+                                        href={reversed}
+                                        download={reversedName}
+                                        className="inline-flex items-center mt-2 text-blue-600 dark:text-blue-400 hover:underline touch-target-size"
+                                    >
+                                        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                        </svg>
+                                        <span className="text-sm md:text-base">Download</span>
+                                    </a>
                                 </div>
                             </div>
                         </div>
                     )}
+
                     {loading && (
-                        <h1 className="text-white text-center my-8">Reversing Gif...</h1>
+                        <div className="flex items-center justify-center py-4">
+                            <div className="animate-spin rounded-full h-6 w-6 md:h-8 md:w-8 border-b-2 border-blue-600 dark:border-blue-400"></div>
+                            <span className="ml-3 text-sm md:text-base text-gray-600 dark:text-gray-400">Reversing GIF...</span>
+                        </div>
                     )}
-                    <div className="text-center">
-                        <button onClick={reverseGif} className="bg-blue-500 text-white px-4 py-2 rounded-lg mr-2">Reverse Gif(s)</button>
-                        <button onClick={deleteFiles} className="bg-red-500 text-white px-4 py-2 rounded-lg">Convert more</button>
+
+                    <div className="flex flex-col md:flex-row justify-center space-y-3 md:space-y-0 md:space-x-4">
+                        <button 
+                            onClick={reverseGif}
+                            className="w-full md:w-auto px-6 py-4 md:py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all duration-200 touch-target-size"
+                        >
+                            Reverse GIF
+                        </button>
+                        <button 
+                            onClick={deleteFiles}
+                            className="w-full md:w-auto px-6 py-4 md:py-3 bg-red-500 hover:bg-red-600 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all duration-200 touch-target-size"
+                        >
+                            Start Over
+                        </button>
                     </div>
                 </div>
             )}
         </div>
     ) : (
-        <p className="text-slate-900 dark:text-white text-4xl text-center mt-16 mb-16 align-middle">loading...</p>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
+            <div className="flex items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400"></div>
+                <span className="ml-3 text-gray-600 dark:text-gray-400">Loading...</span>
+            </div>
+        </div>
     );
 };
 
