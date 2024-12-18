@@ -1,11 +1,11 @@
 import React from 'react';
+import Link from 'next/link';
 import ReactGA from 'react-ga4';
 
 const gaCode = process.env.TRACKING_ID;
 ReactGA.initialize("G-MHJ39LXW6P");
 
 export default function Footer() {
-
   const gaEvent = (cat, act) => {
     ReactGA.event({
       category: cat,
@@ -15,25 +15,101 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-gray-800 text-white py-4">
-      <div className="container mx-auto text-center">
-        <p>
-          reversegif.com by{' '}
-          <a
-            className="text-blue-400 hover:underline"
-            onClick={() => gaEvent('abevalle-click', 'abevalle-click')}
-            href="https://abevalle.com"
-          >
-            AbeValle
-          </a>{' '}
-          |{' '}
-          <a className="text-blue-400 hover:underline" href="/privacy">
-            Privacy
-          </a>{' '}|{' '}
-          <a className="text-blue-400 hover:underline" href="/terms">
-            Terms
-          </a>
-        </p>
+    <footer className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+      <div className="container mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Logo and description */}
+          <div className="text-center md:text-left">
+            <Link href="/" className="inline-flex items-center space-x-2">
+              <span className="relative">
+                <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  ReverseGIF
+                </span>
+              </span>
+            </Link>
+            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+              The easiest way to reverse your GIFs online
+            </p>
+          </div>
+
+          {/* Quick Links */}
+          <div className="text-center md:text-left">
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wider mb-4">
+              Quick Links
+            </h3>
+            <div className="space-y-3">
+              <Link href="/about" className="block text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">
+                About Us
+              </Link>
+              <Link href="/faq" className="block text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">
+                FAQ
+              </Link>
+              <Link href="/privacy" className="block text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">
+                Privacy Policy
+              </Link>
+              <Link href="/terms" className="block text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">
+                Terms of Service
+              </Link>
+            </div>
+          </div>
+
+          {/* Related Tools */}
+          <div className="text-center md:text-left">
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wider mb-4">
+              Related Tools
+            </h3>
+            <div className="space-y-3">
+              <a
+                href="https://thepasswordgenerator.com"
+                onClick={() => gaEvent('footer-link', 'password-generator-click')}
+                className="block text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
+              >
+                Password Generator
+              </a>
+              <a
+                href="https://zipmyfile.com"
+                onClick={() => gaEvent('footer-link', 'zip-file-click')}
+                className="block text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
+              >
+                ZIP File Compression
+              </a>
+              <a
+                href="https://yiddishbabynames.com"
+                onClick={() => gaEvent('footer-link', 'yiddish-names-click')}
+                className="block text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
+              >
+                Yiddish Baby Names
+              </a>
+              <a
+                href="https://meetingsession.com"
+                onClick={() => gaEvent('footer-link', 'meeting-session-click')}
+                className="block text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
+              >
+                Meeting Session
+              </a>
+              <a
+                href="https://schedulr.org"
+                onClick={() => gaEvent('footer-link', 'schedulr-click')}
+                className="block text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
+              >
+                Schedulr
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700 text-center text-sm text-gray-600 dark:text-gray-400">
+          <p>
+            © {new Date().getFullYear()} ReverseGIF.com by{' '}
+            <a
+              href="https://abevalle.com"
+              onClick={() => gaEvent('footer-link', 'abevalle-click')}
+              className="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              AbeValle
+            </a>
+          </p>
+        </div>
       </div>
     </footer>
   );

@@ -1,8 +1,8 @@
-module.exports = {
+const nextConfig = {
   async headers() {
     return [
       {
-        source: '/',
+        source: '/:path*',
         headers: [
           {
             key: 'Cross-Origin-Embedder-Policy',
@@ -20,3 +20,5 @@ module.exports = {
     domains: ['media.giphy.com'],
   },
 };
+
+module.exports = nextConfig;
