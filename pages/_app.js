@@ -4,8 +4,20 @@ import Head from 'next/head';
 import { Analytics } from "@vercel/analytics/react";
 import { ApolloProvider } from '@apollo/client';
 import client from '../lib/apollo-client';
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
+import * as gtm from '../lib/gtm';
 
 function MyApp({ Component, pageProps }) {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.events.on('routeChangeComplete', (url) => gtm.pageview(url));
+    return () => {
+      router.events.off('routeChangeComplete', gtm.pageview);
+    };
+  }, [router.events]);
+
   return (
     <ApolloProvider client={client}>
       <ThemeProvider attribute="class">
