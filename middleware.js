@@ -5,6 +5,12 @@ import { NextResponse } from 'next/server';
 export async function middleware(req) {
   const { pathname } = req.nextUrl;
 
+  // Handle legacy URLs (4-character codes)
+  if (pathname.match(/^\/[a-zA-Z0-9]{4}$/)) {
+    const url = new URL(req.url);
+    return NextResponse.redirect(new URL('/', url), 301);
+  }
+
   // Apply middleware only for image file requests
   if (pathname.match(/\.(gif|jpg|jpeg|tiff|png)$/)) {
     const url = new URL(req.url);
