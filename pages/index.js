@@ -21,6 +21,40 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-slate-100 to-slate-200 dark:from-slate-900 dark:to-slate-800 text-gray-900 dark:text-gray-100">
+      <Head>
+        {/* Add SoftwareApplication Schema */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "SoftwareApplication",
+              "name": "ReverseGIF.com",
+              "applicationCategory": "ImageEditing",
+              "applicationSubCategory": "GIF Editor",
+              "operatingSystem": "Web",
+              "offers": {
+                "@type": "Offer",
+                "price": "0.00",
+                "priceCurrency": "USD",
+                "availability": "https://schema.org/InStock"
+              },
+              "description": "A free online tool to reverse GIF animations. Process GIFs directly in your browser with no file size limits and complete privacy.",
+              "featureList": [
+                "Browser-based GIF processing",
+                "No file upload required",
+                "Privacy focused - files never leave your browser",
+                "High-quality output",
+                "Lightning-fast processing",
+                "Video to reversed GIF conversion"
+              ],
+              "browserRequirements": "Requires a modern web browser with JavaScript enabled",
+              "softwareVersion": "1.0",
+              "url": "https://reversegif.com"
+            })
+          }}
+        />
+      </Head>
       <Header />
       <main className="flex-grow container mx-auto px-4 py-6 md:p-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 items-start">

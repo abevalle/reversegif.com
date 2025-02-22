@@ -36,6 +36,75 @@ export default function FAQ() {
         <meta name="twitter:description" content="Find answers to common questions about using ReverseGIF.com, the best tool for reversing GIFs for free." />
         <meta name="twitter:image" content="/metaimg.webp" />
         <meta name="twitter:site" content="@yourtwitterhandle" />
+        
+        {/* FAQ Schema Markup */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              "mainEntity": [
+                {
+                  "@type": "Question",
+                  "name": "How do I reverse a GIF?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "To reverse a GIF using ReverseGIF.com, simply upload the GIF file using our tool, and click the 'Reverse' button. The reversed GIF will be generated instantly and available for download. It's a quick and free way to reverse your GIFs."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "Is there a file size limit for uploading GIFs?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes, the maximum file size for uploading a GIF is 50MB. This ensures quick processing and optimal performance when you reverse a GIF."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "Are my GIFs stored on your servers?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "No, we prioritize your privacy. All GIF processing is done locally in your browser. We do not store or transmit your GIF files to our servers when you use our free reverse GIF tool."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "Can I reverse videos using your tool?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes, when you upload a video to our tool, it will be automatically converted to a reversed GIF. This makes it easy to create fun and engaging reversed animations from your video files."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "Are there any costs associated with using ReverseGIF.com?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "No, our reverse GIF tool is completely free to use. We aim to provide a valuable service without any hidden costs or fees."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "Can I use reversed GIFs on social media?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes, once you have reversed your GIF, you can download it and share it on any social media platform. Our reverse GIF tool ensures that the quality is maintained for optimal sharing."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "What if I encounter an issue while using the tool?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "If you experience any problems, please contact us at hello@reversegif.com. Our support team will be happy to assist you."
+                  }
+                }
+              ]
+            })
+          }}
+        />
       </Head>
       <Header />
       <main className="flex-grow container mx-auto px-4 py-12">
