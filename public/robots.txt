@@ -1,0 +1,11 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+Allow: /about
+Allow: /faq
+Allow: /blog
+Allow: /privacy
+Allow: /terms
+
+# Sitemap
+Sitemap: https://reversegif.com/sitemap.xml 
