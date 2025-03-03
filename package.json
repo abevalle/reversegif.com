@@ -2,8 +2,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "optimize": "node scripts/optimize.js",
     "build": "next build",
-    "start": "next start"
+    "build:prod": "npm run optimize && next build",
+    "start": "next start",
+    "analyze": "ANALYZE=true next build"
   },
   "dependencies": {
     "@apollo/client": "^3.10.4",
@@ -17,12 +20,14 @@
     "graphql": "^16.8.1",
     "imagemagick": "^0.1.3",
     "isomorphic-unfetch": "^4.0.2",
+    "marked": "^15.0.7",
     "next": "latest",
     "next-themes": "^0.3.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-ga": "^3.3.1",
-    "react-ga4": "^2.1.0"
+    "react-ga4": "^2.1.0",
+    "react-markdown": "^10.0.0"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.19",
