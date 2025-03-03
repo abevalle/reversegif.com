@@ -18,7 +18,9 @@ const DropZone = () => {
     const [loading, setLoading] = useState(false);
 
     const load = async () => {
-        await ffmpeg.load();
+        if (!ffmpeg.isLoaded()) {
+            await ffmpeg.load();
+        }
         setReady(true);
         gaEvent('app-load', 'App Loaded');
     };

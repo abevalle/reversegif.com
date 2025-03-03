@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 
 export default function Header() {
@@ -12,9 +13,16 @@ export default function Header() {
     <header className="bg-white dark:bg-gray-800 shadow-sm">
       <nav className="container mx-auto px-4 py-3">
         <div className="flex justify-between items-center">
-          <Link href="/" className="flex items-center space-x-2">
+          <Link href="/" className="flex items-center space-x-3">
+            <Image
+              src="/logo.png"
+              alt="ReverseGIF Logo"
+              width={32}
+              height={32}
+              className="w-8 h-8"
+            />
             <span className="relative">
-              <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="text-xl font-bold text-gray-900 dark:text-white">
                 ReverseGIF
               </span>
             </span>
@@ -64,6 +72,9 @@ const NavLinks = ({ isActivePath, mobile = false }) => {
     <>
       <Link href="/" className={linkClass('/')}>
         Home
+      </Link>
+      <Link href="/blog" className={linkClass('/blog')}>
+        Blog
       </Link>
       <Link href="/about" className={linkClass('/about')}>
         About

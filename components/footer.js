@@ -22,7 +22,7 @@ export default function Footer() {
           <div className="text-center md:text-left">
             <Link href="/" className="inline-flex items-center space-x-2">
               <span className="relative">
-                <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                <span className="text-xl font-bold text-gray-900 dark:text-white">
                   ReverseGIF
                 </span>
               </span>

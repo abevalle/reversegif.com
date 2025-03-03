@@ -5,6 +5,11 @@ import { NextResponse } from 'next/server';
 export async function middleware(req) {
   const { pathname } = req.nextUrl;
 
+  // Skip middleware for /blog routes
+  if (pathname.startsWith('/blog')) {
+    return NextResponse.next();
+  }
+
   // Handle legacy URLs (4-character codes)
   if (pathname.match(/^\/[a-zA-Z0-9]{4}$/)) {
     const url = new URL(req.url);
