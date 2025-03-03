@@ -25,7 +25,7 @@ function MyApp({ Component, pageProps }) {
         <Head>
           <title>Reversegif.com | Reverse a Gif for FREE!</title>
           <meta name="title" content="Reverse a gif for free | reversegif.com" />
-          <meta name="description" content="reversegif.com: Easily reverse GIFs in 3 steps. Drag, drop, and click to reverse. Local secure video encoding. Try it now!" />
+          <meta name="description" content="Free online GIF reverser - Create backwards GIFs instantly! No upload needed, 100% secure browser-based processing. Convert videos to reversed GIFs. No size limits. Try now!" />
           <meta name="keywords" content="reversegif, reverse a gif, gif, backwards gif, rewind a gif, gif reverse, gifs reversed, reversing a gif" />
           <meta name="robots" content="index, follow" />
           <meta name="language" content="English" />
