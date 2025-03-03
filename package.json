@@ -2,8 +2,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "optimize": "node scripts/optimize.js",
     "build": "next build",
-    "start": "next start"
+    "build:prod": "npm run optimize && next build",
+    "start": "next start",
+    "analyze": "ANALYZE=true next build"
   },
   "dependencies": {
     "@apollo/client": "^3.10.4",

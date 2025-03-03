@@ -48,3 +48,57 @@ yarn dev
 ```
 
 Open your web browser and visit http://localhost:3000 to embark on your reversegIF journey! 🚀🌐
+
+## Blog Functionality
+
+The application now includes a blog feature powered by Strapi CMS. Blog posts are fetched from the Strapi API and displayed in a dedicated blog section.
+
+### Features
+
+- Blog index page with paginated posts
+- Individual blog post pages with rich content
+- SEO optimizations for blog content
+- Related posts suggestions
+
+### Routes
+
+- `/blog` - Blog index page
+- `/blog/[slug]` - Individual blog post page
+
+## Development
+
+```bash
+# Install dependencies
+npm install
+
+# Run the development server
+npm run dev
+```
+
+## Production Deployment
+
+```bash
+# Optimize and build for production
+npm run build:prod
+
+# Start the production server
+npm run start
+```
+
+### Environment Variables
+
+Create a `.env.production` file with the following variables:
+
+```
+NEXT_PUBLIC_STRAPI_API_URL=your-strapi-api-url
+NEXT_PUBLIC_STRAPI_API_TOKEN=your-strapi-api-token
+```
+
+## Scripts
+
+- `npm run dev` - Start development server
+- `npm run optimize` - Run pre-build optimizations
+- `npm run build` - Build the application
+- `npm run build:prod` - Run optimizations and build for production
+- `npm run start` - Start production server
+- `npm run analyze` - Analyze the bundle size (requires @next/bundle-analyzer)

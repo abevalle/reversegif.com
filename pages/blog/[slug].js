@@ -26,15 +26,21 @@ export default function BlogPost() {
       
       try {
         setIsLoading(true);
-        console.log('Fetching post with slug:', slug);
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Fetching post with slug:', slug);
+        }
         
         // Fetch the post
         const postData = await fetchBlogPostBySlug(slug);
-        console.log('Post API Response:', postData);
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Post API Response:', postData);
+        }
         setApiResponse(postData);
         
         if (!postData) {
-          console.error('Post not found for slug:', slug);
+          if (process.env.NODE_ENV === 'development') {
+            console.error('Post not found for slug:', slug);
+          }
           setError('Post not found');
           setIsLoading(false);
           return;
@@ -44,7 +50,9 @@ export default function BlogPost() {
         
         // Fetch related posts
         const relatedResult = await fetchBlogPosts(1, 3);
-        console.log('Related posts API response:', relatedResult);
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Related posts API response:', relatedResult);
+        }
         
         // Filter out the current post from related posts
         if (relatedResult && relatedResult.data && Array.isArray(relatedResult.data)) {
@@ -55,7 +63,9 @@ export default function BlogPost() {
           setRelatedPosts(filteredRelated.slice(0, 3));
         }
       } catch (err) {
-        console.error('Error fetching post data:', err);
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Error fetching post data:', err);
+        }
         setError(`Failed to load the blog post: ${err.message}`);
       } finally {
         setIsLoading(false);

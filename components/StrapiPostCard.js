@@ -5,11 +5,15 @@ import Image from 'next/image';
 const StrapiPostCard = ({ post }) => {
   // Check if post is undefined
   if (!post) {
-    console.log("Post is undefined");
+    if (process.env.NODE_ENV === 'development') {
+      console.log("Post is undefined");
+    }
     return null; // Don't render anything if data is missing
   }
 
-  console.log("Post data:", post);
+  if (process.env.NODE_ENV === 'development') {
+    console.log("Post data:", post);
+  }
 
   // Extract data from Strapi's response structure
   // Handle both possible structures: with attributes or direct properties
@@ -17,7 +21,9 @@ const StrapiPostCard = ({ post }) => {
   const { Title, Metadescription, publishedAt, SocialMediaMetaImage, slug } = attributes;
   
   if (!Title) {
-    console.log("Title is missing in post:", post);
+    if (process.env.NODE_ENV === 'development') {
+      console.log("Title is missing in post:", post);
+    }
     return null;
   }
   

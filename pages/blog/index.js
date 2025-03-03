@@ -25,25 +25,30 @@ export default function Blog() {
         setIsLoading(true);
         const result = await fetchBlogPosts(1, POSTS_PER_PAGE);
         
-        // Log the API response for debugging
-        console.log('API Response:', result);
+        // Store API response for potential debugging in development
+        if (process.env.NODE_ENV === 'development') {
+          console.log('API Response:', result);
+        }
         setApiResponse(result);
         
         // Check if data exists and is an array
         if (result && result.data && Array.isArray(result.data)) {
-          console.log('Posts found:', result.data.length);
-          result.data.forEach((post, index) => {
-            console.log(`Post ${index + 1}:`, post);
-          });
+          if (process.env.NODE_ENV === 'development') {
+            console.log('Posts found:', result.data.length);
+          }
           
           setPosts(result.data);
           setPaginationData(result.meta?.pagination || { page: 1, pageSize: POSTS_PER_PAGE, pageCount: 1, total: 0 });
         } else {
-          console.error('Invalid API response structure:', result);
+          if (process.env.NODE_ENV === 'development') {
+            console.error('Invalid API response structure:', result);
+          }
           setError('Received invalid data format from the API.');
         }
       } catch (err) {
-        console.error('Error fetching initial posts:', err);
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Error fetching initial posts:', err);
+        }
         setError('Failed to load blog posts. Please try again later.');
       } finally {
         setIsLoading(false);
