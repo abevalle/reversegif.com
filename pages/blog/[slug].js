@@ -294,6 +294,60 @@ export default function BlogPost() {
     });
   };
 
+  // Custom components for ReactMarkdown
+  const customComponents = {
+    img: ({ node, ...props }) => {
+      // Get image dimensions or use defaults
+      const width = 800;  // Default width
+      const height = 450; // Default height (16:9 aspect ratio)
+      
+      // Check if the image is from a trusted domain
+      const trustedDomains = [
+        'blg01.coolify.valle.us',
+        'media.giphy.com',
+        'u488cwcco0gw00048g4wgoo0.coolify.valle.us'
+      ];
+      
+      // Extract domain from src
+      let domain = '';
+      try {
+        if (props.src) {
+          const url = new URL(props.src);
+          domain = url.hostname;
+        }
+      } catch (error) {
+        console.error('Error parsing URL:', error);
+      }
+      
+      // If the domain is trusted, use Next Image component
+      if (trustedDomains.includes(domain)) {
+        return (
+          <div className="my-6">
+            <Image
+              src={props.src}
+              alt={props.alt || 'Image'}
+              width={width}
+              height={height}
+              className="max-w-full h-auto rounded"
+              style={{ objectFit: 'contain' }}
+            />
+          </div>
+        );
+      }
+      
+      // Fallback to regular img tag for other domains
+      return (
+        <div className="my-6">
+          <img 
+            src={props.src} 
+            alt={props.alt || 'Image'} 
+            className="max-w-full h-auto rounded"
+          />
+        </div>
+      );
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-slate-100 dark:bg-slate-900 text-gray-900 dark:text-gray-100">
       <Head>
@@ -347,7 +401,7 @@ export default function BlogPost() {
               {isStructuredContent ? (
                 renderStructuredContent(Body)
               ) : typeof Body === 'string' ? (
-                <ReactMarkdown>{Body}</ReactMarkdown>
+                <ReactMarkdown components={customComponents}>{Body}</ReactMarkdown>
               ) : (
                 <div>
                   <p className="text-red-500">Unable to render content. Content type: {typeof Body}</p>

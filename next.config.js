@@ -43,7 +43,8 @@ const nextConfig = {
   images: {
     domains: [
       'media.giphy.com',
-      'u488cwcco0gw00048g4wgoo0.coolify.valle.us'
+      'u488cwcco0gw00048g4wgoo0.coolify.valle.us',
+      'blg01.coolify.valle.us'
     ],
   },
   productionBrowserSourceMaps: false,
