@@ -184,16 +184,34 @@ export default function BlogPost() {
   // Function to get the full image URL
   const getFullImageUrl = (src) => {
     if (!src) return '';
-    // If it's already a full URL, return it
+    
+    // If it's already a full URL, extract just the uploads path
     if (src.startsWith('http://') || src.startsWith('https://')) {
-      return src;
+      try {
+        const url = new URL(src);
+        const uploadsIndex = url.pathname.indexOf('/uploads/');
+        if (uploadsIndex !== -1) {
+          // Get everything after /uploads/
+          const imagePath = url.pathname.slice(uploadsIndex);
+          return `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${imagePath}`;
+        }
+      } catch (error) {
+        console.error('Error parsing URL:', error);
+      }
     }
-    // If it starts with a slash, it's a local image
+    
+    // If it starts with /uploads/, use as is
+    if (src.startsWith('/uploads/')) {
+      return `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${src}`;
+    }
+    
+    // If it's a local image (starts with /)
     if (src.startsWith('/')) {
       return src;
     }
-    // Otherwise, prepend the Strapi URL
-    return `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${src}`;
+    
+    // For any other case, assume it's a relative path and append to uploads
+    return `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/uploads/${src}`;
   };
   
   if (SocialMediaMetaImage?.data?.attributes?.url) {
@@ -326,16 +344,34 @@ export default function BlogPost() {
       // Function to get the full image URL
       const getFullImageUrl = (src) => {
         if (!src) return '';
-        // If it's already a full URL, return it
+        
+        // If it's already a full URL, extract just the uploads path
         if (src.startsWith('http://') || src.startsWith('https://')) {
-          return src;
+          try {
+            const url = new URL(src);
+            const uploadsIndex = url.pathname.indexOf('/uploads/');
+            if (uploadsIndex !== -1) {
+              // Get everything after /uploads/
+              const imagePath = url.pathname.slice(uploadsIndex);
+              return `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${imagePath}`;
+            }
+          } catch (error) {
+            console.error('Error parsing URL:', error);
+          }
         }
-        // If it starts with a slash, it's a local image
+        
+        // If it starts with /uploads/, use as is
+        if (src.startsWith('/uploads/')) {
+          return `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${src}`;
+        }
+        
+        // If it's a local image (starts with /)
         if (src.startsWith('/')) {
           return src;
         }
-        // Otherwise, prepend the Strapi URL
-        return `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${src}`;
+        
+        // For any other case, assume it's a relative path and append to uploads
+        return `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/uploads/${src}`;
       };
       
       // Get the full image URL
