@@ -36,7 +36,9 @@ const StrapiPostCard = ({ post }) => {
   
   // Function to get the full image URL
   const getFullImageUrl = (src) => {
-    if (!src) return '';
+    if (!src) return '/default-image.png';
+    
+    const strapiUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL || 'https://u488cwcco0gw00048g4wgoo0.coolify.valle.us';
     
     // If it's already a full URL, extract just the uploads path
     if (src.startsWith('http://') || src.startsWith('https://')) {
@@ -46,16 +48,18 @@ const StrapiPostCard = ({ post }) => {
         if (uploadsIndex !== -1) {
           // Get everything after /uploads/
           const imagePath = url.pathname.slice(uploadsIndex);
-          return `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${imagePath}`;
+          return `${strapiUrl}${imagePath}`;
         }
+        return src; // Return the original URL if no uploads path found
       } catch (error) {
         console.error('Error parsing URL:', error);
+        return src; // Return the original URL if parsing fails
       }
     }
     
     // If it starts with /uploads/, use as is
     if (src.startsWith('/uploads/')) {
-      return `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${src}`;
+      return `${strapiUrl}${src}`;
     }
     
     // If it's a local image (starts with /)
@@ -64,7 +68,7 @@ const StrapiPostCard = ({ post }) => {
     }
     
     // For any other case, assume it's a relative path and append to uploads
-    return `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/uploads/${src}`;
+    return `${strapiUrl}/uploads/${src}`;
   };
   
   // Get cover image URL if available
