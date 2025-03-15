@@ -301,30 +301,49 @@ export default function BlogPost() {
       const width = 800;  // Default width
       const height = 450; // Default height (16:9 aspect ratio)
       
-      // Check if the image is from a trusted domain
+      // Function to get the full image URL
+      const getFullImageUrl = (src) => {
+        if (!src) return '';
+        // If it's already a full URL, return it
+        if (src.startsWith('http://') || src.startsWith('https://')) {
+          return src;
+        }
+        // Otherwise, prepend the Strapi URL
+        return `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${src}`;
+      };
+      
+      // Get the full image URL
+      const fullImageUrl = getFullImageUrl(props.src);
+      
+      // Check if the image URL is valid
+      if (!fullImageUrl) {
+        console.error('Invalid image URL:', props.src);
+        return null;
+      }
+      
+      // Extract domain from src
+      let domain = '';
+      try {
+        const url = new URL(fullImageUrl);
+        domain = url.hostname;
+      } catch (error) {
+        console.error('Error parsing URL:', error);
+        return null;
+      }
+      
+      // List of trusted domains
       const trustedDomains = [
         'blg01.coolify.valle.us',
         'media.giphy.com',
         'u488cwcco0gw00048g4wgoo0.coolify.valle.us'
       ];
       
-      // Extract domain from src
-      let domain = '';
-      try {
-        if (props.src) {
-          const url = new URL(props.src);
-          domain = url.hostname;
-        }
-      } catch (error) {
-        console.error('Error parsing URL:', error);
-      }
-      
       // If the domain is trusted, use Next Image component
       if (trustedDomains.includes(domain)) {
         return (
           <div className="my-6">
             <Image
-              src={props.src}
+              src={fullImageUrl}
               alt={props.alt || 'Image'}
               width={width}
               height={height}
@@ -339,7 +358,7 @@ export default function BlogPost() {
       return (
         <div className="my-6">
           <img 
-            src={props.src} 
+            src={fullImageUrl}
             alt={props.alt || 'Image'} 
             className="max-w-full h-auto rounded"
           />

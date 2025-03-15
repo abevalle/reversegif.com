@@ -46,6 +46,20 @@ const nextConfig = {
       'u488cwcco0gw00048g4wgoo0.coolify.valle.us',
       'blg01.coolify.valle.us'
     ],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**.coolify.valle.us',
+        port: '',
+        pathname: '/uploads/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'media.giphy.com',
+        port: '',
+        pathname: '/**',
+      }
+    ]
   },
   productionBrowserSourceMaps: false,
   poweredByHeader: false,
