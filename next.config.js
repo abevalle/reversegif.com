@@ -59,7 +59,8 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       }
-    ]
+    ],
+    unoptimized: process.env.NODE_ENV === 'development'
   },
   productionBrowserSourceMaps: false,
   poweredByHeader: false,

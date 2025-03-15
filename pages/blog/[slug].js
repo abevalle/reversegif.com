@@ -19,6 +19,17 @@ export default function BlogPost() {
   const [error, setError] = useState(null);
   const [apiResponse, setApiResponse] = useState(null);
 
+  // Utility function to get full image URL
+  const getFullImageUrl = (src) => {
+    if (!src) return '';
+    // If it's already a full URL, return it
+    if (src.startsWith('http://') || src.startsWith('https://')) {
+      return src;
+    }
+    // Otherwise, prepend the Strapi URL
+    return `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${src}`;
+  };
+
   // Fetch post data when slug is available
   useEffect(() => {
     const fetchData = async () => {
@@ -178,14 +189,10 @@ export default function BlogPost() {
     day: 'numeric'
   }) : 'No date';
 
-  // Get cover image URL if available
-  let coverImageUrl = '/placeholder-blog.jpg'; // Default fallback image
-  
-  if (SocialMediaMetaImage?.data?.attributes?.url) {
-    coverImageUrl = `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${SocialMediaMetaImage.data.attributes.url}`;
-  } else if (SocialMediaMetaImage?.url) {
-    coverImageUrl = `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${SocialMediaMetaImage.url}`;
-  }
+  // Get the cover image URL
+  const coverImageUrl = post?.attributes?.SocialMediaMetaImage?.data?.attributes?.url
+    ? getFullImageUrl(post.attributes.SocialMediaMetaImage.data.attributes.url)
+    : '/images/default-cover.jpg';  // Fallback image
 
   // Determine if Body is structured content or markdown
   const isStructuredContent = Array.isArray(Body) && Body.length > 0 && typeof Body[0] === 'object';
@@ -301,17 +308,6 @@ export default function BlogPost() {
       const width = 800;  // Default width
       const height = 450; // Default height (16:9 aspect ratio)
       
-      // Function to get the full image URL
-      const getFullImageUrl = (src) => {
-        if (!src) return '';
-        // If it's already a full URL, return it
-        if (src.startsWith('http://') || src.startsWith('https://')) {
-          return src;
-        }
-        // Otherwise, prepend the Strapi URL
-        return `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${src}`;
-      };
-      
       // Get the full image URL
       const fullImageUrl = getFullImageUrl(props.src);
       
@@ -394,12 +390,13 @@ export default function BlogPost() {
         <div className="relative w-full h-64 md:h-96">
           <Image
             src={coverImageUrl}
-            alt={Title}
-            layout="fill"
-            objectFit="cover"
-            priority={true}
+            alt={Title || 'Blog post cover image'}
+            fill
+            priority
+            sizes="100vw"
+            style={{ objectFit: 'cover' }}
+            className="brightness-75"
           />
-          <div className="absolute inset-0 bg-black bg-opacity-40"></div>
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center px-4">
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">{Title}</h1>
