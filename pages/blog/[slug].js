@@ -19,15 +19,6 @@ export default function BlogPost() {
   const [error, setError] = useState(null);
   const [apiResponse, setApiResponse] = useState(null);
 
-  // Helper function to get full URL for images
-  const getFullImageUrl = (src) => {
-    if (!src) return '';
-    if (src.startsWith('http://') || src.startsWith('https://')) {
-      return src;
-    }
-    return `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${src}`;
-  };
-
   // Fetch post data when slug is available
   useEffect(() => {
     const fetchData = async () => {
@@ -145,28 +136,72 @@ export default function BlogPost() {
     );
   }
 
-  // Extract post data
-  const {
-    Title = '',
-    Body = '',
-    Metadescription = '',
-    Keywords = '',
-    publishedAt = '',
-    SocialMediaMetaImage = null,
-  } = post?.attributes || {};
+  // Extract post data - handle both possible structures
+  const attributes = post.attributes || post;
+  const { Title, Body, Metadescription, Keywords, publishedAt, SocialMediaMetaImage, slug: postSlug } = attributes;
 
-  // Get the cover image URL
-  const coverImageUrl = getFullImageUrl(SocialMediaMetaImage?.data?.attributes?.url);
+  if (!Title || !Body) {
+    return (
+      <div className="min-h-screen flex flex-col bg-slate-100 dark:bg-slate-900">
+        <Header />
+        <main className="flex-grow container mx-auto px-4 py-12 text-center">
+          <h1 className="text-3xl font-bold mb-4">Invalid Post Data</h1>
+          <p className="mb-8">The post data is incomplete or in an unexpected format.</p>
+          <div className="mb-4 p-4 bg-gray-100 dark:bg-gray-800 rounded overflow-auto max-h-64 text-left">
+            <p className="font-bold mb-2">Post Data Structure:</p>
+            <pre className="text-xs">{JSON.stringify(post, null, 2)}</pre>
+          </div>
+          {apiResponse && (
+            <div className="mt-4 p-4 bg-gray-100 dark:bg-gray-800 rounded overflow-auto max-h-64 text-left">
+              <p className="font-bold mb-2">API Response (for debugging):</p>
+              <pre className="text-xs">{JSON.stringify(apiResponse, null, 2)}</pre>
+            </div>
+          )}
+          <div className="mt-8">
+            <Link 
+              href="/blog"
+              className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            >
+              Back to Blog
+            </Link>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
-  // Format the date
-  const formattedDate = new Date(publishedAt).toLocaleDateString('en-US', {
+  // Format date
+  const formattedDate = publishedAt ? new Date(publishedAt).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric'
-  });
+  }) : 'No date';
 
-  // Get the post slug for canonical URL
-  const postSlug = post?.attributes?.slug || slug;
+  // Get cover image URL if available
+  let coverImageUrl = '/placeholder-blog.jpg'; // Default fallback image
+  
+  // Function to get the full image URL
+  const getFullImageUrl = (src) => {
+    if (!src) return '';
+    // If it's already a full URL, return it
+    if (src.startsWith('http://') || src.startsWith('https://')) {
+      return src;
+    }
+    // Otherwise, prepend the Strapi URL
+    return `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${src}`;
+  };
+  
+  if (SocialMediaMetaImage?.data?.attributes?.url) {
+    coverImageUrl = getFullImageUrl(SocialMediaMetaImage.data.attributes.url);
+  } else if (SocialMediaMetaImage?.url) {
+    coverImageUrl = getFullImageUrl(SocialMediaMetaImage.url);
+  }
+
+  // For debugging in development
+  if (process.env.NODE_ENV === 'development') {
+    console.log('Cover Image URL:', coverImageUrl);
+  }
 
   // Determine if Body is structured content or markdown
   const isStructuredContent = Array.isArray(Body) && Body.length > 0 && typeof Body[0] === 'object';
@@ -282,6 +317,17 @@ export default function BlogPost() {
       const width = 800;  // Default width
       const height = 450; // Default height (16:9 aspect ratio)
       
+      // Function to get the full image URL
+      const getFullImageUrl = (src) => {
+        if (!src) return '';
+        // If it's already a full URL, return it
+        if (src.startsWith('http://') || src.startsWith('https://')) {
+          return src;
+        }
+        // Otherwise, prepend the Strapi URL
+        return `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${src}`;
+      };
+      
       // Get the full image URL
       const fullImageUrl = getFullImageUrl(props.src);
       
@@ -362,22 +408,18 @@ export default function BlogPost() {
       <main className="flex-grow">
         {/* Hero section with cover image */}
         <div className="relative w-full h-64 md:h-96">
-          {coverImageUrl ? (
-            <Image
-              src={coverImageUrl}
-              alt={Title || 'Blog post cover image'}
-              fill
-              sizes="100vw"
-              priority={true}
-              style={{ objectFit: 'cover' }}
-              onError={(e) => {
-                console.error('Error loading hero image:', e);
-                e.target.style.display = 'none';
-              }}
-            />
-          ) : (
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600" />
-          )}
+          <Image
+            src={coverImageUrl}
+            alt={Title}
+            fill
+            sizes="100vw"
+            priority={true}
+            style={{ objectFit: 'cover' }}
+            className="transition-opacity opacity-0 duration-500"
+            onLoadingComplete={(image) => {
+              image.classList.remove('opacity-0');
+            }}
+          />
           <div className="absolute inset-0 bg-black bg-opacity-40"></div>
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center px-4">

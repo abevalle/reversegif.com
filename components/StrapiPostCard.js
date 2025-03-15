@@ -34,13 +34,29 @@ const StrapiPostCard = ({ post }) => {
     day: 'numeric'
   }) : 'No date';
   
+  // Function to get the full image URL
+  const getFullImageUrl = (src) => {
+    if (!src) return '';
+    // If it's already a full URL, return it
+    if (src.startsWith('http://') || src.startsWith('https://')) {
+      return src;
+    }
+    // Otherwise, prepend the Strapi URL
+    return `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${src}`;
+  };
+  
   // Get cover image URL if available
   let coverImageUrl = '/placeholder-blog.jpg'; // Default fallback image
   
   if (SocialMediaMetaImage?.data?.attributes?.url) {
-    coverImageUrl = `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${SocialMediaMetaImage.data.attributes.url}`;
+    coverImageUrl = getFullImageUrl(SocialMediaMetaImage.data.attributes.url);
   } else if (SocialMediaMetaImage?.url) {
-    coverImageUrl = `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${SocialMediaMetaImage.url}`;
+    coverImageUrl = getFullImageUrl(SocialMediaMetaImage.url);
+  }
+
+  // For debugging in development
+  if (process.env.NODE_ENV === 'development') {
+    console.log('Cover Image URL:', coverImageUrl);
   }
   
   // Use slug if available, otherwise use ID
@@ -53,9 +69,13 @@ const StrapiPostCard = ({ post }) => {
         <Image 
           src={coverImageUrl}
           alt={Title}
-          layout="fill"
-          objectFit="cover"
-          priority={false}
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          style={{ objectFit: 'cover' }}
+          className="transition-opacity opacity-0 duration-500"
+          onLoadingComplete={(image) => {
+            image.classList.remove('opacity-0');
+          }}
         />
       </div>
       <div className="p-6">
