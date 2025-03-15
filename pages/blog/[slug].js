@@ -179,7 +179,7 @@ export default function BlogPost() {
   }) : 'No date';
 
   // Get cover image URL if available
-  let coverImageUrl = '/placeholder-blog.jpg'; // Default fallback image
+  let coverImageUrl = '/default-image.png'; // Default fallback image
   
   // Function to get the full image URL
   const getFullImageUrl = (src) => {
@@ -188,14 +188,20 @@ export default function BlogPost() {
     if (src.startsWith('http://') || src.startsWith('https://')) {
       return src;
     }
+    // If it starts with a slash, it's a local image
+    if (src.startsWith('/')) {
+      return src;
+    }
     // Otherwise, prepend the Strapi URL
     return `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${src}`;
   };
   
   if (SocialMediaMetaImage?.data?.attributes?.url) {
-    coverImageUrl = getFullImageUrl(SocialMediaMetaImage.data.attributes.url);
+    const imageUrl = getFullImageUrl(SocialMediaMetaImage.data.attributes.url);
+    if (imageUrl) coverImageUrl = imageUrl;
   } else if (SocialMediaMetaImage?.url) {
-    coverImageUrl = getFullImageUrl(SocialMediaMetaImage.url);
+    const imageUrl = getFullImageUrl(SocialMediaMetaImage.url);
+    if (imageUrl) coverImageUrl = imageUrl;
   }
 
   // For debugging in development
@@ -322,6 +328,10 @@ export default function BlogPost() {
         if (!src) return '';
         // If it's already a full URL, return it
         if (src.startsWith('http://') || src.startsWith('https://')) {
+          return src;
+        }
+        // If it starts with a slash, it's a local image
+        if (src.startsWith('/')) {
           return src;
         }
         // Otherwise, prepend the Strapi URL
