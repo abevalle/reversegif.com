@@ -179,6 +179,8 @@ const DropZone = () => {
             setFiles(file);
             const fileExtension = file.name.split('.').pop();
             setFileType(fileExtension);
+            // Set convertToGif based on file type
+            setConvertToGif(!file.type.includes('gif'));
             // Check if it's a video and larger than 3MB
             if (file.type.startsWith('video/') && file.size > 3 * 1024 * 1024) {
                 setShowSizeWarning(true);
@@ -241,11 +243,15 @@ const DropZone = () => {
                         const file = event.target.files?.item(0);
                         setFiles(file);
                         gaEvent('file-upload', 'File Uploaded via Click');
-                        // Check if it's a video and larger than 3MB
-                        if (file && file.type.startsWith('video/') && file.size > 3 * 1024 * 1024) {
-                            setShowSizeWarning(true);
-                        } else {
-                            setShowSizeWarning(false);
+                        // Set convertToGif based on file type
+                        if (file) {
+                            setConvertToGif(!file.type.includes('gif'));
+                            // Check if it's a video and larger than 3MB
+                            if (file.type.startsWith('video/') && file.size > 3 * 1024 * 1024) {
+                                setShowSizeWarning(true);
+                            } else {
+                                setShowSizeWarning(false);
+                            }
                         }
                     }} hidden ref={inputRef} accept="image/*,video/*" />
                     <div className="flex flex-col items-center justify-center space-y-4 w-full">
@@ -374,20 +380,22 @@ const DropZone = () => {
                                 </div>
                                 <span className="ml-3 text-sm md:text-base text-gray-700 dark:text-gray-300">Show Watermark</span>
                             </label>
-                            <label className="flex items-center cursor-pointer ml-6">
-                                <div className="relative">
-                                    <input
-                                        type="checkbox"
-                                        className="sr-only"
-                                        checked={convertToGif}
-                                        onChange={(e) => setConvertToGif(e.target.checked)}
-                                    />
-                                    <div className={`block w-14 h-8 rounded-full transition-colors duration-200 ease-in-out ${convertToGif ? 'bg-blue-600' : 'bg-gray-400'}`}>
-                                        <div className={`dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform duration-200 ease-in-out ${convertToGif ? 'transform translate-x-6' : ''}`}></div>
+                            {!files.type.includes('gif') && (
+                                <label className="flex items-center cursor-pointer ml-6">
+                                    <div className="relative">
+                                        <input
+                                            type="checkbox"
+                                            className="sr-only"
+                                            checked={convertToGif}
+                                            onChange={(e) => setConvertToGif(e.target.checked)}
+                                        />
+                                        <div className={`block w-14 h-8 rounded-full transition-colors duration-200 ease-in-out ${convertToGif ? 'bg-blue-600' : 'bg-gray-400'}`}>
+                                            <div className={`dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform duration-200 ease-in-out ${convertToGif ? 'transform translate-x-6' : ''}`}></div>
+                                        </div>
                                     </div>
-                                </div>
-                                <span className="ml-3 text-sm md:text-base text-gray-700 dark:text-gray-300">Convert to GIF</span>
-                            </label>
+                                    <span className="ml-3 text-sm md:text-base text-gray-700 dark:text-gray-300">Convert to GIF</span>
+                                </label>
+                            )}
                         </div>
                     </div>
                 </div>
