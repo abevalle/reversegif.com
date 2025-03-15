@@ -173,9 +173,17 @@ const DropZone = () => {
 
     const handleDrop = (event) => {
         event.preventDefault();
-        gaEvent('file-upload', 'File Uploaded via Drag and Drop');
         if (event.dataTransfer.files.length === 1) {
             const file = event.dataTransfer.files?.item(0);
+            const fileType = file.type;
+            const isValidType = fileType === 'image/gif' || fileType === 'image/webp' || fileType === 'video/mp4';
+            
+            if (!isValidType) {
+                alert('Please upload only GIF, WebP, or MP4 files.');
+                return;
+            }
+
+            gaEvent('file-upload', 'File Uploaded via Drag and Drop');
             setFiles(file);
             const fileExtension = file.name.split('.').pop();
             setFileType(fileExtension);
@@ -253,7 +261,7 @@ const DropZone = () => {
                                 setShowSizeWarning(false);
                             }
                         }
-                    }} hidden ref={inputRef} accept="image/*,video/*" />
+                    }} hidden ref={inputRef} accept=".gif,.webp,video/mp4" />
                     <div className="flex flex-col items-center justify-center space-y-4 w-full">
                         <svg className="w-10 h-10 md:w-12 md:h-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
