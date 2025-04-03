@@ -1,5 +1,1 @@
-# This is your ads.txt file
-# Format: <domain>, <publisher ID>, <type>, <certification authority ID>
-# Example entry (replace with your actual advertising partnerships):
-# google.com, pub-1234567891234567, DIRECT, f08c47fec0942fa0 
-google.com, pub-7359270153499473, DIRECT, f08c47fec0942fa0 
+google.com, pub-7359270153499473, DIRECT, f08c47fec0942fa0
