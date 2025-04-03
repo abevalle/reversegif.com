@@ -17,6 +17,10 @@ class MyDocument extends Document {
             }}
           />
           {/* End Google Tag Manager */}
+          {/* Google AdSense */}
+          <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7359270153499473"
+            crossorigin="anonymous"></script>
+          {/* End Google AdSense */}
           <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
           <link href="https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&display=swap" rel="stylesheet" />
           <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&family=Roboto&display=swap" rel="stylesheet" />
