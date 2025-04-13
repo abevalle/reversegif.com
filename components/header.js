@@ -73,6 +73,9 @@ const NavLinks = ({ isActivePath, mobile = false }) => {
       <Link href="/" className={linkClass('/')}>
         Home
       </Link>
+      <Link href="/video-2-gif" className={linkClass('/video-2-gif')}>
+        Video to GIF
+      </Link>
       <Link href="/blog" className={linkClass('/blog')}>
         Blog
       </Link>

@@ -104,7 +104,7 @@ const MediaPreview = ({ file, className, onClick }) => {
     );
 };
 
-const DropZone = () => {
+const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, videoOnly = false }) => {
     const [files, setFiles] = useState(null);
     const inputRef = useRef();
     const [ready, setReady] = useState(false);
@@ -116,7 +116,7 @@ const DropZone = () => {
     const [fileType, setFileType] = useState('');
     const [loading, setLoading] = useState(false);
     const [showWatermark, setShowWatermark] = useState(true);
-    const [convertToGif, setConvertToGif] = useState(true);
+    const [convertToGif, setConvertToGif] = useState(defaultConvertToGif);
     const [showSizeWarning, setShowSizeWarning] = useState(false);
     const [previewModal, setPreviewModal] = useState({ 
         isOpen: false, 
@@ -176,7 +176,13 @@ const DropZone = () => {
         if (event.dataTransfer.files.length === 1) {
             const file = event.dataTransfer.files?.item(0);
             const fileType = file.type;
-            const isValidType = fileType === 'image/gif' || fileType === 'image/webp' || fileType === 'video/mp4';
+            let isValidType = fileType === 'image/gif' || fileType === 'image/webp' || fileType === 'video/mp4';
+            
+            // If videoOnly is true, only accept video files
+            if (videoOnly && !fileType.startsWith('video/')) {
+                alert('Please upload only video files.');
+                return;
+            }
             
             if (!isValidType) {
                 alert('Please upload only GIF, WebP, or MP4 files.');
@@ -187,8 +193,8 @@ const DropZone = () => {
             setFiles(file);
             const fileExtension = file.name.split('.').pop();
             setFileType(fileExtension);
-            // Set convertToGif based on file type
-            setConvertToGif(!file.type.includes('gif'));
+            // Set convertToGif based on file type and forceConvertToGif prop
+            setConvertToGif(forceConvertToGif || !file.type.includes('gif'));
             // Check if it's a video and larger than 3MB
             if (file.type.startsWith('video/') && file.size > 3 * 1024 * 1024) {
                 setShowSizeWarning(true);
@@ -249,11 +255,18 @@ const DropZone = () => {
                 >
                     <input type="file" onChange={(event) => { 
                         const file = event.target.files?.item(0);
-                        setFiles(file);
-                        gaEvent('file-upload', 'File Uploaded via Click');
-                        // Set convertToGif based on file type
+                        
                         if (file) {
-                            setConvertToGif(!file.type.includes('gif'));
+                            // If videoOnly is true, only accept video files
+                            if (videoOnly && !file.type.startsWith('video/')) {
+                                alert('Please upload only video files.');
+                                return;
+                            }
+                            
+                            setFiles(file);
+                            gaEvent('file-upload', 'File Uploaded via Click');
+                            // Set convertToGif based on file type and forceConvertToGif prop
+                            setConvertToGif(forceConvertToGif || !file.type.includes('gif'));
                             // Check if it's a video and larger than 3MB
                             if (file.type.startsWith('video/') && file.size > 3 * 1024 * 1024) {
                                 setShowSizeWarning(true);
@@ -261,13 +274,13 @@ const DropZone = () => {
                                 setShowSizeWarning(false);
                             }
                         }
-                    }} hidden ref={inputRef} accept=".gif,.webp,video/mp4" />
+                    }} hidden ref={inputRef} accept={videoOnly ? "video/*" : ".gif,.webp,video/mp4"} />
                     <div className="flex flex-col items-center justify-center space-y-4 w-full">
                         <svg className="w-10 h-10 md:w-12 md:h-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                         </svg>
                         <h1 className="text-xl md:text-2xl font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                            Drop your GIF here
+                            {videoOnly ? 'Drop your Video here' : 'Drop your GIF here'}
                         </h1>
                         <p className="text-gray-500 dark:text-gray-400">or</p>
                         <button className="w-full md:w-auto px-6 py-4 md:py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all duration-200 touch-target-size">
@@ -364,7 +377,7 @@ const DropZone = () => {
                                 onClick={reverseGif}
                                 className="w-full md:w-auto px-6 py-4 md:py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all duration-200 touch-target-size"
                             >
-                                Reverse GIF
+                                {videoOnly ? 'Convert to GIF' : 'Reverse GIF'}
                             </button>
                             <button 
                                 onClick={deleteFiles}
@@ -388,7 +401,7 @@ const DropZone = () => {
                                 </div>
                                 <span className="ml-3 text-sm md:text-base text-gray-700 dark:text-gray-300">Show Watermark</span>
                             </label>
-                            {!files.type.includes('gif') && (
+                            {!files?.type.includes('gif') && !forceConvertToGif && (
                                 <label className="flex items-center cursor-pointer ml-6">
                                     <div className="relative">
                                         <input
