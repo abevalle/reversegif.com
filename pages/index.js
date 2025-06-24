@@ -7,19 +7,12 @@ import Head from 'next/head';
 import Script from 'next/script';
 import ExampleGifs from './exmaplegifs.js';
 import { useEffect, useState } from 'react';
-import dynamic from 'next/dynamic';
-
-// Client-side only component for AdSense
-const AdSenseComponent = dynamic(
-  () => import('../components/AdSense'),
-  { ssr: false }
-);
+import AdSenseUnderDropzone from '../components/AdSenseUnderDropzone';
 
 const gaCode = process.env.TRACKING_ID;
 ReactGA.initialize("G-MHJ39LXW6P");
 
 export default function Home() {
-  const [adBlockDetected, setAdBlockDetected] = useState(false);
   const gaEvent = (cat, act) => {
     ReactGA.event({
       category: cat,
@@ -147,19 +140,9 @@ export default function Home() {
           <div id="dropzone" className="order-1 md:order-2 md:sticky md:top-4 -mx-4 md:mx-0 rounded-none md:rounded-xl overflow-hidden">
             <DropZone />
             
-            {/* Google AdSense Display Ad */}
-            <div className="flex flex-col justify-center my-4 overflow-hidden">
-              <AdSenseComponent 
-                onDetected={(detected) => setAdBlockDetected(detected)}
-              />
-              
-              {adBlockDetected && (
-                <div className="mt-2 text-center p-2 bg-yellow-50 dark:bg-yellow-900 border border-yellow-200 dark:border-yellow-800 rounded-lg">
-                  <p className="text-sm text-yellow-700 dark:text-yellow-200">
-                    Please disable ad blocker to support our free service and new features.
-                  </p>
-                </div>
-              )}
+            {/* Ad unit under dropzone */}
+            <div className="mt-4 px-4 md:px-0 flex justify-center">
+              <AdSenseUnderDropzone />
             </div>
             
             <div className="mt-4 md:mt-6 px-4 md:px-0">
@@ -173,9 +156,3 @@ export default function Home() {
   );
 }
 
-// Add this to your global CSS or Tailwind config
-const styles = {
-  '.touch-target-size': {
-    minHeight: '44px', // Minimum touch target size
-  }
-};

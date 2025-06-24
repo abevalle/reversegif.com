@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 
-const AdSense = ({ slot, format = 'auto', responsive = true }) => {
+const AdSenseUnderDropzone = () => {
   useEffect(() => {
     try {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
@@ -12,13 +12,11 @@ const AdSense = ({ slot, format = 'auto', responsive = true }) => {
   return (
     <ins
       className="adsbygoogle"
-      style={{ display: 'block' }}
+      style={{ display: 'inline-block', width: '728px', height: '90px' }}
       data-ad-client="ca-pub-7359270153499473"
-      data-ad-slot={slot}
-      data-ad-format={format}
-      data-full-width-responsive={responsive}
+      data-ad-slot="8440382746"
     />
   );
 };
 
-export default AdSense;
+export default AdSenseUnderDropzone;
