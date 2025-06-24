@@ -1,35 +1,39 @@
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 import Image from 'next/image';
 
+// Move the GIF selection logic outside the component to prevent re-initialization
+const allGifs = [
+  'https://media.giphy.com/media/5GoVLqeAOo6PK/giphy.gif',
+  'https://media.giphy.com/media/11sBLVxNs7v6WA/giphy.gif',
+  'https://media.giphy.com/media/3o7TKMt1VVNkHV2PaE/giphy.gif',
+  'https://media.giphy.com/media/l0HlUOry8A07NfL5q/giphy.gif',
+  'https://media.giphy.com/media/13CoXDiaCcCoyk/giphy.gif',
+  'https://media.giphy.com/media/26ufdipQqU2lhNA4g/giphy.gif',
+  'https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif',
+  'https://media.giphy.com/media/l0HlNQ03J5JxX6lva/giphy.gif',
+];
+
+// Cache the selected GIFs for the session
+let cachedSelection = null;
+
 const ExampleGifs = () => {
-  const allGifs = [
-    'https://media.giphy.com/media/5GoVLqeAOo6PK/giphy.gif',
-    'https://media.giphy.com/media/11sBLVxNs7v6WA/giphy.gif',
-    'https://media.giphy.com/media/3o7TKMt1VVNkHV2PaE/giphy.gif',
-    'https://media.giphy.com/media/l0HlUOry8A07NfL5q/giphy.gif',
-    'https://media.giphy.com/media/13CoXDiaCcCoyk/giphy.gif',
-    'https://media.giphy.com/media/26ufdipQqU2lhNA4g/giphy.gif',
-    'https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif',
-    'https://media.giphy.com/media/l0HlNQ03J5JxX6lva/giphy.gif',
-  ];
-
-  const [selectedGifs, setSelectedGifs] = useState([]);
-
-  useEffect(() => {
+  // Use useMemo to ensure GIFs are selected only once and cached
+  const selectedGifs = useMemo(() => {
+    if (cachedSelection) {
+      return cachedSelection;
+    }
+    
     const shuffleArray = (array) => {
-      for (let i = array.length - 1; i > 0; i--) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
+        [arr[i], arr[j]] = [arr[j], arr[i]];
       }
+      return arr;
     };
 
-    const selectRandomGifs = () => {
-      const gifsToDisplay = [...allGifs];
-      shuffleArray(gifsToDisplay);
-      return gifsToDisplay.slice(0, 4); // Select 4 random GIFs
-    };
-
-    setSelectedGifs(selectRandomGifs());
+    cachedSelection = shuffleArray(allGifs).slice(0, 4);
+    return cachedSelection;
   }, []);
 
   return (
@@ -46,9 +50,12 @@ const ExampleGifs = () => {
                 src={gif}
                 alt={`Example GIF ${index + 1}`}
                 fill
-                sizes="100px"
+                sizes="64px"
                 style={{ objectFit: 'cover' }}
                 className="rounded-lg"
+                priority={false}
+                loading="lazy"
+                quality={50}
               />
             </div>
           ))}

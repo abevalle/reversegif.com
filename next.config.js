@@ -64,7 +64,7 @@ const nextConfig = {
     dangerouslyAllowSVG: true,
     contentDispositionType: 'attachment',
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    minimumCacheTTL: 60,
+    minimumCacheTTL: 86400, // Cache images for 24 hours
     formats: ['image/webp'],
   },
   productionBrowserSourceMaps: false,

@@ -6,6 +6,9 @@ const ffmpeg = createFFmpeg({ log: true, corePath: "https://unpkg.com/@ffmpeg/co
 const gaCode = process.env.TRACKING_ID;
 ReactGA.initialize("G-MHJ39LXW6P");
 
+// Cache for the watermark font
+let watermarkFontCache = null;
+
 const ImagePreviewModal = ({ isOpen, onClose, imageUrl, altText, mediaFile }) => {
     if (!isOpen) return null;
 
@@ -55,12 +58,16 @@ const ImagePreviewModal = ({ isOpen, onClose, imageUrl, altText, mediaFile }) =>
 
 const MediaPreview = ({ file, className, onClick }) => {
     const [thumbnail, setThumbnail] = useState('');
+    const [imageUrl, setImageUrl] = useState('');
     const isVideo = file.type.startsWith('video/');
 
     useEffect(() => {
+        let objectUrl = '';
+        
         if (isVideo) {
             const video = document.createElement('video');
-            video.src = URL.createObjectURL(file);
+            objectUrl = URL.createObjectURL(file);
+            video.src = objectUrl;
             video.addEventListener('loadeddata', () => {
                 video.currentTime = 0;
                 const canvas = document.createElement('canvas');
@@ -69,10 +76,19 @@ const MediaPreview = ({ file, className, onClick }) => {
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
                 setThumbnail(canvas.toDataURL());
-                URL.revokeObjectURL(video.src);
+                URL.revokeObjectURL(objectUrl);
             });
+        } else {
+            objectUrl = URL.createObjectURL(file);
+            setImageUrl(objectUrl);
         }
-    }, [file]);
+
+        return () => {
+            if (objectUrl && !isVideo) {
+                URL.revokeObjectURL(objectUrl);
+            }
+        };
+    }, [file, isVideo]);
 
     if (isVideo) {
         return (
@@ -96,7 +112,7 @@ const MediaPreview = ({ file, className, onClick }) => {
 
     return (
         <img 
-            src={URL.createObjectURL(file)} 
+            src={imageUrl} 
             className={`${className} object-cover rounded-lg`}
             alt="Media preview"
             onClick={onClick}
@@ -113,7 +129,6 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
     const [reversedName, setReversedName] = useState('');
     const [reversedSize, setReversedSize] = useState(0);
     const [tooManyFiles, setTooManyFiles] = useState(false);
-    const [fileType, setFileType] = useState('');
     const [loading, setLoading] = useState(false);
     const [showWatermark, setShowWatermark] = useState(true);
     const [convertToGif, setConvertToGif] = useState(defaultConvertToGif);
@@ -150,11 +165,24 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
         }
     }, [reversed, reversedName, files, convertToGif]);
 
+    // Cleanup blob URLs on unmount or when files change
+    useEffect(() => {
+        return () => {
+            if (reversed) {
+                URL.revokeObjectURL(reversed);
+            }
+        };
+    }, [reversed]);
+
     const handleDragOver = (event) => {
         event.preventDefault();
     };
 
     const deleteFiles = () => {
+        // Revoke blob URL before clearing
+        if (reversed) {
+            URL.revokeObjectURL(reversed);
+        }
         setFiles(null);
         setReversed(null);
         setReversedFile(null);
@@ -191,8 +219,6 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
 
             gaEvent('file-upload', 'File Uploaded via Drag and Drop');
             setFiles(file);
-            const fileExtension = file.name.split('.').pop();
-            setFileType(fileExtension);
             // Set convertToGif based on file type and forceConvertToGif prop
             setConvertToGif(forceConvertToGif || !file.type.includes('gif'));
             // Check if it's a video and larger than 3MB
@@ -201,7 +227,6 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
             } else {
                 setShowSizeWarning(false);
             }
-            console.log(fileExtension);
         } else {
             setTooManyFiles(true);
             gaEvent('file-upload-error', 'Too Many Files Uploaded');
@@ -217,7 +242,11 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
         
         let filterCommand = 'reverse';
         if (showWatermark) {
-            ffmpeg.FS('writeFile', 'font.woff', await fetchFile('https://assets.nflxext.com/ffe/siteui/fonts/netflix-sans/v3/NetflixSans_W_Lt.woff'));
+            // Load and cache the watermark font
+            if (!watermarkFontCache) {
+                watermarkFontCache = await fetchFile('https://assets.nflxext.com/ffe/siteui/fonts/netflix-sans/v3/NetflixSans_W_Lt.woff');
+            }
+            ffmpeg.FS('writeFile', 'font.woff', watermarkFontCache);
             filterCommand = 'drawtext=fontfile=/font.woff:text=\'reversegif.com\':fontcolor=white:fontsize=20:bordercolor=black:borderw=1:x=w-tw-2:y=h-th-2:alpha=0.5,reverse';
         }
 
@@ -234,6 +263,18 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
         setReversedName(outputFileName);
         setReversedSize((data.byteLength / 1024 / 1024).toFixed(2));
         setLoading(false);
+        
+        // Clean up FFmpeg filesystem
+        try {
+            ffmpeg.FS('unlink', inputFileName);
+            ffmpeg.FS('unlink', outputFileName);
+            if (showWatermark) {
+                ffmpeg.FS('unlink', 'font.woff');
+            }
+        } catch (e) {
+            console.log('Error cleaning up FFmpeg filesystem:', e);
+        }
+        
         gaEvent("gif-reverse-complete", "Gif Reversing Completed");
     };
 
@@ -302,7 +343,7 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
                                 className="w-20 h-20 md:w-24 md:h-24 cursor-pointer hover:opacity-80 transition-opacity duration-200"
                                 onClick={() => setPreviewModal({ 
                                     isOpen: true, 
-                                    imageUrl: URL.createObjectURL(files),
+                                    imageUrl: '',
                                     altText: "Original media",
                                     mediaFile: files
                                 })}
