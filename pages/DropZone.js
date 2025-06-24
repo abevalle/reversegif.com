@@ -4,8 +4,7 @@ import ReactGA from 'react-ga4';
 
 const ffmpeg = createFFmpeg({ 
   log: true, 
-  // Use single-threaded version that doesn't require COEP/COOP
-  corePath: "https://unpkg.com/@ffmpeg/core-st@0.11.1/dist/ffmpeg-core.js"
+  corePath: "https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js"
 });
 const gaCode = process.env.TRACKING_ID;
 ReactGA.initialize("G-MHJ39LXW6P");
@@ -148,7 +147,16 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
     useEffect(() => {
         const load = async () => {
             if (!ffmpeg.isLoaded()) {
-                await ffmpeg.load();
+                try {
+                    await ffmpeg.load();
+                } catch (error) {
+                    console.error('FFmpeg loading error:', error);
+                    // If FFmpeg fails to load due to COEP/COOP, show a message
+                    if (error.message && error.message.includes('SharedArrayBuffer')) {
+                        alert('To use this feature, please open this page in a new tab or window. This is required for video processing security.');
+                        return;
+                    }
+                }
             }
             setReady(true);
             gaEvent('app-load', 'App Loaded');
