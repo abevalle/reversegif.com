@@ -7,6 +7,7 @@ import client from '../lib/apollo-client';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import * as gtm from '../lib/gtm';
+import AdSenseWrapper from '../components/AdSenseWrapper';
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
@@ -42,6 +43,7 @@ function MyApp({ Component, pageProps }) {
           <meta name="twitter:description" content="Easily reverse GIFs in 3 steps. Now with optional watermark! Drag, drop, and click to reverse. Local secure video encoding. Try it now!" />
           <meta name="twitter:image" content="/metaimg.webp" />
         </Head>
+        <AdSenseWrapper />
         <Component {...pageProps} />
       </ThemeProvider>
     </ApolloProvider>

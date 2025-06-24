@@ -7,7 +7,6 @@ import Head from 'next/head';
 import Script from 'next/script';
 import ExampleGifs from './exmaplegifs.js';
 import { useEffect, useState } from 'react';
-import AdSenseWrapper from '../components/AdSenseWrapper';
 
 const gaCode = process.env.TRACKING_ID;
 ReactGA.initialize("G-MHJ39LXW6P");
@@ -139,8 +138,6 @@ export default function Home() {
           {/* Mobile-optimized dropzone */}
           <div id="dropzone" className="order-1 md:order-2 md:sticky md:top-4 -mx-4 md:mx-0 rounded-none md:rounded-xl overflow-hidden">
             <DropZone />
-            
-            <AdSenseWrapper />
             
             <div className="mt-4 md:mt-6 px-4 md:px-0">
               <ExampleGifs />
