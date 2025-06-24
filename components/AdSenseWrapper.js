@@ -5,6 +5,7 @@ import AdBlockNotice from './AdBlockNotice';
 const AdSenseWrapper = () => {
   const [adsLoaded, setAdsLoaded] = useState(false);
   const [adsBlocked, setAdsBlocked] = useState(false);
+  const [adPushed, setAdPushed] = useState(false);
 
   useEffect(() => {
     // Check if ads are blocked
@@ -22,6 +23,31 @@ const AdSenseWrapper = () => {
     }
   }, []);
 
+  useEffect(() => {
+    // Push the ad after the script loads and the ad unit is in the DOM
+    if (adsLoaded && !adsBlocked && !adPushed) {
+      // Small delay to ensure the ad unit is rendered in the DOM
+      const timer = setTimeout(() => {
+        try {
+          const adUnits = document.querySelectorAll('.adsbygoogle');
+          console.log('Found ad units:', adUnits.length);
+          
+          if (adUnits.length > 0) {
+            (window.adsbygoogle = window.adsbygoogle || []).push({});
+            setAdPushed(true);
+            console.log('AdSense push successful');
+          } else {
+            console.warn('No ad units found in DOM');
+          }
+        } catch (e) {
+          console.error('AdSense push error:', e);
+        }
+      }, 100);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [adsLoaded, adsBlocked, adPushed]);
+
   return (
     <>
       {!adsBlocked && (
@@ -29,7 +55,11 @@ const AdSenseWrapper = () => {
           id="adsense-script"
           strategy="afterInteractive"
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7359270153499473"
-          onLoad={() => setAdsLoaded(true)}
+          crossOrigin="anonymous"
+          onLoad={() => {
+            console.log('AdSense script loaded successfully');
+            setAdsLoaded(true);
+          }}
           onError={(e) => {
             console.log('AdSense script failed to load:', e);
             setAdsBlocked(true);
@@ -69,20 +99,6 @@ const AdSenseWrapper = () => {
               )}
             </div>
           </div>
-          
-          {adsLoaded && (
-            <script
-              dangerouslySetInnerHTML={{
-                __html: `
-                  try {
-                    (adsbygoogle = window.adsbygoogle || []).push({});
-                  } catch (e) {
-                    console.error('AdSense push error:', e);
-                  }
-                `,
-              }}
-            />
-          )}
         </>
       )}
     </>
