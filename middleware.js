@@ -3,7 +3,7 @@
 import { NextResponse } from 'next/server';
 
 export async function middleware(req) {
-  const { pathname } = req.nextUrl;
+  const { pathname, searchParams } = req.nextUrl;
 
   // Skip middleware for /blog routes
   if (pathname.startsWith('/blog')) {
@@ -33,5 +33,15 @@ export async function middleware(req) {
     }
   }
 
-  return NextResponse.next();
+  // Check if FFmpeg is needed based on query parameter
+  const response = NextResponse.next();
+  const needsFFmpeg = searchParams.get('ffmpeg') === 'true';
+  
+  if (needsFFmpeg) {
+    // Add COEP/COOP headers only when FFmpeg is explicitly needed
+    response.headers.set('Cross-Origin-Embedder-Policy', 'require-corp');
+    response.headers.set('Cross-Origin-Opener-Policy', 'same-origin');
+  }
+
+  return response;
 }

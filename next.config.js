@@ -3,16 +3,9 @@ const nextConfig = {
   async headers() {
     return [
       {
+        // Apply general security headers to all paths
         source: '/:path*',
         headers: [
-          {
-            key: 'Cross-Origin-Embedder-Policy',
-            value: 'require-corp',
-          },
-          {
-            key: 'Cross-Origin-Opener-Policy',
-            value: 'same-origin',
-          },
           {
             key: 'X-Content-Type-Options',
             value: 'nosniff',

@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from 'react';
-import Script from 'next/script';
 
 const AdSense = ({ onDetected }) => {
   const adRef = useRef(null);
@@ -63,28 +62,16 @@ const AdSense = ({ onDetected }) => {
 
   return (
     <div className="flex justify-center w-full overflow-hidden">
-      <Script
-        async
-        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7359270153499473"
-        crossOrigin="anonymous"
-        strategy="afterInteractive"
-        onLoad={() => {
-          window.dispatchEvent(new Event('adsenseScriptLoaded'));
-        }}
-      />
       <ins 
         ref={adRef}
         className="adsbygoogle"
         style={{
-          display: "block", 
-          width: "100%", 
-          height: "90px",
-          maxWidth: "728px"
+          display: "inline-block",
+          width: "728px",
+          height: "90px"
         }}
         data-ad-client="ca-pub-7359270153499473"
         data-ad-slot="8440382746"
-        data-ad-format="auto"
-        data-full-width-responsive="true"
       />
     </div>
   );
