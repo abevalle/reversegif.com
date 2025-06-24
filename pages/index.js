@@ -1,24 +1,12 @@
 import React from 'react';
 import DropZone from './DropZone.js';
-import ReactGA from 'react-ga4';
 import Header from '../components/header.js';
 import Footer from '../components/footer.js';
 import Head from 'next/head';
-import Script from 'next/script';
 import ExampleGifs from './exmaplegifs.js';
-import { useEffect, useState } from 'react';
 
-const gaCode = process.env.TRACKING_ID;
-ReactGA.initialize("G-MHJ39LXW6P");
 
 export default function Home() {
-  const gaEvent = (cat, act) => {
-    ReactGA.event({
-      category: cat,
-      action: act,
-      nonInteraction: false
-    });
-  };
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-slate-100 to-slate-200 dark:from-slate-900 dark:to-slate-800 text-gray-900 dark:text-gray-100">

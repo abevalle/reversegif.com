@@ -1,21 +1,17 @@
 import React from 'react';
-import ReactGA from 'react-ga4';
+import * as gtm from '../lib/gtm';
 import Header from '../components/header.js';
 import Footer from '../components/footer.js';
 
 import Head from 'next/head';
-import Script from 'next/script';
 
-const gaCode = process.env.TRACKING_ID;
-ReactGA.initialize("G-MHJ39LXW6P");
 
 export default function Home() {
 
   const gaEvent = (cat, act) => {
-    ReactGA.event({
+    gtm.event({
       category: cat,
-      action: act,
-      nonInteraction: false
+      action: act
     });
   };
 

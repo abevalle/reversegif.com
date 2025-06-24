@@ -1,16 +1,13 @@
 import React from 'react';
 import Link from 'next/link';
-import ReactGA from 'react-ga4';
+import * as gtm from '../lib/gtm';
 
-const gaCode = process.env.TRACKING_ID;
-ReactGA.initialize("G-MHJ39LXW6P");
 
 export default function Footer() {
   const gaEvent = (cat, act) => {
-    ReactGA.event({
+    gtm.event({
       category: cat,
-      action: act,
-      nonInteraction: false
+      action: act
     });
   };
 

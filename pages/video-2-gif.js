@@ -1,14 +1,11 @@
 import React from 'react';
 import DropZone from './DropZone.js';
-import ReactGA from 'react-ga4';
+import * as gtm from '../lib/gtm';
 import Header from '../components/header.js';
 import Footer from '../components/footer.js';
 import Head from 'next/head';
-import Script from 'next/script';
 import ExampleGifs from './exmaplegifs.js';
 
-const gaCode = process.env.TRACKING_ID;
-ReactGA.initialize("G-MHJ39LXW6P");
 
 const VideoDropZone = () => {
   // This wrapper ensures that the DropZone component is used specifically for video to GIF conversion
@@ -17,10 +14,9 @@ const VideoDropZone = () => {
 
 export default function VideoToGif() {
   const gaEvent = (cat, act) => {
-    ReactGA.event({
+    gtm.event({
       category: cat,
-      action: act,
-      nonInteraction: false
+      action: act
     });
   };
 

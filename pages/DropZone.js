@@ -1,13 +1,11 @@
 import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
 import React, { useState, useRef, useEffect } from 'react';
-import ReactGA from 'react-ga4';
+import * as gtm from '../lib/gtm';
 
 const ffmpeg = createFFmpeg({ 
   log: true, 
   corePath: "https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js"
 });
-const gaCode = process.env.TRACKING_ID;
-ReactGA.initialize("G-MHJ39LXW6P");
 
 // Cache for the watermark font
 let watermarkFontCache = null;
@@ -204,10 +202,9 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
     };
 
     const gaEvent = (cat, act) => {
-        ReactGA.event({
+        gtm.event({
             category: cat,
-            action: act,
-            nonInteraction: false
+            action: act
         });
     };
 
