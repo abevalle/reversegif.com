@@ -1,6 +1,7 @@
 import { ThemeProvider } from 'next-themes';
 import '../styles/globals.css'
 import Head from 'next/head';
+import Script from 'next/script';
 import { Analytics } from "@vercel/analytics/react";
 import { ApolloProvider } from '@apollo/client';
 import client from '../lib/apollo-client';
@@ -42,6 +43,12 @@ function MyApp({ Component, pageProps }) {
           <meta name="twitter:description" content="Easily reverse GIFs in 3 steps. Now with optional watermark! Drag, drop, and click to reverse. Local secure video encoding. Try it now!" />
           <meta name="twitter:image" content="/metaimg.webp" />
         </Head>
+        <Script
+          id="adsense-script"
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7359270153499473"
+          strategy="lazyOnload"
+          crossOrigin="anonymous"
+        />
         <Component {...pageProps} />
       </ThemeProvider>
     </ApolloProvider>

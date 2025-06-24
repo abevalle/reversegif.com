@@ -12,9 +12,17 @@ const AdSenseUnderDropzone = () => {
   return (
     <ins
       className="adsbygoogle"
-      style={{ display: 'inline-block', width: '728px', height: '90px' }}
+      style={{ 
+        display: 'block',
+        width: '100%',
+        maxWidth: '728px',
+        height: '90px',
+        margin: '0 auto'
+      }}
       data-ad-client="ca-pub-7359270153499473"
       data-ad-slot="8440382746"
+      data-ad-format="horizontal"
+      data-full-width-responsive="false"
     />
   );
 };
