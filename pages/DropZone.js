@@ -134,6 +134,7 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
     const [showWatermark, setShowWatermark] = useState(true);
     const [convertToGif, setConvertToGif] = useState(defaultConvertToGif);
     const [showSizeWarning, setShowSizeWarning] = useState(false);
+    const [shouldReverse, setShouldReverse] = useState(true);
     const [previewModal, setPreviewModal] = useState({ 
         isOpen: false, 
         imageUrl: '', 
@@ -245,24 +246,37 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
 
     const reverseGif = async () => {
         setLoading(true);
-        gaEvent("gif-reverse", "Gif Reversing Started");
+        
+        // Update event tracking
+        const actionType = videoOnly 
+            ? (shouldReverse ? "Video-Convert-Reverse" : "Video-Convert-Only") 
+            : "Gif-Reverse";
+        gaEvent("media-processing", actionType + " Started");
+        
         const inputFileName = 'input' + (files.type.includes('gif') ? '.gif' : files.name.substring(files.name.lastIndexOf('.')));
         ffmpeg.FS('writeFile', inputFileName, await fetchFile(files));
         
-        let filterCommand = 'reverse';
+        let filterCommand = shouldReverse ? 'reverse' : '';
         if (showWatermark) {
             // Load and cache the watermark font
             if (!watermarkFontCache) {
                 watermarkFontCache = await fetchFile('https://assets.nflxext.com/ffe/siteui/fonts/netflix-sans/v3/NetflixSans_W_Lt.woff');
             }
             ffmpeg.FS('writeFile', 'font.woff', watermarkFontCache);
-            filterCommand = 'drawtext=fontfile=/font.woff:text=\'reversegif.com\':fontcolor=white:fontsize=20:bordercolor=black:borderw=1:x=w-tw-2:y=h-th-2:alpha=0.5,reverse';
+            filterCommand = shouldReverse 
+                ? 'drawtext=fontfile=/font.woff:text=\'reversegif.com\':fontcolor=white:fontsize=20:bordercolor=black:borderw=1:x=w-tw-2:y=h-th-2:alpha=0.5,reverse' 
+                : 'drawtext=fontfile=/font.woff:text=\'reversegif.com\':fontcolor=white:fontsize=20:bordercolor=black:borderw=1:x=w-tw-2:y=h-th-2:alpha=0.5';
         }
 
-        const outputFileName = convertToGif ? 'reversed.gif' : `reversed${files.name.substring(files.name.lastIndexOf('.'))}`;
+        // Update the file name based on whether we're reversing or just converting
+        const filePrefix = shouldReverse ? 'reversed' : 'converted';
+        const outputFileName = convertToGif ? `${filePrefix}.gif` : `${filePrefix}${files.name.substring(files.name.lastIndexOf('.'))}`;
         const outputFormat = convertToGif ? ['-f', 'gif'] : [];
         
-        await ffmpeg.run('-i', inputFileName, '-vf', filterCommand, ...outputFormat, outputFileName);
+        // Skip the -vf parameter if filterCommand is empty
+        const filterArgs = filterCommand ? ['-vf', filterCommand] : [];
+        
+        await ffmpeg.run('-i', inputFileName, ...filterArgs, ...outputFormat, outputFileName);
         const data = ffmpeg.FS('readFile', outputFileName);
 
         const mimeType = convertToGif ? 'image/gif' : files.type;
@@ -284,7 +298,7 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
             console.log('Error cleaning up FFmpeg filesystem:', e);
         }
         
-        gaEvent("gif-reverse-complete", "Gif Reversing Completed");
+        gaEvent("media-processing", actionType + " Completed");
     };
 
     return ready ? (
@@ -417,7 +431,11 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
                     {loading && (
                         <div className="flex items-center justify-center py-4">
                             <div className="animate-spin rounded-full h-6 w-6 md:h-8 md:w-8 border-b-2 border-blue-600 dark:border-blue-400"></div>
-                            <span className="ml-3 text-sm md:text-base text-gray-600 dark:text-gray-400">Reversing GIF...</span>
+                            <span className="ml-3 text-sm md:text-base text-gray-600 dark:text-gray-400">
+                                {videoOnly 
+                                    ? (shouldReverse ? 'Converting & Reversing...' : 'Converting to GIF...') 
+                                    : 'Reversing GIF...'}
+                            </span>
                         </div>
                     )}
 
@@ -427,7 +445,9 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
                                 onClick={reverseGif}
                                 className="w-full md:w-auto px-6 py-4 md:py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all duration-200 touch-target-size"
                             >
-                                {videoOnly ? 'Convert to GIF' : 'Reverse GIF'}
+                                {videoOnly 
+                                    ? (shouldReverse ? 'Convert & Reverse' : 'Convert to GIF') 
+                                    : 'Reverse GIF'}
                             </button>
                             <button 
                                 onClick={deleteFiles}
@@ -465,6 +485,22 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
                                         </div>
                                     </div>
                                     <span className="ml-3 text-sm md:text-base text-gray-700 dark:text-gray-300">Convert to GIF</span>
+                                </label>
+                            )}
+                            {videoOnly && (
+                                <label className="flex items-center cursor-pointer ml-6">
+                                    <div className="relative">
+                                        <input
+                                            type="checkbox"
+                                            className="sr-only"
+                                            checked={shouldReverse}
+                                            onChange={(e) => setShouldReverse(e.target.checked)}
+                                        />
+                                        <div className={`block w-14 h-8 rounded-full transition-colors duration-200 ease-in-out ${shouldReverse ? 'bg-blue-600' : 'bg-gray-400'}`}>
+                                            <div className={`dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform duration-200 ease-in-out ${shouldReverse ? 'transform translate-x-6' : ''}`}></div>
+                                        </div>
+                                    </div>
+                                    <span className="ml-3 text-sm md:text-base text-gray-700 dark:text-gray-300">Reverse Video</span>
                                 </label>
                             )}
                         </div>

@@ -7,15 +7,20 @@ import client from '../lib/apollo-client';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import * as gtm from '../lib/gtm';
+import * as ga from '../lib/google-analytics';
 import AdSenseWrapper from '../components/AdSenseWrapper';
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
 
   useEffect(() => {
-    router.events.on('routeChangeComplete', (url) => gtm.pageview(url));
+    const handleRouteChange = (url) => {
+      gtm.pageview(url);
+      ga.pageview(url);
+    };
+    router.events.on('routeChangeComplete', handleRouteChange);
     return () => {
-      router.events.off('routeChangeComplete', gtm.pageview);
+      router.events.off('routeChangeComplete', handleRouteChange);
     };
   }, [router.events]);
 
