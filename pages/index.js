@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import DropZone from './DropZone.js';
 import Header from '../components/header.js';
 import Footer from '../components/footer.js';
@@ -7,6 +7,16 @@ import ExampleGifs from './exmaplegifs.js';
 
 
 export default function Home() {
+  useEffect(() => {
+    // Push the ad when component mounts
+    if (typeof window !== 'undefined' && window.adsbygoogle) {
+      try {
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+      } catch (err) {
+        console.error('AdSense error:', err);
+      }
+    }
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-slate-100 to-slate-200 dark:from-slate-900 dark:to-slate-800 text-gray-900 dark:text-gray-100">
@@ -126,6 +136,14 @@ export default function Home() {
           {/* Mobile-optimized dropzone */}
           <div id="dropzone" className="order-1 md:order-2 md:sticky md:top-4 -mx-4 md:mx-0 rounded-none md:rounded-xl overflow-hidden">
             <DropZone />
+            
+            {/* Ad placement under dropzone */}
+            <div className="mt-4 px-4 md:px-0 flex justify-center">
+              <ins className="adsbygoogle"
+                   style={{display: 'inline-block', width: '728px', height: '90px'}}
+                   data-ad-client="ca-pub-7359270153499473"
+                   data-ad-slot="8440382746"></ins>
+            </div>
             
             <div className="mt-4 md:mt-6 px-4 md:px-0">
               <ExampleGifs />
