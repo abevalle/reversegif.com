@@ -3,28 +3,26 @@ import { NextResponse } from 'next/server';
 export function middleware(request) {
   const response = NextResponse.next();
   
-  // Allow AdSense and Google services
   const url = request.url;
-  const referer = request.headers.get('referer');
-  const origin = request.headers.get('origin');
+  const pathname = new URL(url).pathname;
   
-  // Check if the request is for AdSense resources or if it's a page that will show ads
-  const isAdRelated = 
-    url?.includes('googlesyndication.com') ||
-    url?.includes('doubleclick.net') ||
-    url?.includes('googleadservices.com') ||
-    referer?.includes('googlesyndication.com') || 
-    referer?.includes('google.com') ||
-    referer?.includes('doubleclick.net') ||
-    origin?.includes('googlesyndication.com') ||
-    origin?.includes('google.com') ||
-    origin?.includes('doubleclick.net');
+  // Only apply restrictive headers for pages that need FFmpeg.wasm
+  // FFmpeg requires SharedArrayBuffer which needs these headers
+  const needsFFmpeg = [
+    '/',
+    '/video-2-gif', 
+    '/gif-to-mp4',
+    '/video-to-png',
+    '/video-to-jpg'
+  ].includes(pathname);
   
-  // Set headers to enable SharedArrayBuffer for FFmpeg.wasm
-  response.headers.set('Cross-Origin-Embedder-Policy', 'require-corp');
-  response.headers.set('Cross-Origin-Opener-Policy', 'same-origin');
+  if (needsFFmpeg) {
+    // Set headers to enable SharedArrayBuffer for FFmpeg.wasm
+    response.headers.set('Cross-Origin-Embedder-Policy', 'require-corp');
+    response.headers.set('Cross-Origin-Opener-Policy', 'same-origin');
+  }
   
-  // Set permissive headers for AdSense compatibility
+  // Set permissive headers for all pages to allow external resources
   response.headers.set('Cross-Origin-Resource-Policy', 'cross-origin');
   
   // Remove CSP restrictions to allow FFmpeg and other tools to work

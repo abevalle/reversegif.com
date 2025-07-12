@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import DropZone from './DropZone.js';
 import * as gtm from '../lib/gtm';
 import Header from '../components/header.js';
 import Footer from '../components/footer.js';
 import Head from 'next/head';
 import ExampleGifs from './exmaplegifs.js';
+import AdUnit from '../components/AdUnit.js';
 
 
 const VideoToJpgDropZone = () => {
@@ -14,17 +15,6 @@ const VideoToJpgDropZone = () => {
 
 export default function VideoToJpg() {
   const [isToolsExpanded, setIsToolsExpanded] = useState(false);
-  
-  useEffect(() => {
-    // Push the ad when component mounts
-    if (typeof window !== 'undefined' && window.adsbygoogle) {
-      try {
-        (window.adsbygoogle = window.adsbygoogle || []).push({});
-      } catch (err) {
-        console.error('AdSense error:', err);
-      }
-    }
-  }, []);
   
   const gaEvent = (cat, act) => {
     gtm.event({
@@ -176,12 +166,7 @@ export default function VideoToJpg() {
             <VideoToJpgDropZone />
             
             {/* Ad placement under dropzone */}
-            <div className="mt-4 px-4 md:px-0 flex justify-center">
-              <ins className="adsbygoogle"
-                   style={{display: 'inline-block', width: '728px', height: '90px'}}
-                   data-ad-client="ca-pub-7359270153499473"
-                   data-ad-slot="8440382746"></ins>
-            </div>
+            <AdUnit className="mt-4 px-4 md:px-0" />
             
             <div className="mt-4 md:mt-6 px-4 md:px-0">
               <ExampleGifs hideExamples={true} />
