@@ -4,7 +4,21 @@ import Script from 'next/script';
 const AdSenseWrapper = () => {
   const [adsBlocked, setAdsBlocked] = useState(false);
 
-  // AdSenseWrapper only loads the script - individual AdUnit components handle their own initialization
+  useEffect(() => {
+    // Check if ads are blocked
+    if (typeof window !== 'undefined') {
+      const testAd = document.createElement('div');
+      testAd.innerHTML = '&nbsp;';
+      testAd.className = 'adsbox';
+      document.body.appendChild(testAd);
+      window.setTimeout(() => {
+        if (testAd.offsetHeight === 0) {
+          setAdsBlocked(true);
+        }
+        testAd.remove();
+      }, 100);
+    }
+  }, []);
 
   return (
     <>

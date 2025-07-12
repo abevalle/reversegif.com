@@ -3,31 +3,19 @@ import { NextResponse } from 'next/server';
 export function middleware(request) {
   const response = NextResponse.next();
   
-  const url = request.url;
-  const pathname = new URL(url).pathname;
+  // Allow AdSense and Google services
+  const referer = request.headers.get('referer');
+  const origin = request.headers.get('origin');
   
-  // Only apply restrictive headers for pages that need FFmpeg.wasm
-  const needsFFmpeg = [
-    '/',
-    '/video-2-gif', 
-    '/gif-to-mp4',
-    '/video-to-png',
-    '/video-to-jpg'
-  ].includes(pathname);
-  
-  if (needsFFmpeg) {
-    // Try a less restrictive approach for SharedArrayBuffer
-    // Use credentialless instead of require-corp to avoid blocking external resources
-    response.headers.set('Cross-Origin-Embedder-Policy', 'credentialless');
-    response.headers.set('Cross-Origin-Opener-Policy', 'same-origin');
+  // Check if the request is for AdSense resources
+  if (referer?.includes('googlesyndication.com') || 
+      referer?.includes('google.com') ||
+      origin?.includes('googlesyndication.com') ||
+      origin?.includes('google.com')) {
+    // Remove restrictive headers for AdSense requests
+    response.headers.delete('Cross-Origin-Embedder-Policy');
+    response.headers.delete('Cross-Origin-Opener-Policy');
   }
-  
-  // Set permissive headers for all pages to allow external resources
-  response.headers.set('Cross-Origin-Resource-Policy', 'cross-origin');
-  
-  // Remove CSP restrictions to allow FFmpeg and other tools to work
-  // CSP was causing issues with unpkg.com and other CDN resources
-  response.headers.delete('Content-Security-Policy');
   
   return response;
 }
