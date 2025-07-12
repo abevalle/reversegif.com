@@ -7,7 +7,6 @@ export function middleware(request) {
   const pathname = new URL(url).pathname;
   
   // Only apply restrictive headers for pages that need FFmpeg.wasm
-  // FFmpeg requires SharedArrayBuffer which needs these headers
   const needsFFmpeg = [
     '/',
     '/video-2-gif', 
@@ -17,8 +16,9 @@ export function middleware(request) {
   ].includes(pathname);
   
   if (needsFFmpeg) {
-    // Set headers to enable SharedArrayBuffer for FFmpeg.wasm
-    response.headers.set('Cross-Origin-Embedder-Policy', 'require-corp');
+    // Try a less restrictive approach for SharedArrayBuffer
+    // Use credentialless instead of require-corp to avoid blocking external resources
+    response.headers.set('Cross-Origin-Embedder-Policy', 'credentialless');
     response.headers.set('Cross-Origin-Opener-Policy', 'same-origin');
   }
   

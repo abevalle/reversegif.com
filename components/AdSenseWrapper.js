@@ -4,17 +4,7 @@ import Script from 'next/script';
 const AdSenseWrapper = () => {
   const [adsBlocked, setAdsBlocked] = useState(false);
 
-  useEffect(() => {
-    // Initialize AdSense
-    if (typeof window !== 'undefined' && !adsBlocked) {
-      try {
-        // Push AdSense initialization
-        (window.adsbygoogle = window.adsbygoogle || []).push({});
-      } catch (err) {
-        console.log('AdSense initialization error:', err);
-      }
-    }
-  }, [adsBlocked]);
+  // AdSenseWrapper only loads the script - individual AdUnit components handle their own initialization
 
   return (
     <>
