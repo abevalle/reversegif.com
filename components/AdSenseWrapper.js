@@ -5,20 +5,16 @@ const AdSenseWrapper = () => {
   const [adsBlocked, setAdsBlocked] = useState(false);
 
   useEffect(() => {
-    // Check if ads are blocked
-    if (typeof window !== 'undefined') {
-      const testAd = document.createElement('div');
-      testAd.innerHTML = '&nbsp;';
-      testAd.className = 'adsbox';
-      document.body.appendChild(testAd);
-      window.setTimeout(() => {
-        if (testAd.offsetHeight === 0) {
-          setAdsBlocked(true);
-        }
-        testAd.remove();
-      }, 100);
+    // Initialize AdSense
+    if (typeof window !== 'undefined' && !adsBlocked) {
+      try {
+        // Push AdSense initialization
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+      } catch (err) {
+        console.log('AdSense initialization error:', err);
+      }
     }
-  }, []);
+  }, [adsBlocked]);
 
   return (
     <>

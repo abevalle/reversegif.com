@@ -1,79 +1,7 @@
 const nextConfig = {
   pageExtensions: ['js', 'jsx', 'ts', 'tsx'],
-  async headers() {
-    return [
-      {
-        // Apply COEP/COOP headers to root path for FFmpeg
-        source: '/',
-        headers: [
-          {
-            key: 'Cross-Origin-Embedder-Policy',
-            value: 'credentialless',
-          },
-          {
-            key: 'Cross-Origin-Opener-Policy',
-            value: 'same-origin',
-          },
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
-          },
-          {
-            key: 'X-Frame-Options',
-            value: 'SAMEORIGIN',
-          },
-          {
-            key: 'X-XSS-Protection',
-            value: '1; mode=block',
-          },
-        ],
-      },
-      {
-        // Apply COEP/COOP headers to video-2-gif path
-        source: '/video-2-gif',
-        headers: [
-          {
-            key: 'Cross-Origin-Embedder-Policy',
-            value: 'credentialless',
-          },
-          {
-            key: 'Cross-Origin-Opener-Policy',
-            value: 'same-origin',
-          },
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
-          },
-          {
-            key: 'X-Frame-Options',
-            value: 'SAMEORIGIN',
-          },
-          {
-            key: 'X-XSS-Protection',
-            value: '1; mode=block',
-          },
-        ],
-      },
-      {
-        // Apply general security headers to all other paths
-        source: '/:path((?!video-2-gif).*)',
-        headers: [
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
-          },
-          {
-            key: 'X-Frame-Options',
-            value: 'SAMEORIGIN',
-          },
-          {
-            key: 'X-XSS-Protection',
-            value: '1; mode=block',
-          },
-        ],
-      },
-    ];
-  },
+  // Security headers are now handled by middleware.js for better AdSense compatibility
+  // The middleware dynamically adjusts headers based on the request
   async rewrites() {
     return [
       {
@@ -108,7 +36,7 @@ const nextConfig = {
     ],
     dangerouslyAllowSVG: true,
     contentDispositionType: 'attachment',
-    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    // Removed restrictive CSP to allow AdSense images to load properly
     minimumCacheTTL: 86400, // Cache images for 24 hours
     formats: ['image/webp'],
   },
