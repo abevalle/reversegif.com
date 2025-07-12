@@ -16,7 +16,7 @@ const allGifs = [
 // Cache the selected GIFs for the session
 let cachedSelection = null;
 
-const ExampleGifs = () => {
+const ExampleGifs = ({ hideExamples = false }) => {
   // Use useMemo to ensure GIFs are selected only once and cached
   const selectedGifs = useMemo(() => {
     if (cachedSelection) {
@@ -38,29 +38,31 @@ const ExampleGifs = () => {
 
   return (
     <div className="text-center p-4">
-      <div className="flex flex-col md:flex-row justify-center items-center space-x-0 md:space-x-4">
-        <div className="mb-4 md:mb-0">
-          <p className="text-lg text-gray-900 dark:text-gray-100">No GIF?</p>
-          <p className="text-lg text-gray-900 dark:text-gray-100">Try one of these:</p>
+      {!hideExamples && (
+        <div className="flex flex-col md:flex-row justify-center items-center space-x-0 md:space-x-4">
+          <div className="mb-4 md:mb-0">
+            <p className="text-lg text-gray-900 dark:text-gray-100">No GIF?</p>
+            <p className="text-lg text-gray-900 dark:text-gray-100">Try one of these:</p>
+          </div>
+          <div className="flex space-x-4">
+            {selectedGifs.map((gif, index) => (
+              <div key={index} className="w-16 h-16 relative rounded-lg overflow-hidden">
+                <Image
+                  src={gif}
+                  alt={`Example GIF ${index + 1}`}
+                  fill
+                  sizes="64px"
+                  style={{ objectFit: 'cover' }}
+                  className="rounded-lg"
+                  priority={false}
+                  loading="lazy"
+                  quality={50}
+                />
+              </div>
+            ))}
+          </div>
         </div>
-        <div className="flex space-x-4">
-          {selectedGifs.map((gif, index) => (
-            <div key={index} className="w-16 h-16 relative rounded-lg overflow-hidden">
-              <Image
-                src={gif}
-                alt={`Example GIF ${index + 1}`}
-                fill
-                sizes="64px"
-                style={{ objectFit: 'cover' }}
-                className="rounded-lg"
-                priority={false}
-                loading="lazy"
-                quality={50}
-              />
-            </div>
-          ))}
-        </div>
-      </div>
+      )}
       <p className="text-sm text-gray-700 dark:text-gray-300 mt-4">
         By uploading a GIF you agree to our <a href="/terms" className="text-blue-500">Terms of Service</a>. To learn more about how reversegif handles your personal data, check our <a href="/privacy" className="text-blue-500">Privacy Policy</a>.
       </p>

@@ -56,10 +56,22 @@ export default function Home() {
       </Head>
       <Header />
       <main className="flex-grow container mx-auto px-4 py-6 md:p-4">
+        {/* Mobile-only heading section */}
+        <div className="block md:hidden text-center mb-6">
+          <div className="relative">
+            <h1 className="text-3xl sm:text-4xl font-bold mb-3 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent leading-tight">
+              Reverse Your GIFs
+            </h1>
+          </div>
+          <h2 className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 mb-4">
+            Create engaging content in seconds - 100% Free & Private
+          </h2>
+        </div>
+        
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 items-start">
-          {/* Mobile-optimized left column */}
+          {/* Desktop left column */}
           <div className="space-y-4 md:space-y-6 order-2 md:order-1">
-            <div className="text-center md:text-left px-2 md:px-0">
+            <div className="hidden md:block text-center md:text-left px-2 md:px-0">
               <div className="relative">
                 <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 md:mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent leading-tight">
                   Reverse Your GIFs
@@ -103,16 +115,8 @@ export default function Home() {
 
             {/* Mobile-optimized monetization section */}
             <div className="bg-white dark:bg-gray-800 rounded-xl p-4 md:p-6 shadow-lg">
-              <h3 className="text-lg md:text-xl font-semibold mb-3">Tools You'll Love</h3>
+              <h3 className="text-lg md:text-xl font-semibold mb-3">Other Tools</h3>
               <div className="space-y-2 md:space-y-3">
-                <a href="/video-2-gif" 
-                   className="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors touch-target-size">
-                  <span className="text-2xl md:text-xl mr-3">🎬</span>
-                  <div>
-                    <h4 className="font-medium text-base md:text-lg">Video to GIF Converter</h4>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 hidden sm:block">Convert your videos to GIFs</p>
-                  </div>
-                </a>
                 <a href="https://thepasswordgenerator.com" 
                    className="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors touch-target-size">
                   <span className="text-2xl md:text-xl mr-3">🔐</span>

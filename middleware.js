@@ -20,28 +20,16 @@ export function middleware(request) {
     origin?.includes('google.com') ||
     origin?.includes('doubleclick.net');
   
-  // For all pages (to ensure ads can load)
-  // Remove restrictive headers that block AdSense
-  response.headers.delete('Cross-Origin-Embedder-Policy');
-  response.headers.delete('Cross-Origin-Opener-Policy');
-  response.headers.delete('X-Frame-Options');
+  // Set headers to enable SharedArrayBuffer for FFmpeg.wasm
+  response.headers.set('Cross-Origin-Embedder-Policy', 'require-corp');
+  response.headers.set('Cross-Origin-Opener-Policy', 'same-origin');
   
   // Set permissive headers for AdSense compatibility
   response.headers.set('Cross-Origin-Resource-Policy', 'cross-origin');
   
-  // Add Content Security Policy that allows AdSense
-  const cspHeader = [
-    "default-src 'self' https: data: blob:",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.googlesyndication.com https://*.google.com https://*.googletagmanager.com https://*.googleapis.com https://*.gstatic.com https://*.doubleclick.net https://*.googleadservices.com",
-    "style-src 'self' 'unsafe-inline' https://*.googleapis.com https://*.gstatic.com",
-    "img-src 'self' data: https: blob:",
-    "font-src 'self' data: https://*.gstatic.com",
-    "connect-src 'self' https://*.google.com https://*.googlesyndication.com https://*.doubleclick.net https://*.googleadservices.com https://*.google-analytics.com https://*.googletagmanager.com",
-    "frame-src 'self' https://*.googlesyndication.com https://*.google.com https://*.doubleclick.net",
-    "frame-ancestors 'self' https://*.googlesyndication.com https://*.google.com https://*.doubleclick.net"
-  ].join('; ');
-  
-  response.headers.set('Content-Security-Policy', cspHeader);
+  // Remove CSP restrictions to allow FFmpeg and other tools to work
+  // CSP was causing issues with unpkg.com and other CDN resources
+  response.headers.delete('Content-Security-Policy');
   
   return response;
 }

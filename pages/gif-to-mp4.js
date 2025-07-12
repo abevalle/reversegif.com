@@ -7,12 +7,12 @@ import Head from 'next/head';
 import ExampleGifs from './exmaplegifs.js';
 
 
-const VideoDropZone = () => {
-  // This wrapper ensures that the DropZone component is used specifically for video to GIF conversion
-  return <DropZone defaultConvertToGif={true} forceConvertToGif={true} videoOnly={true} />;
+const GifToMp4DropZone = () => {
+  // This wrapper ensures that the DropZone component is used specifically for GIF to MP4 conversion
+  return <DropZone gifToMp4Mode={true} />;
 };
 
-export default function VideoToGif() {
+export default function GifToMp4() {
   const [isToolsExpanded, setIsToolsExpanded] = useState(false);
   
   useEffect(() => {
@@ -43,9 +43,9 @@ export default function VideoToGif() {
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "SoftwareApplication",
-              "name": "ReverseGIF.com - Video to GIF Converter",
+              "name": "ReverseGIF.com - GIF to MP4 Converter",
               "applicationCategory": "ImageEditing",
-              "applicationSubCategory": "Video to GIF Converter",
+              "applicationSubCategory": "GIF to MP4 Converter",
               "operatingSystem": "Web",
               "offers": {
                 "@type": "Offer",
@@ -53,23 +53,23 @@ export default function VideoToGif() {
                 "priceCurrency": "USD",
                 "availability": "https://schema.org/InStock"
               },
-              "description": "A free online tool to convert videos to GIF animations. Process videos directly in your browser with no file size limits and complete privacy.",
+              "description": "A free online tool to convert GIF animations to MP4 videos. Process GIFs directly in your browser with no file size limits and complete privacy.",
               "featureList": [
-                "Browser-based video processing",
+                "Browser-based GIF processing",
                 "No file upload required",
                 "Privacy focused - files never leave your browser",
                 "High-quality output",
                 "Lightning-fast processing",
-                "Video to GIF conversion"
+                "GIF to MP4 conversion"
               ],
               "browserRequirements": "Requires a modern web browser with JavaScript enabled",
               "softwareVersion": "1.0",
-              "url": "https://reversegif.com/video-2-gif"
+              "url": "https://reversegif.com/gif-to-mp4"
             })
           }}
         />
-        <title>Convert Video to GIF Online - Free & Private | ReverseGIF.com</title>
-        <meta name="description" content="Transform your videos into high-quality GIFs with our free online converter. No upload needed - processing happens in your browser for complete privacy." />
+        <title>Convert GIF to MP4 Online - Free & Private | ReverseGIF.com</title>
+        <meta name="description" content="Transform your GIFs into high-quality MP4 videos with our free online converter. No upload needed - processing happens in your browser for complete privacy." />
       </Head>
       <Header />
       <main className="flex-grow container mx-auto px-4 py-6 md:p-4">
@@ -77,11 +77,11 @@ export default function VideoToGif() {
         <div className="block md:hidden text-center mb-6">
           <div className="relative">
             <h1 className="text-3xl sm:text-4xl font-bold mb-3 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent leading-tight">
-              Convert Videos to GIFs
+              Convert GIFs to MP4
             </h1>
           </div>
           <h2 className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 mb-4">
-            Transform videos into shareable GIFs - 100% Free & Private
+            Transform GIFs into efficient MP4 videos - 100% Free & Private
           </h2>
         </div>
         
@@ -91,26 +91,26 @@ export default function VideoToGif() {
             <div className="hidden md:block text-center md:text-left px-2 md:px-0">
               <div className="relative">
                 <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 md:mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent leading-tight">
-                  Convert Videos to GIFs
+                  Convert GIFs to MP4
                 </h1>
               </div>
               <h2 className="text-lg sm:text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-4 md:mb-6">
-                Transform videos into shareable GIFs - 100% Free & Private
+                Transform GIFs into efficient MP4 videos - 100% Free & Private
               </h2>
             </div>
 
             {/* Tool explanation */}
             <div className="bg-white dark:bg-gray-800 rounded-xl p-4 md:p-6 shadow-lg">
-              <h3 className="text-lg md:text-xl font-semibold mb-3 md:mb-4">How Video to GIF Conversion Works</h3>
+              <h3 className="text-lg md:text-xl font-semibold mb-3 md:mb-4">Why Convert GIF to MP4?</h3>
               <div className="prose prose-sm md:prose-base dark:prose-invert">
                 <p className="text-gray-600 dark:text-gray-300 mb-3">
-                  Transform your MP4, MOV, AVI, and other video files into shareable GIF animations instantly. Our browser-based converter uses advanced FFmpeg technology to maintain high quality while optimizing file size for web sharing.
+                  Convert animated GIFs to MP4 video format for dramatically smaller file sizes and better compatibility. MP4 files are typically 80-90% smaller than equivalent GIFs while maintaining the same visual quality, making them perfect for web use and social media.
                 </p>
                 <p className="text-gray-600 dark:text-gray-300 mb-3">
-                  Perfect for creating animated thumbnails, social media content, or preserving memorable video moments as looping GIFs. The conversion happens entirely in your browser - no uploads required, ensuring complete privacy.
+                  Modern browsers, mobile devices, and social platforms prefer MP4 over GIF for animated content. MP4 videos load faster, consume less bandwidth, and provide smoother playback across all devices and platforms.
                 </p>
                 <p className="text-gray-600 dark:text-gray-300">
-                  Simply upload your video, adjust settings if needed, and download your GIF. Supports custom frame rates, quality settings, and optional watermarking for branding.
+                  Our converter uses H.264 encoding with optimized settings for web delivery, ensuring your animations play perfectly everywhere while keeping file sizes minimal.
                 </p>
               </div>
             </div>
@@ -134,38 +134,38 @@ export default function VideoToGif() {
               
               <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isToolsExpanded ? 'max-h-96 opacity-100 mt-3' : 'max-h-0 opacity-0'}`}>
                 <div className="space-y-2 md:space-y-3">
-                  <a href="/" 
-                     className="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors touch-target-size">
-                    <span className="text-2xl md:text-xl mr-3">🔄</span>
-                    <div>
-                      <h4 className="font-medium text-base md:text-lg">Reverse GIFs</h4>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 hidden sm:block">Create reverse playback of any GIF</p>
-                    </div>
-                  </a>
-                  <a href="/gif-to-mp4" 
-                     className="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors touch-target-size">
-                    <span className="text-2xl md:text-xl mr-3">🎥</span>
-                    <div>
-                      <h4 className="font-medium text-base md:text-lg">GIF to MP4</h4>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 hidden sm:block">Convert GIFs to MP4 videos</p>
-                    </div>
-                  </a>
-                  <a href="/video-to-png" 
-                     className="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors touch-target-size">
-                    <span className="text-2xl md:text-xl mr-3">🖼️</span>
-                    <div>
-                      <h4 className="font-medium text-base md:text-lg">Video to PNG</h4>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 hidden sm:block">Extract all PNG frames</p>
-                    </div>
-                  </a>
-                  <a href="/video-to-jpg" 
-                     className="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors touch-target-size">
-                    <span className="text-2xl md:text-xl mr-3">📷</span>
-                    <div>
-                      <h4 className="font-medium text-base md:text-lg">Video to JPG</h4>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 hidden sm:block">Extract all JPG frames</p>
-                    </div>
-                  </a>
+                <a href="/" 
+                   className="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors touch-target-size">
+                  <span className="text-2xl md:text-xl mr-3">🔄</span>
+                  <div>
+                    <h4 className="font-medium text-base md:text-lg">Reverse GIFs</h4>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 hidden sm:block">Create reverse playback of any GIF</p>
+                  </div>
+                </a>
+                <a href="/video-2-gif" 
+                   className="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors touch-target-size">
+                  <span className="text-2xl md:text-xl mr-3">🎬</span>
+                  <div>
+                    <h4 className="font-medium text-base md:text-lg">Video to GIF</h4>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 hidden sm:block">Convert videos to GIF animations</p>
+                  </div>
+                </a>
+                <a href="/video-to-png" 
+                   className="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors touch-target-size">
+                  <span className="text-2xl md:text-xl mr-3">🖼️</span>
+                  <div>
+                    <h4 className="font-medium text-base md:text-lg">Video to PNG</h4>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 hidden sm:block">Extract all PNG frames</p>
+                  </div>
+                </a>
+                <a href="/video-to-jpg" 
+                   className="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors touch-target-size">
+                  <span className="text-2xl md:text-xl mr-3">📷</span>
+                  <div>
+                    <h4 className="font-medium text-base md:text-lg">Video to JPG</h4>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 hidden sm:block">Extract all JPG frames</p>
+                  </div>
+                </a>
                 </div>
               </div>
             </div>
@@ -173,7 +173,7 @@ export default function VideoToGif() {
 
           {/* Mobile-optimized dropzone */}
           <div id="dropzone" className="order-1 md:order-2 md:sticky md:top-4 -mx-4 md:mx-0 rounded-none md:rounded-xl overflow-hidden shadow-lg">
-            <VideoDropZone />
+            <GifToMp4DropZone />
             
             {/* Ad placement under dropzone */}
             <div className="mt-4 px-4 md:px-0 flex justify-center">
@@ -199,4 +199,4 @@ const styles = {
   '.touch-target-size': {
     minHeight: '44px', // Minimum touch target size
   }
-}; 
+};

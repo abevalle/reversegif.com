@@ -76,6 +76,15 @@ const NavLinks = ({ isActivePath, mobile = false }) => {
       <Link href="/video-2-gif" className={linkClass('/video-2-gif')}>
         Video to GIF
       </Link>
+      <Link href="/gif-to-mp4" className={linkClass('/gif-to-mp4')}>
+        GIF to MP4
+      </Link>
+      <Link href="/video-to-png" className={linkClass('/video-to-png')}>
+        Video to PNG
+      </Link>
+      <Link href="/video-to-jpg" className={linkClass('/video-to-jpg')}>
+        Video to JPG
+      </Link>
       <Link href="/blog" className={linkClass('/blog')}>
         Blog
       </Link>
