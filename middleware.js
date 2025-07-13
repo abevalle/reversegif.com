@@ -1,47 +1,73 @@
 import { NextResponse } from 'next/server';
 
+/**
+ * Middleware to handle the conflicting requirements between FFmpeg.wasm and AdSense
+ * 
+ * IMPORTANT: This middleware balances two conflicting requirements:
+ * 
+ * 1. FFmpeg.wasm requires SharedArrayBuffer, which needs:
+ *    - Cross-Origin-Embedder-Policy: require-corp
+ *    - Cross-Origin-Opener-Policy: same-origin
+ *    These headers block external scripts and iframes (including AdSense)
+ * 
+ * 2. AdSense auto ads require:
+ *    - No restrictive CORS headers (they inject iframes and scripts)
+ *    - No CSP restrictions
+ *    - No X-Frame-Options
+ * 
+ * SOLUTION: We conditionally apply headers based on the page:
+ * - FFmpeg pages: Get restrictive headers (sacrificing AdSense on those pages)
+ * - Other pages: Get permissive headers (allowing AdSense auto ads)
+ * 
+ * TRADE-OFFS:
+ * - AdSense auto ads won't work on FFmpeg tool pages (/, /video-2-gif, etc.)
+ * - Manual ad units can still work on FFmpeg pages with proper implementation
+ * - All other pages get full AdSense auto ads support
+ * 
+ * @param {Request} request - The incoming request
+ * @returns {Response} The response with appropriate headers
+ */
 export function middleware(request) {
   const response = NextResponse.next();
   
-  // Allow AdSense and Google services
   const url = request.url;
-  const referer = request.headers.get('referer');
-  const origin = request.headers.get('origin');
+  const pathname = new URL(url).pathname;
   
-  // Check if the request is for AdSense resources or if it's a page that will show ads
-  const isAdRelated = 
-    url?.includes('googlesyndication.com') ||
-    url?.includes('doubleclick.net') ||
-    url?.includes('googleadservices.com') ||
-    referer?.includes('googlesyndication.com') || 
-    referer?.includes('google.com') ||
-    referer?.includes('doubleclick.net') ||
-    origin?.includes('googlesyndication.com') ||
-    origin?.includes('google.com') ||
-    origin?.includes('doubleclick.net');
+  // List of pages that use FFmpeg.wasm and need SharedArrayBuffer
+  // IMPORTANT: Update this list if you add new FFmpeg-based tools
+  const needsFFmpeg = [
+    '/',              // Main reverse GIF tool
+    '/video-2-gif',   // Video to GIF converter
+    '/gif-to-mp4',    // GIF to MP4 converter
+    '/video-to-png',  // Video to PNG frame extractor
+    '/video-to-jpg'   // Video to JPG frame extractor
+  ].includes(pathname);
   
-  // For all pages (to ensure ads can load)
-  // Remove restrictive headers that block AdSense
-  response.headers.delete('Cross-Origin-Embedder-Policy');
-  response.headers.delete('Cross-Origin-Opener-Policy');
+  if (needsFFmpeg) {
+    // FFmpeg pages: Apply restrictive headers for SharedArrayBuffer support
+    // WARNING: This will block AdSense auto ads on these pages
+    response.headers.set('Cross-Origin-Embedder-Policy', 'require-corp');
+    response.headers.set('Cross-Origin-Opener-Policy', 'same-origin');
+  } else {
+    // Non-FFmpeg pages: Remove restrictive headers to allow AdSense auto ads
+    // This enables full AdSense functionality on blog, FAQ, and other pages
+    response.headers.delete('Cross-Origin-Embedder-Policy');
+    response.headers.delete('Cross-Origin-Opener-Policy');
+  }
+  
+  // Global headers applied to all pages:
+  
+  // Remove X-Frame-Options to allow AdSense and other services to embed content
   response.headers.delete('X-Frame-Options');
   
-  // Set permissive headers for AdSense compatibility
+  // Set permissive CORP to allow cross-origin resource loading
+  // This allows external scripts like Buy Me a Coffee, Vercel Analytics, etc.
   response.headers.set('Cross-Origin-Resource-Policy', 'cross-origin');
   
-  // Add Content Security Policy that allows AdSense
-  const cspHeader = [
-    "default-src 'self' https: data: blob:",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.googlesyndication.com https://*.google.com https://*.googletagmanager.com https://*.googleapis.com https://*.gstatic.com https://*.doubleclick.net https://*.googleadservices.com",
-    "style-src 'self' 'unsafe-inline' https://*.googleapis.com https://*.gstatic.com",
-    "img-src 'self' data: https: blob:",
-    "font-src 'self' data: https://*.gstatic.com",
-    "connect-src 'self' https://*.google.com https://*.googlesyndication.com https://*.doubleclick.net https://*.googleadservices.com https://*.google-analytics.com https://*.googletagmanager.com",
-    "frame-src 'self' https://*.googlesyndication.com https://*.google.com https://*.doubleclick.net",
-    "frame-ancestors 'self' https://*.googlesyndication.com https://*.google.com https://*.doubleclick.net"
-  ].join('; ');
-  
-  response.headers.set('Content-Security-Policy', cspHeader);
+  // Remove Content-Security-Policy entirely
+  // CSP was blocking critical resources: unpkg.com (FFmpeg), Buy Me a Coffee, Vercel Analytics
+  // Removing it allows all external scripts to load properly
+  response.headers.delete('Content-Security-Policy');
   
   return response;
 }
