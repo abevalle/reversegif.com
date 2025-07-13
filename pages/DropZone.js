@@ -232,10 +232,8 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
     const handleDrop = async (event) => {
         event.preventDefault();
         
-        // Load FFmpeg when user drops a file (non-blocking)
-        if (!ffmpegLoaded && !ffmpegLoading) {
-            loadFFmpeg(); // Don't await - load in background
-        }
+        // Don't load FFmpeg yet - wait until user clicks process button
+        // This prevents COEP header conflicts and allows ads to work properly
         
         if (event.dataTransfer.files.length === 1) {
             const file = event.dataTransfer.files?.item(0);
@@ -477,10 +475,8 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
                         const file = event.target.files?.item(0);
                         
                         if (file) {
-                            // Load FFmpeg when user selects a file (non-blocking)
-                            if (!ffmpegLoaded && !ffmpegLoading) {
-                                loadFFmpeg(); // Don't await - load in background
-                            }
+                            // Don't load FFmpeg yet - wait until user clicks process button
+                            // This prevents COEP header conflicts and allows ads to work properly
                             // If videoOnly is true, only accept video files
                             if (videoOnly && !file.type.startsWith('video/')) {
                                 alert('Please upload only video files.');
