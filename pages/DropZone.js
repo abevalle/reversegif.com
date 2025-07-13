@@ -127,7 +127,7 @@ const MediaPreview = ({ file, className, onClick }) => {
 const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, videoOnly = false, gifToMp4Mode = false, videoToPngMode = false, videoToJpgMode = false }) => {
     const [files, setFiles] = useState(null);
     const inputRef = useRef();
-    const [ready, setReady] = useState(false); // Start with dropzone not ready to give AdSense time to load
+    const [ready, setReady] = useState(true); // Dropzone is ready to accept files immediately
     const [reversed, setReversed] = useState(null);
     const [reversedFile, setReversedFile] = useState(null);
     const [reversedName, setReversedName] = useState('');
@@ -150,14 +150,6 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
     const [ffmpegLoaded, setFfmpegLoaded] = useState(false);
     const [ffmpegLoading, setFfmpegLoading] = useState(false);
     
-    // Add delay to allow AdSense to load before showing dropzone
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setReady(true);
-        }, 800); // 800ms delay for AdSense to initialize
-        
-        return () => clearTimeout(timer);
-    }, []);
 
     // Lazy load FFmpeg only when user interacts with the tool
     const loadFFmpeg = async () => {
@@ -754,12 +746,9 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
         </div>
     ) : (
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
-            <div className="flex flex-col items-center justify-center space-y-4">
+            <div className="flex items-center justify-center">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400"></div>
-                <div className="text-center">
-                    <span className="text-gray-600 dark:text-gray-400">Initializing...</span>
-                    <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">Please wait a moment</div>
-                </div>
+                <span className="ml-3 text-gray-600 dark:text-gray-400">Loading...</span>
             </div>
         </div>
     );

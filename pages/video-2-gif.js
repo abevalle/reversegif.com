@@ -165,9 +165,6 @@ export default function VideoToGif() {
           <div id="dropzone" className="order-1 md:order-2 md:sticky md:top-4 -mx-4 md:mx-0 rounded-none md:rounded-xl overflow-hidden shadow-lg">
             <VideoDropZone />
             
-            {/* Ad placement under dropzone */}
-            <AdUnit className="mt-4 px-4 md:px-0" />
-            
             <div className="mt-4 md:mt-6 px-4 md:px-0">
               <ExampleGifs hideExamples={true} />
             </div>
