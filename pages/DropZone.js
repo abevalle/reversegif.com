@@ -2,6 +2,9 @@ import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
 import React, { useState, useRef, useEffect } from 'react';
 import * as gtm from '../lib/gtm';
 
+// Initialize FFmpeg instance (but don't load it yet)
+// Following best practices: Delay FFmpeg/WASM loading until user interaction
+// to avoid blocking AdSense and impacting page performance
 const ffmpeg = createFFmpeg({ 
   log: true, 
   corePath: "https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js"
@@ -124,7 +127,7 @@ const MediaPreview = ({ file, className, onClick }) => {
 const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, videoOnly = false, gifToMp4Mode = false, videoToPngMode = false, videoToJpgMode = false }) => {
     const [files, setFiles] = useState(null);
     const inputRef = useRef();
-    const [ready, setReady] = useState(false);
+    const [ready, setReady] = useState(true); // Dropzone is ready to accept files immediately
     const [reversed, setReversed] = useState(null);
     const [reversedFile, setReversedFile] = useState(null);
     const [reversedName, setReversedName] = useState('');
@@ -143,26 +146,33 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
         mediaFile: null 
     });
 
-    // Load FFmpeg
-    useEffect(() => {
-        const load = async () => {
+    // Track if FFmpeg has been initialized
+    const [ffmpegLoaded, setFfmpegLoaded] = useState(false);
+    const [ffmpegLoading, setFfmpegLoading] = useState(false);
+
+    // Lazy load FFmpeg only when user interacts with the tool
+    const loadFFmpeg = async () => {
+        if (ffmpegLoaded || ffmpegLoading) return;
+        
+        setFfmpegLoading(true);
+        try {
             if (!ffmpeg.isLoaded()) {
-                try {
-                    await ffmpeg.load();
-                } catch (error) {
-                    console.error('FFmpeg loading error:', error);
-                    // If FFmpeg fails to load due to COEP/COOP, show a message
-                    if (error.message && error.message.includes('SharedArrayBuffer')) {
-                        alert('To use this feature, please open this page in a new tab or window. This is required for video processing security.');
-                        return;
-                    }
-                }
+                await ffmpeg.load();
             }
-            setReady(true);
-            gaEvent('app-load', 'App Loaded');
-        };
-        load();
-    }, []);
+            setFfmpegLoaded(true);
+            gaEvent('ffmpeg-load', 'FFmpeg Loaded on User Interaction');
+        } catch (error) {
+            console.error('FFmpeg loading error:', error);
+            setFfmpegLoading(false);
+            // If FFmpeg fails to load due to COEP/COOP, show a message
+            if (error.message && error.message.includes('SharedArrayBuffer')) {
+                alert('To use this feature, please open this page in a new tab or window. This is required for video processing security.');
+                return;
+            }
+            throw error;
+        }
+        setFfmpegLoading(false);
+    };
 
     // Handle reversed blob
     useEffect(() => {
@@ -219,8 +229,14 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
         });
     };
 
-    const handleDrop = (event) => {
+    const handleDrop = async (event) => {
         event.preventDefault();
+        
+        // Load FFmpeg when user drops a file (non-blocking)
+        if (!ffmpegLoaded && !ffmpegLoading) {
+            loadFFmpeg(); // Don't await - load in background
+        }
+        
         if (event.dataTransfer.files.length === 1) {
             const file = event.dataTransfer.files?.item(0);
             const fileType = file.type;
@@ -268,6 +284,10 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
     };
 
     const reverseGif = async () => {
+        // Ensure FFmpeg is loaded before processing
+        if (!ffmpegLoaded) {
+            await loadFFmpeg();
+        }
         setLoading(true);
         
         // Update event tracking
@@ -457,6 +477,10 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
                         const file = event.target.files?.item(0);
                         
                         if (file) {
+                            // Load FFmpeg when user selects a file (non-blocking)
+                            if (!ffmpegLoaded && !ffmpegLoading) {
+                                loadFFmpeg(); // Don't await - load in background
+                            }
                             // If videoOnly is true, only accept video files
                             if (videoOnly && !file.type.startsWith('video/')) {
                                 alert('Please upload only video files.');
@@ -638,9 +662,18 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
                         <div className="flex flex-col md:flex-row justify-center space-y-3 md:space-y-0 md:space-x-4">
                             <button 
                                 onClick={reverseGif}
-                                className="w-full md:w-auto px-6 py-4 md:py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all duration-200 touch-target-size"
+                                disabled={loading || ffmpegLoading}
+                                className={`w-full md:w-auto px-6 py-4 md:py-3 ${
+                                    loading || ffmpegLoading 
+                                        ? 'bg-gray-400 cursor-not-allowed' 
+                                        : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:shadow-lg'
+                                } text-white font-medium rounded-lg shadow-md transition-all duration-200 touch-target-size`}
                             >
-                                {gifToMp4Mode
+                                {ffmpegLoading
+                                    ? 'Initializing Tool...'
+                                    : loading
+                                    ? 'Processing...'
+                                    : gifToMp4Mode
                                     ? 'Convert to MP4'
                                     : videoToPngMode
                                     ? 'Extract All PNG Frames'
