@@ -157,10 +157,15 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
         setFfmpegLoading(true);
         try {
             if (!ffmpeg.isLoaded()) {
-                await ffmpeg.load();
+                // Load FFmpeg from local files instead of CDN
+                await ffmpeg.load({
+                    coreURL: '/ffmpeg/ffmpeg-core.js',
+                    wasmURL: '/ffmpeg/ffmpeg-core.wasm',
+                    workerURL: '/ffmpeg/ffmpeg-core.worker.js'
+                });
             }
             setFfmpegLoaded(true);
-            gaEvent('ffmpeg-load', 'FFmpeg Loaded on User Interaction');
+            gaEvent('ffmpeg-load', 'FFmpeg Loaded from Local Files');
         } catch (error) {
             console.error('FFmpeg loading error:', error);
             setFfmpegLoading(false);
