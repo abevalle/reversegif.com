@@ -38,37 +38,36 @@ const StrapiPostCard = ({ post }) => {
   const getFullImageUrl = (src) => {
     if (!src) return '/default-image.png';
     
-    const strapiUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL || 'https://u488cwcco0gw00048g4wgoo0.coolify.valle.us';
-    
-    // If it's already a full URL, extract just the uploads path
+    // If it's already a full URL
     if (src.startsWith('http://') || src.startsWith('https://')) {
-      try {
-        const url = new URL(src);
-        const uploadsIndex = url.pathname.indexOf('/uploads/');
-        if (uploadsIndex !== -1) {
-          // Get everything after /uploads/
-          const imagePath = url.pathname.slice(uploadsIndex);
-          return `${strapiUrl}${imagePath}`;
-        }
-        return src; // Return the original URL if no uploads path found
-      } catch (error) {
-        console.error('Error parsing URL:', error);
-        return src; // Return the original URL if parsing fails
+      // Convert DigitalOcean Spaces URLs to use CDN
+      if (src.includes('nyc3.digitaloceanspaces.com')) {
+        return src.replace('nyc3.digitaloceanspaces.com', 'nyc3.cdn.digitaloceanspaces.com');
       }
+      return src;
     }
     
-    // If it starts with /uploads/, use as is
-    if (src.startsWith('/uploads/')) {
-      return `${strapiUrl}${src}`;
+    // If it's a DigitalOcean Spaces path without protocol
+    if (src.includes('vs-strapi.nyc3.digitaloceanspaces.com')) {
+      // It's already a Digital Ocean path, just needs https://
+      const cdnUrl = `https://${src}`.replace('nyc3.digitaloceanspaces.com', 'nyc3.cdn.digitaloceanspaces.com');
+      return cdnUrl;
     }
     
     // If it's a local image (starts with /)
     if (src.startsWith('/')) {
+      // For relative paths, assume they're on DigitalOcean Spaces
+      if (src.startsWith('/uploads/')) {
+        // Remove /uploads/ prefix and construct DigitalOcean URL
+        const filename = src.replace('/uploads/', '');
+        return `https://vs-strapi.nyc3.cdn.digitaloceanspaces.com/${filename}`;
+      }
+      // Other local paths, return as is
       return src;
     }
     
-    // For any other case, assume it's a relative path and append to uploads
-    return `${strapiUrl}/uploads/${src}`;
+    // For any other case, assume it's a filename on DigitalOcean Spaces
+    return `https://vs-strapi.nyc3.cdn.digitaloceanspaces.com/${src}`;
   };
   
   // Get cover image URL if available
@@ -101,13 +100,13 @@ const StrapiPostCard = ({ post }) => {
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           style={{ objectFit: 'cover' }}
           className="transition-opacity opacity-0 duration-500"
-          onLoadingComplete={(image) => {
-            image.classList.remove('opacity-0');
+          onLoad={(e) => {
+            e.currentTarget.classList.remove('opacity-0');
           }}
           onError={(e) => {
             e.currentTarget.src = '/default-image.png';
           }}
-          unoptimized={coverImageUrl.startsWith('http') && !coverImageUrl.includes('coolify.valle.us')}
+          unoptimized={false}
         />
       </div>
       <div className="p-6">

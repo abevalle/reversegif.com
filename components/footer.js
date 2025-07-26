@@ -36,7 +36,7 @@ export default function Footer() {
                 onClick={() => gaEvent('footer-link', 'buy-me-coffee-click')}
               >
                 <img 
-                  src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" 
+                  src="/images/buy-me-a-coffee-button.png" 
                   alt="Buy Me A Coffee" 
                   style={{ height: '60px', width: '217px' }}
                 />

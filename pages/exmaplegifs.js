@@ -1,5 +1,7 @@
-import React, { useMemo } from 'react';
-import Image from 'next/image';
+import React, { useMemo, useState, useEffect } from 'react';
+import { fetchFeaturedBlogPosts } from '../lib/strapi-api';
+import CompactBlogCard from '../components/CompactBlogCard';
+import Link from 'next/link';
 
 // Move the GIF selection logic outside the component to prevent re-initialization
 const allGifs = [
@@ -13,16 +15,18 @@ const allGifs = [
   'https://media.giphy.com/media/l0HlNQ03J5JxX6lva/giphy.gif',
 ];
 
-// Cache the selected GIFs for the session
-let cachedSelection = null;
+// Use a deterministic selection to prevent hydration mismatch
+const selectedGifs = allGifs.slice(0, 4);
 
 const ExampleGifs = ({ hideExamples = false }) => {
-  // Use useMemo to ensure GIFs are selected only once and cached
-  const selectedGifs = useMemo(() => {
-    if (cachedSelection) {
-      return cachedSelection;
-    }
-    
+  const [blogPosts, setBlogPosts] = useState([]);
+  const [isLoadingPosts, setIsLoadingPosts] = useState(true);
+
+  // State for client-side GIF randomization
+  const [displayGifs, setDisplayGifs] = useState(selectedGifs);
+  
+  // Randomize GIFs after initial mount to avoid hydration mismatch
+  useEffect(() => {
     const shuffleArray = (array) => {
       const arr = [...array];
       for (let i = arr.length - 1; i > 0; i--) {
@@ -31,9 +35,25 @@ const ExampleGifs = ({ hideExamples = false }) => {
       }
       return arr;
     };
+    
+    setDisplayGifs(shuffleArray(allGifs).slice(0, 4));
+  }, []);
 
-    cachedSelection = shuffleArray(allGifs).slice(0, 4);
-    return cachedSelection;
+  // Fetch featured blog posts on component mount
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        setIsLoadingPosts(true);
+        const posts = await fetchFeaturedBlogPosts(3);
+        setBlogPosts(posts);
+      } catch (error) {
+        console.error('Error fetching blog posts:', error);
+      } finally {
+        setIsLoadingPosts(false);
+      }
+    };
+
+    fetchPosts();
   }, []);
 
   return (
@@ -45,18 +65,13 @@ const ExampleGifs = ({ hideExamples = false }) => {
             <p className="text-lg text-gray-900 dark:text-gray-100">Try one of these:</p>
           </div>
           <div className="flex space-x-4">
-            {selectedGifs.map((gif, index) => (
+            {displayGifs.map((gif, index) => (
               <div key={index} className="w-16 h-16 relative rounded-lg overflow-hidden">
-                <Image
+                <img
                   src={gif}
                   alt={`Example GIF ${index + 1}`}
-                  fill
-                  sizes="64px"
-                  style={{ objectFit: 'cover' }}
-                  className="rounded-lg"
-                  priority={false}
+                  className="w-full h-full object-cover rounded-lg"
                   loading="lazy"
-                  quality={50}
                 />
               </div>
             ))}
@@ -66,6 +81,26 @@ const ExampleGifs = ({ hideExamples = false }) => {
       <p className="text-sm text-gray-700 dark:text-gray-300 mt-4">
         By uploading a GIF you agree to our <a href="/terms" className="text-blue-500">Terms of Service</a>. To learn more about how reversegif handles your personal data, check our <a href="/privacy" className="text-blue-500">Privacy Policy</a>.
       </p>
+
+      {/* Blog Posts Section */}
+      {blogPosts.length > 0 && (
+        <div className="mt-8">
+          <div className="flex flex-col gap-3 text-left max-w-3xl mx-auto">
+            {blogPosts.map((post, index) => (
+              <CompactBlogCard key={post.id || index} post={post} />
+            ))}
+          </div>
+          <Link 
+            href="/blog"
+            className="inline-flex items-center mt-4 text-blue-600 dark:text-blue-400 hover:underline"
+          >
+            View all posts
+            <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </Link>
+        </div>
+      )}
     </div>
   );
 };

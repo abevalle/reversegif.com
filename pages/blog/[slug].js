@@ -185,37 +185,36 @@ export default function BlogPost() {
   const getFullImageUrl = (src) => {
     if (!src) return '/default-image.png';
     
-    const strapiUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL || 'https://u488cwcco0gw00048g4wgoo0.coolify.valle.us';
-    
-    // If it's already a full URL, extract just the uploads path
+    // If it's already a full URL
     if (src.startsWith('http://') || src.startsWith('https://')) {
-      try {
-        const url = new URL(src);
-        const uploadsIndex = url.pathname.indexOf('/uploads/');
-        if (uploadsIndex !== -1) {
-          // Get everything after /uploads/
-          const imagePath = url.pathname.slice(uploadsIndex);
-          return `${strapiUrl}${imagePath}`;
-        }
-        return src; // Return the original URL if no uploads path found
-      } catch (error) {
-        console.error('Error parsing URL:', error);
-        return src; // Return the original URL if parsing fails
+      // Convert DigitalOcean Spaces URLs to use CDN
+      if (src.includes('nyc3.digitaloceanspaces.com')) {
+        return src.replace('nyc3.digitaloceanspaces.com', 'nyc3.cdn.digitaloceanspaces.com');
       }
+      return src;
     }
     
-    // If it starts with /uploads/, use as is
-    if (src.startsWith('/uploads/')) {
-      return `${strapiUrl}${src}`;
+    // If it's a DigitalOcean Spaces path without protocol
+    if (src.includes('vs-strapi.nyc3.digitaloceanspaces.com')) {
+      // It's already a Digital Ocean path, just needs https://
+      const cdnUrl = `https://${src}`.replace('nyc3.digitaloceanspaces.com', 'nyc3.cdn.digitaloceanspaces.com');
+      return cdnUrl;
     }
     
     // If it's a local image (starts with /)
     if (src.startsWith('/')) {
+      // For relative paths, assume they're on DigitalOcean Spaces
+      if (src.startsWith('/uploads/')) {
+        // Remove /uploads/ prefix and construct DigitalOcean URL
+        const filename = src.replace('/uploads/', '');
+        return `https://vs-strapi.nyc3.cdn.digitaloceanspaces.com/${filename}`;
+      }
+      // Other local paths, return as is
       return src;
     }
     
-    // For any other case, assume it's a relative path and append to uploads
-    return `${strapiUrl}/uploads/${src}`;
+    // For any other case, assume it's a filename on DigitalOcean Spaces
+    return `https://vs-strapi.nyc3.cdn.digitaloceanspaces.com/${src}`;
   };
   
   if (SocialMediaMetaImage?.data?.attributes?.url) {
@@ -340,6 +339,13 @@ export default function BlogPost() {
 
   // Custom components for ReactMarkdown
   const customComponents = {
+    p: ({ children }) => {
+      // Check if the paragraph contains only an image
+      if (children && children.length === 1 && children[0]?.type === 'img') {
+        return <>{children}</>;
+      }
+      return <p>{children}</p>;
+    },
     img: ({ node, ...props }) => {
       // Get image dimensions or use defaults
       const width = 800;  // Default width
@@ -349,37 +355,36 @@ export default function BlogPost() {
       const getFullImageUrl = (src) => {
         if (!src) return '/default-image.png';
         
-        const strapiUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL || 'https://u488cwcco0gw00048g4wgoo0.coolify.valle.us';
-        
-        // If it's already a full URL, extract just the uploads path
+        // If it's already a full URL
         if (src.startsWith('http://') || src.startsWith('https://')) {
-          try {
-            const url = new URL(src);
-            const uploadsIndex = url.pathname.indexOf('/uploads/');
-            if (uploadsIndex !== -1) {
-              // Get everything after /uploads/
-              const imagePath = url.pathname.slice(uploadsIndex);
-              return `${strapiUrl}${imagePath}`;
-            }
-            return src; // Return the original URL if no uploads path found
-          } catch (error) {
-            console.error('Error parsing URL:', error);
-            return src; // Return the original URL if parsing fails
+          // Convert DigitalOcean Spaces URLs to use CDN
+          if (src.includes('nyc3.digitaloceanspaces.com')) {
+            return src.replace('nyc3.digitaloceanspaces.com', 'nyc3.cdn.digitaloceanspaces.com');
           }
+          return src;
         }
         
-        // If it starts with /uploads/, use as is
-        if (src.startsWith('/uploads/')) {
-          return `${strapiUrl}${src}`;
+        // If it's a DigitalOcean Spaces path without protocol
+        if (src.includes('vs-strapi.nyc3.digitaloceanspaces.com')) {
+          // It's already a Digital Ocean path, just needs https://
+          const cdnUrl = `https://${src}`.replace('nyc3.digitaloceanspaces.com', 'nyc3.cdn.digitaloceanspaces.com');
+          return cdnUrl;
         }
         
         // If it's a local image (starts with /)
         if (src.startsWith('/')) {
+          // For relative paths, assume they're on DigitalOcean Spaces
+          if (src.startsWith('/uploads/')) {
+            // Remove /uploads/ prefix and construct DigitalOcean URL
+            const filename = src.replace('/uploads/', '');
+            return `https://vs-strapi.nyc3.cdn.digitaloceanspaces.com/${filename}`;
+          }
+          // Other local paths, return as is
           return src;
         }
         
-        // For any other case, assume it's a relative path and append to uploads
-        return `${strapiUrl}/uploads/${src}`;
+        // For any other case, assume it's a filename on DigitalOcean Spaces
+        return `https://vs-strapi.nyc3.cdn.digitaloceanspaces.com/${src}`;
       };
       
       // Get the full image URL
@@ -405,13 +410,36 @@ export default function BlogPost() {
       const trustedDomains = [
         'blg01.coolify.valle.us',
         'media.giphy.com',
-        'u488cwcco0gw00048g4wgoo0.coolify.valle.us'
+        'u488cwcco0gw00048g4wgoo0.coolify.valle.us',
+        'vs-strapi.nyc3.digitaloceanspaces.com',
+        'nyc3.digitaloceanspaces.com'
       ];
       
-      // If the domain is trusted, use Next Image component
+      // If the domain is trusted
       if (trustedDomains.includes(domain)) {
+        // For GIFs or external domains that might have CORS issues, use regular img tag
+        const isGif = fullImageUrl.toLowerCase().endsWith('.gif');
+        const isExternalDomain = domain.includes('coolify.valle.us');
+        
+        if (isGif || isExternalDomain) {
+          // Use regular img tag to avoid CORS issues
+          return (
+            <span className="block my-6">
+              <img 
+                src={fullImageUrl}
+                alt={props.alt || 'Image'} 
+                className="max-w-full h-auto rounded"
+                onError={(e) => {
+                  e.currentTarget.src = '/default-image.png';
+                }}
+              />
+            </span>
+          );
+        }
+        
+        // For non-GIF images from trusted domains, use Next Image
         return (
-          <div className="my-6">
+          <span className="block my-6">
             <Image
               src={fullImageUrl}
               alt={props.alt || 'Image'}
@@ -422,21 +450,21 @@ export default function BlogPost() {
               onError={(e) => {
                 e.currentTarget.src = '/default-image.png';
               }}
-              unoptimized={fullImageUrl.startsWith('http') && !fullImageUrl.includes('coolify.valle.us')}
+              unoptimized={false}
             />
-          </div>
+          </span>
         );
       }
       
       // Fallback to regular img tag for other domains
       return (
-        <div className="my-6">
+        <span className="block my-6">
           <img 
             src={fullImageUrl}
             alt={props.alt || 'Image'} 
             className="max-w-full h-auto rounded"
           />
-        </div>
+        </span>
       );
     }
   };
@@ -474,13 +502,13 @@ export default function BlogPost() {
             priority={true}
             style={{ objectFit: 'cover' }}
             className="transition-opacity opacity-0 duration-500"
-            onLoadingComplete={(image) => {
-              image.classList.remove('opacity-0');
+            onLoad={(e) => {
+              e.currentTarget.classList.remove('opacity-0');
             }}
             onError={(e) => {
               e.currentTarget.src = '/default-image.png';
             }}
-            unoptimized={coverImageUrl.startsWith('http') && !coverImageUrl.includes('coolify.valle.us')}
+            unoptimized={false}
           />
           <div className="absolute inset-0 bg-black bg-opacity-40"></div>
           <div className="absolute inset-0 flex items-center justify-center">

@@ -43,14 +43,24 @@ export function middleware(request) {
     '/video-to-jpg'   // Video to JPG frame extractor
   ].includes(pathname);
   
+  // Check if this is a blog page
+  const isBlogPage = pathname.startsWith('/blog');
+  
   if (needsFFmpeg) {
-    // FFmpeg pages: Apply restrictive headers for SharedArrayBuffer support
+    // FFmpeg pages: Apply headers for SharedArrayBuffer support
     // WARNING: This will block AdSense auto ads on these pages
-    response.headers.set('Cross-Origin-Embedder-Policy', 'require-corp');
+    // Using 'credentialless' allows loading cross-origin resources without credentials
+    response.headers.set('Cross-Origin-Embedder-Policy', 'credentialless');
     response.headers.set('Cross-Origin-Opener-Policy', 'same-origin');
+  } else if (isBlogPage) {
+    // Blog pages: Explicitly remove restrictive headers to ensure images load properly
+    response.headers.delete('Cross-Origin-Embedder-Policy');
+    response.headers.delete('Cross-Origin-Opener-Policy');
+    // Ensure permissive CORP for blog images
+    response.headers.set('Cross-Origin-Resource-Policy', 'cross-origin');
   } else {
-    // Non-FFmpeg pages: Remove restrictive headers to allow AdSense auto ads
-    // This enables full AdSense functionality on blog, FAQ, and other pages
+    // Other non-FFmpeg pages: Remove restrictive headers to allow AdSense auto ads
+    // This enables full AdSense functionality on FAQ, and other pages
     response.headers.delete('Cross-Origin-Embedder-Policy');
     response.headers.delete('Cross-Origin-Opener-Policy');
   }
