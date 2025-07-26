@@ -4,7 +4,6 @@ import Header from '../components/header.js';
 import Footer from '../components/footer.js';
 import Head from 'next/head';
 import ExampleGifs from './exmaplegifs.js';
-import AdUnit from '../components/AdUnit.js';
 
 
 export default function Home() {

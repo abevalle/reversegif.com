@@ -5,7 +5,6 @@ import Header from '../components/header.js';
 import Footer from '../components/footer.js';
 import Head from 'next/head';
 import ExampleGifs from './exmaplegifs.js';
-import AdUnit from '../components/AdUnit.js';
 
 
 const GifToMp4DropZone = () => {
@@ -165,8 +164,6 @@ export default function GifToMp4() {
           <div id="dropzone" className="order-1 md:order-2 md:sticky md:top-4 -mx-4 md:mx-0 rounded-none md:rounded-xl overflow-hidden shadow-lg">
             <GifToMp4DropZone />
             
-            {/* Ad placement under dropzone */}
-            <AdUnit className="mt-4 px-4 md:px-0" />
             
             <div className="mt-4 md:mt-6 px-4 md:px-0">
               <ExampleGifs hideExamples={true} />

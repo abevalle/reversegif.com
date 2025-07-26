@@ -419,6 +419,10 @@ export default function BlogPost() {
               height={height}
               className="max-w-full h-auto rounded"
               style={{ objectFit: 'contain' }}
+              onError={(e) => {
+                e.currentTarget.src = '/default-image.png';
+              }}
+              unoptimized={fullImageUrl.startsWith('http') && !fullImageUrl.includes('coolify.valle.us')}
             />
           </div>
         );
@@ -473,6 +477,10 @@ export default function BlogPost() {
             onLoadingComplete={(image) => {
               image.classList.remove('opacity-0');
             }}
+            onError={(e) => {
+              e.currentTarget.src = '/default-image.png';
+            }}
+            unoptimized={coverImageUrl.startsWith('http') && !coverImageUrl.includes('coolify.valle.us')}
           />
           <div className="absolute inset-0 bg-black bg-opacity-40"></div>
           <div className="absolute inset-0 flex items-center justify-center">

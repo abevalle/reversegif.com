@@ -104,6 +104,10 @@ const StrapiPostCard = ({ post }) => {
           onLoadingComplete={(image) => {
             image.classList.remove('opacity-0');
           }}
+          onError={(e) => {
+            e.currentTarget.src = '/default-image.png';
+          }}
+          unoptimized={coverImageUrl.startsWith('http') && !coverImageUrl.includes('coolify.valle.us')}
         />
       </div>
       <div className="p-6">

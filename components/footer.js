@@ -11,35 +11,6 @@ export default function Footer() {
     });
   };
 
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js';
-    script.setAttribute('data-name', 'bmc-button');
-    script.setAttribute('data-slug', 'abeu');
-    script.setAttribute('data-color', '#FFDD00');
-    script.setAttribute('data-emoji', '☕');
-    script.setAttribute('data-font', 'Cookie');
-    script.setAttribute('data-text', 'Buy me a coffee');
-    script.setAttribute('data-outline-color', '#000000');
-    script.setAttribute('data-font-color', '#000000');
-    script.setAttribute('data-coffee-color', '#ffffff');
-    script.async = true;
-    
-    script.onload = () => {
-      const container = document.getElementById('bmc-button-container');
-      if (container && window.BMC) {
-        window.BMC.Widget({ id: 'bmc-button-container', username: 'abeu' });
-      }
-    };
-    
-    document.body.appendChild(script);
-    
-    return () => {
-      if (document.body.contains(script)) {
-        document.body.removeChild(script);
-      }
-    };
-  }, []);
 
   return (
     <footer className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
@@ -57,6 +28,20 @@ export default function Footer() {
             <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
               The easiest way to reverse your GIFs online
             </p>
+            <div className="mt-4">
+              <a 
+                href="https://www.buymeacoffee.com/abeu" 
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => gaEvent('footer-link', 'buy-me-coffee-click')}
+              >
+                <img 
+                  src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" 
+                  alt="Buy Me A Coffee" 
+                  style={{ height: '60px', width: '217px' }}
+                />
+              </a>
+            </div>
           </div>
 
           {/* Quick Links */}
@@ -129,12 +114,6 @@ export default function Footer() {
         </div>
 
         <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700 text-center">
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-4">
-            <div 
-              id="bmc-button-container" 
-              onClick={() => gaEvent('footer-link', 'buy-me-coffee-click')}
-            ></div>
-          </div>
           <p className="text-sm text-gray-600 dark:text-gray-400">
             © {new Date().getFullYear()} ReverseGIF.com by{' '}
             <a
