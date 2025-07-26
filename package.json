@@ -1,5 +1,8 @@
 {
   "private": true,
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "dev": "next dev",
     "optimize": "node scripts/optimize.js",
