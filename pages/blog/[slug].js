@@ -185,20 +185,44 @@ export default function BlogPost() {
   const getFullImageUrl = (src) => {
     if (!src) return '/default-image.png';
     
+    // Log for debugging
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Processing image URL:', src);
+    }
+    
     // If it's already a full URL
     if (src.startsWith('http://') || src.startsWith('https://')) {
+      let finalUrl = src;
+      
       // Convert DigitalOcean Spaces URLs to use CDN
       if (src.includes('nyc3.digitaloceanspaces.com')) {
-        return src.replace('nyc3.digitaloceanspaces.com', 'nyc3.cdn.digitaloceanspaces.com');
+        // Check specific patterns first, then general ones
+        if (src.includes('/vs-strapi/')) {
+          // Handle both CDN and non-CDN URLs with vs-strapi path
+          // Transform: https://nyc3.digitaloceanspaces.com/vs-strapi/file.gif -> https://vs-strapi.nyc3.cdn.digitaloceanspaces.com/file.gif
+          // Transform: https://nyc3.cdn.digitaloceanspaces.com/vs-strapi/file.gif -> https://vs-strapi.nyc3.cdn.digitaloceanspaces.com/file.gif
+          const match = src.match(/https?:\/\/(nyc3\.(?:cdn\.)?digitaloceanspaces\.com)\/vs-strapi\/(.*)/);
+          if (match) {
+            finalUrl = `https://vs-strapi.nyc3.cdn.digitaloceanspaces.com/${match[2]}`;
+          }
+        } else if (!src.includes('nyc3.cdn.digitaloceanspaces.com')) {
+          // For other patterns without /vs-strapi/, just add CDN
+          // https://vs-strapi.nyc3.digitaloceanspaces.com/... -> https://vs-strapi.nyc3.cdn.digitaloceanspaces.com/...
+          finalUrl = src.replace('nyc3.digitaloceanspaces.com', 'nyc3.cdn.digitaloceanspaces.com');
+        }
       }
-      return src;
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Transformed URL:', finalUrl);
+      }
+      
+      return finalUrl;
     }
     
     // If it's a DigitalOcean Spaces path without protocol
-    if (src.includes('vs-strapi.nyc3.digitaloceanspaces.com')) {
+    if (src.includes('nyc3.digitaloceanspaces.com') || src.includes('nyc3.cdn.digitaloceanspaces.com')) {
       // It's already a Digital Ocean path, just needs https://
-      const cdnUrl = `https://${src}`.replace('nyc3.digitaloceanspaces.com', 'nyc3.cdn.digitaloceanspaces.com');
-      return cdnUrl;
+      return `https://${src}`;
     }
     
     // If it's a local image (starts with /)
@@ -306,12 +330,42 @@ export default function BlogPost() {
             </HeadingTag>
           );
         case 'image':
+          // Handle different possible image URL structures from Strapi
+          let imageUrl = block.url;
+          
+          // Check if URL is nested in image object
+          if (!imageUrl && block.image) {
+            if (block.image.url) {
+              imageUrl = block.image.url;
+            } else if (block.image.data && block.image.data.attributes && block.image.data.attributes.url) {
+              imageUrl = block.image.data.attributes.url;
+            }
+          }
+          
+          // Log for debugging
+          if (process.env.NODE_ENV === 'development') {
+            console.log('Image block:', { 
+              blockStructure: block, 
+              extractedUrl: imageUrl 
+            });
+          }
+          
+          // Use the global getFullImageUrl function to handle all URL transformations
+          const processedImageUrl = getFullImageUrl(imageUrl);
+          
           return (
             <div key={blockIndex} className="my-6">
               <img 
-                src={block.url} 
-                alt={block.alt || 'Image'} 
+                src={processedImageUrl} 
+                alt={block.alt || block.image?.alternativeText || 'Image'} 
                 className="max-w-full h-auto rounded"
+                onError={(e) => {
+                  console.error('Image failed to load:', {
+                    processed: processedImageUrl,
+                    original: imageUrl,
+                    block: block
+                  });
+                }}
               />
               {block.caption && (
                 <p className="text-sm text-gray-600 mt-2">{block.caption}</p>
@@ -347,47 +401,13 @@ export default function BlogPost() {
       return <p>{children}</p>;
     },
     img: ({ node, ...props }) => {
+      console.log('Markdown img component received:', props.src);
+      
       // Get image dimensions or use defaults
       const width = 800;  // Default width
       const height = 450; // Default height (16:9 aspect ratio)
       
-      // Function to get the full image URL
-      const getFullImageUrl = (src) => {
-        if (!src) return '/default-image.png';
-        
-        // If it's already a full URL
-        if (src.startsWith('http://') || src.startsWith('https://')) {
-          // Convert DigitalOcean Spaces URLs to use CDN
-          if (src.includes('nyc3.digitaloceanspaces.com')) {
-            return src.replace('nyc3.digitaloceanspaces.com', 'nyc3.cdn.digitaloceanspaces.com');
-          }
-          return src;
-        }
-        
-        // If it's a DigitalOcean Spaces path without protocol
-        if (src.includes('vs-strapi.nyc3.digitaloceanspaces.com')) {
-          // It's already a Digital Ocean path, just needs https://
-          const cdnUrl = `https://${src}`.replace('nyc3.digitaloceanspaces.com', 'nyc3.cdn.digitaloceanspaces.com');
-          return cdnUrl;
-        }
-        
-        // If it's a local image (starts with /)
-        if (src.startsWith('/')) {
-          // For relative paths, assume they're on DigitalOcean Spaces
-          if (src.startsWith('/uploads/')) {
-            // Remove /uploads/ prefix and construct DigitalOcean URL
-            const filename = src.replace('/uploads/', '');
-            return `https://vs-strapi.nyc3.cdn.digitaloceanspaces.com/${filename}`;
-          }
-          // Other local paths, return as is
-          return src;
-        }
-        
-        // For any other case, assume it's a filename on DigitalOcean Spaces
-        return `https://vs-strapi.nyc3.cdn.digitaloceanspaces.com/${src}`;
-      };
-      
-      // Get the full image URL
+      // Function to get the full image URL - using the global one instead
       const fullImageUrl = getFullImageUrl(props.src);
       
       // Check if the image URL is valid
@@ -412,8 +432,19 @@ export default function BlogPost() {
         'media.giphy.com',
         'u488cwcco0gw00048g4wgoo0.coolify.valle.us',
         'vs-strapi.nyc3.digitaloceanspaces.com',
-        'nyc3.digitaloceanspaces.com'
+        'vs-strapi.nyc3.cdn.digitaloceanspaces.com',
+        'nyc3.digitaloceanspaces.com',
+        'nyc3.cdn.digitaloceanspaces.com'
       ];
+      
+      // Debug logging
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Image domain check:', {
+          extractedDomain: domain,
+          isTrusted: trustedDomains.includes(domain),
+          fullUrl: fullImageUrl
+        });
+      }
       
       // If the domain is trusted
       if (trustedDomains.includes(domain)) {
@@ -430,7 +461,13 @@ export default function BlogPost() {
                 alt={props.alt || 'Image'} 
                 className="max-w-full h-auto rounded"
                 onError={(e) => {
-                  e.currentTarget.src = '/default-image.png';
+                  console.error('Image failed to load:', {
+                    src: fullImageUrl,
+                    alt: props.alt,
+                    originalSrc: props.src
+                  });
+                  // Don't immediately replace with default - let's see the actual error
+                  // e.currentTarget.src = '/default-image.png';
                 }}
               />
             </span>
@@ -457,12 +494,19 @@ export default function BlogPost() {
       }
       
       // Fallback to regular img tag for other domains
+      console.warn('Image using fallback renderer (untrusted domain):', {
+        domain: domain,
+        url: fullImageUrl
+      });
       return (
         <span className="block my-6">
           <img 
             src={fullImageUrl}
             alt={props.alt || 'Image'} 
             className="max-w-full h-auto rounded"
+            onError={(e) => {
+              e.currentTarget.src = '/default-image.png';
+            }}
           />
         </span>
       );
@@ -573,7 +617,6 @@ export async function getStaticPaths() {
     const result = await fetchBlogPosts(1, 100);
     const posts = result.data || [];
     
-    console.log(`Found ${posts.length} posts for static paths generation`);
     
     // Create paths for each post using slug if available
     const paths = posts
@@ -582,14 +625,12 @@ export async function getStaticPaths() {
         params: { slug: post.attributes.slug }
       }));
     
-    console.log(`Generated ${paths.length} static paths for blog posts`);
     
     return {
       paths,
       fallback: 'blocking' // Generate pages for new posts on-demand
     };
   } catch (error) {
-    console.error('Error in getStaticPaths:', error);
     return {
       paths: [],
       fallback: 'blocking'
@@ -600,20 +641,17 @@ export async function getStaticPaths() {
 // Fetch data for a specific blog post
 export async function getStaticProps({ params }) {
   try {
-    console.log('getStaticProps for blog post with slug:', params.slug);
     
     // Fetch the post by slug
     const post = await fetchBlogPostBySlug(params.slug);
     
     // If post not found, return 404
     if (!post) {
-      console.log('Post not found for slug:', params.slug);
       return {
         notFound: true
       };
     }
     
-    console.log('Post found:', post.id || (post.attributes && post.attributes.id));
     
     // Fetch related posts (simple implementation - just get latest 3 posts)
     const relatedResult = await fetchBlogPosts(1, 3);
@@ -636,7 +674,6 @@ export async function getStaticProps({ params }) {
       revalidate: 3600,
     };
   } catch (error) {
-    console.error('Error in getStaticProps:', error);
     return {
       notFound: true
     };

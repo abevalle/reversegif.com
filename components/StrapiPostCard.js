@@ -5,14 +5,7 @@ import Image from 'next/image';
 const StrapiPostCard = ({ post }) => {
   // Check if post is undefined
   if (!post) {
-    if (process.env.NODE_ENV === 'development') {
-      console.log("Post is undefined");
-    }
     return null; // Don't render anything if data is missing
-  }
-
-  if (process.env.NODE_ENV === 'development') {
-    console.log("Post data:", post);
   }
 
   // Extract data from Strapi's response structure
@@ -21,9 +14,6 @@ const StrapiPostCard = ({ post }) => {
   const { Title, Metadescription, publishedAt, SocialMediaMetaImage, slug } = attributes;
   
   if (!Title) {
-    if (process.env.NODE_ENV === 'development') {
-      console.log("Title is missing in post:", post);
-    }
     return null;
   }
   
@@ -40,11 +30,24 @@ const StrapiPostCard = ({ post }) => {
     
     // If it's already a full URL
     if (src.startsWith('http://') || src.startsWith('https://')) {
+      let finalUrl = src;
+      
       // Convert DigitalOcean Spaces URLs to use CDN
       if (src.includes('nyc3.digitaloceanspaces.com')) {
-        return src.replace('nyc3.digitaloceanspaces.com', 'nyc3.cdn.digitaloceanspaces.com');
+        // Check specific patterns first, then general ones
+        if (src.includes('/vs-strapi/')) {
+          // Handle both CDN and non-CDN URLs with vs-strapi path
+          const match = src.match(/https?:\/\/(nyc3\.(?:cdn\.)?digitaloceanspaces\.com)\/vs-strapi\/(.*)/);
+          if (match) {
+            finalUrl = `https://vs-strapi.nyc3.cdn.digitaloceanspaces.com/${match[2]}`;
+          }
+        } else if (!src.includes('nyc3.cdn.digitaloceanspaces.com')) {
+          // For other patterns without /vs-strapi/, just add CDN
+          finalUrl = src.replace('nyc3.digitaloceanspaces.com', 'nyc3.cdn.digitaloceanspaces.com');
+        }
       }
-      return src;
+      
+      return finalUrl;
     }
     
     // If it's a DigitalOcean Spaces path without protocol
@@ -79,11 +82,6 @@ const StrapiPostCard = ({ post }) => {
   } else if (SocialMediaMetaImage?.url) {
     const imageUrl = getFullImageUrl(SocialMediaMetaImage.url);
     if (imageUrl) coverImageUrl = imageUrl;
-  }
-
-  // For debugging in development
-  if (process.env.NODE_ENV === 'development') {
-    console.log('Cover Image URL:', coverImageUrl);
   }
   
   // Use slug if available, otherwise use ID

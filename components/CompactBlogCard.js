@@ -5,10 +5,6 @@ import Image from 'next/image';
 const CompactBlogCard = ({ post }) => {
   if (!post) return null;
 
-  // Debug log to see the post structure
-  if (process.env.NODE_ENV === 'development') {
-    console.log('CompactBlogCard received post:', post);
-  }
 
   const attributes = post.attributes || post;
   const { Title, Metadescription, slug, SocialMediaMetaImage } = attributes;
@@ -21,11 +17,24 @@ const CompactBlogCard = ({ post }) => {
     
     // If it's already a full URL
     if (src.startsWith('http://') || src.startsWith('https://')) {
+      let finalUrl = src;
+      
       // Convert DigitalOcean Spaces URLs to use CDN
       if (src.includes('nyc3.digitaloceanspaces.com')) {
-        return src.replace('nyc3.digitaloceanspaces.com', 'nyc3.cdn.digitaloceanspaces.com');
+        // Check specific patterns first, then general ones
+        if (src.includes('/vs-strapi/')) {
+          // Handle both CDN and non-CDN URLs with vs-strapi path
+          const match = src.match(/https?:\/\/(nyc3\.(?:cdn\.)?digitaloceanspaces\.com)\/vs-strapi\/(.*)/);
+          if (match) {
+            finalUrl = `https://vs-strapi.nyc3.cdn.digitaloceanspaces.com/${match[2]}`;
+          }
+        } else if (!src.includes('nyc3.cdn.digitaloceanspaces.com')) {
+          // For other patterns without /vs-strapi/, just add CDN
+          finalUrl = src.replace('nyc3.digitaloceanspaces.com', 'nyc3.cdn.digitaloceanspaces.com');
+        }
       }
-      return src;
+      
+      return finalUrl;
     }
     
     // If it's a DigitalOcean Spaces path without protocol
@@ -54,24 +63,14 @@ const CompactBlogCard = ({ post }) => {
   // Get image URL
   let imageUrl = '/default-image.png';
   
-  // Debug log to see the image structure
-  if (process.env.NODE_ENV === 'development') {
-    console.log('SocialMediaMetaImage:', SocialMediaMetaImage);
-  }
   
   if (SocialMediaMetaImage?.data?.attributes?.url) {
     const url = SocialMediaMetaImage.data.attributes.url;
     imageUrl = getFullImageUrl(url);
-    if (process.env.NODE_ENV === 'development') {
-      console.log('Found image URL:', url, '-> Full URL:', imageUrl);
-    }
   } else if (SocialMediaMetaImage?.url) {
     // Handle case where image data might be directly in SocialMediaMetaImage
     const url = SocialMediaMetaImage.url;
     imageUrl = getFullImageUrl(url);
-    if (process.env.NODE_ENV === 'development') {
-      console.log('Found direct image URL:', url, '-> Full URL:', imageUrl);
-    }
   }
   
   const postUrl = slug ? `/blog/${slug}` : `/blog/${post.id}`;

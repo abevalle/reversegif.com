@@ -25,30 +25,17 @@ export default function Blog() {
         setIsLoading(true);
         const result = await fetchBlogPosts(1, POSTS_PER_PAGE);
         
-        // Store API response for potential debugging in development
-        if (process.env.NODE_ENV === 'development') {
-          console.log('API Response:', result);
-        }
         setApiResponse(result);
         
         // Check if data exists and is an array
         if (result && result.data && Array.isArray(result.data)) {
-          if (process.env.NODE_ENV === 'development') {
-            console.log('Posts found:', result.data.length);
-          }
           
           setPosts(result.data);
           setPaginationData(result.meta?.pagination || { page: 1, pageSize: POSTS_PER_PAGE, pageCount: 1, total: 0 });
         } else {
-          if (process.env.NODE_ENV === 'development') {
-            console.error('Invalid API response structure:', result);
-          }
           setError('Received invalid data format from the API.');
         }
       } catch (err) {
-        if (process.env.NODE_ENV === 'development') {
-          console.error('Error fetching initial posts:', err);
-        }
         setError('Failed to load blog posts. Please try again later.');
       } finally {
         setIsLoading(false);
@@ -73,11 +60,9 @@ export default function Blog() {
         setPaginationData(result.meta?.pagination || paginationData);
         setCurrentPage(nextPage);
       } else {
-        console.error('Invalid API response structure when loading more:', result);
         setError('Received invalid data format from the API when loading more posts.');
       }
     } catch (err) {
-      console.error('Error loading more posts:', err);
       setError('Failed to load more posts. Please try again later.');
     } finally {
       setIsLoading(false);
@@ -173,7 +158,6 @@ export async function getStaticProps() {
       revalidate: 3600,
     };
   } catch (error) {
-    console.error('Error in getStaticProps:', error);
     return {
       props: {
         initialPosts: [],
