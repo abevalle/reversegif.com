@@ -17,8 +17,7 @@ When making changes, run these commands to ensure code quality:
 ## Architecture Notes
 - The site uses Next.js for the frontend
 - Strapi CMS is used for blog content management
-- FFmpeg.wasm is used for GIF processing directly in the browser
-- All GIF processing happens client-side for privacy
+- GIF processing is handled via API endpoints
 
 ## Build Commands
 - `npm run dev` - Start development server
@@ -29,14 +28,11 @@ When making changes, run these commands to ensure code quality:
 
 ## Key Architectural Decisions
 
-### FFmpeg.wasm Integration
-FFmpeg is loaded lazily when users click process buttons to avoid COEP conflicts. The FFmpeg files are served from `/public/ffmpeg/`.
-
 ### CORS and Header Management
-The `middleware.js` file handles complex header requirements:
-- FFmpeg pages need `Cross-Origin-Embedder-Policy: credentialless` for SharedArrayBuffer support
-- Blog and other pages have permissive headers for external resources (AdSense, images)
-- Headers are conditionally applied based on the page path
+The `middleware.js` file removes restrictive headers to allow:
+- AdSense auto ads to work properly
+- External scripts and resources to load
+- Cross-origin images and media
 
 ### Strapi API Integration
 - API client is in `/lib/strapi-api.js`
