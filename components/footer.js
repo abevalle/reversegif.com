@@ -28,20 +28,6 @@ export default function Footer() {
             <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
               The easiest way to reverse your GIFs online
             </p>
-            <div className="mt-4">
-              <a 
-                href="https://www.buymeacoffee.com/abeu" 
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => gaEvent('footer-link', 'buy-me-coffee-click')}
-              >
-                <img 
-                  src="/images/buy-me-a-coffee-button.png" 
-                  alt="Buy Me A Coffee" 
-                  style={{ height: '60px', width: '217px' }}
-                />
-              </a>
-            </div>
           </div>
 
           {/* Quick Links */}
