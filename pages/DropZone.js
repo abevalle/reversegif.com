@@ -130,6 +130,8 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
     const [convertToGif, setConvertToGif] = useState(defaultConvertToGif);
     const [showSizeWarning, setShowSizeWarning] = useState(false);
     const [shouldReverse, setShouldReverse] = useState(false);
+    const [error, setError] = useState(null);
+    const [errorDetails, setErrorDetails] = useState(null);
     const [previewModal, setPreviewModal] = useState({ 
         isOpen: false, 
         imageUrl: '', 
@@ -184,6 +186,8 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
         setExtractedFrames([]);
         setExcludedFrames(new Set());
         setFramesPaths([]);
+        setError(null);
+        setErrorDetails(null);
         gaEvent('files-delete', 'Files Deleted');
     };
 
@@ -286,7 +290,17 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
             });
             
             if (!response.ok) {
-                throw new Error(`Processing error: ${response.statusText}`);
+                // Try to get detailed error from API response
+                let errorData;
+                try {
+                    errorData = await response.json();
+                } catch (e) {
+                    errorData = { error: 'Processing failed', details: response.statusText };
+                }
+                const error = new Error(errorData.error || 'Processing failed');
+                error.details = errorData.details;
+                error.status = response.status;
+                throw error;
             }
             
             // Determine output filename and handle response
@@ -377,8 +391,29 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
             gaEvent("media-processing", actionType + " Completed");
         } catch (error) {
             console.error('Error processing file:', error);
-            alert('Error processing file. Please try again.');
-            gaEvent("media-processing", actionType + " Failed");
+            
+            // Use error details from API if available, otherwise determine from error
+            let errorMessage = error.message || 'Unable to process file';
+            let errorDetail = error.details || error.message;
+            
+            // Override with more specific messages for network errors
+            if (error.message.includes('NetworkError') || error.message.includes('fetch')) {
+                errorMessage = 'Connection failed';
+                errorDetail = 'Unable to connect to the processing server. The server may be temporarily unavailable.';
+            } else if (error.status === 504 || error.message.includes('timeout')) {
+                errorMessage = 'Request timed out';
+                errorDetail = error.details || 'The processing is taking longer than expected. Please try again with a smaller file.';
+            } else if (error.status === 413) {
+                errorMessage = 'File too large';
+                errorDetail = error.details || 'The file exceeds the maximum size limit. Please try a smaller file.';
+            } else if (error.status === 503) {
+                errorMessage = 'Service unavailable';
+                errorDetail = error.details || 'The processing service is temporarily unavailable. Please try again later.';
+            }
+            
+            setError(errorMessage);
+            setErrorDetails(errorDetail);
+            gaEvent("media-processing", actionType + " Failed - " + errorMessage);
         } finally {
             setLoading(false);
         }
@@ -675,6 +710,43 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
                                     ? 'Converting to GIF...' 
                                     : 'Reversing GIF...'}
                             </span>
+                        </div>
+                    )}
+
+                    {error && !loading && (
+                        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+                            <div className="flex items-start">
+                                <div className="flex-shrink-0">
+                                    <svg className="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                                    </svg>
+                                </div>
+                                <div className="ml-3 flex-1">
+                                    <h3 className="text-sm font-medium text-red-800 dark:text-red-200">
+                                        {error}
+                                    </h3>
+                                    {errorDetails && (
+                                        <p className="mt-2 text-sm text-red-700 dark:text-red-300">
+                                            {errorDetails}
+                                        </p>
+                                    )}
+                                    <div className="mt-4">
+                                        <button
+                                            onClick={() => {
+                                                setError(null);
+                                                setErrorDetails(null);
+                                                reverseGif();
+                                            }}
+                                            className="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800 text-white text-sm font-medium rounded-md transition-colors duration-200"
+                                        >
+                                            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                            </svg>
+                                            Try Again
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     )}
 

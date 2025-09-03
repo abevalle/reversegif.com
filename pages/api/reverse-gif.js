@@ -52,19 +52,69 @@ export default async function handler(req, res) {
         
         console.log('Forwarding to API:', `${API_BASE_URL}/reverse-gif`);
         
-        // Send to external API
-        const response = await fetch(`${API_BASE_URL}/reverse-gif`, {
-          method: 'POST',
-          body: formData,
-          headers: {
-            ...formData.getHeaders(),
-          },
-        });
+        // Send to external API with timeout
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 60000); // 60 second timeout
+        
+        let response;
+        try {
+          response = await fetch(`${API_BASE_URL}/reverse-gif`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+              ...formData.getHeaders(),
+            },
+            signal: controller.signal,
+          });
+        } catch (fetchError) {
+          clearTimeout(timeout);
+          console.error('Fetch error:', fetchError);
+          
+          let statusCode = 500;
+          let errorMessage = 'Processing failed';
+          let errorDetails = fetchError.message;
+          
+          if (fetchError.name === 'AbortError') {
+            statusCode = 504;
+            errorMessage = 'Request timeout';
+            errorDetails = 'The request took too long to complete. Please try again with a smaller file.';
+          } else if (fetchError.message.includes('ECONNREFUSED')) {
+            statusCode = 503;
+            errorMessage = 'Service unavailable';
+            errorDetails = 'The processing service is currently unavailable. Please try again later.';
+          } else if (fetchError.message.includes('ENOTFOUND') || fetchError.message.includes('EAI_AGAIN')) {
+            statusCode = 503;
+            errorMessage = 'Service unreachable';
+            errorDetails = 'Cannot reach the processing service. Please check your connection and try again.';
+          }
+          
+          res.status(statusCode).json({ error: errorMessage, details: errorDetails });
+          fs.unlinkSync(filepath);
+          return resolve();
+        }
+        
+        clearTimeout(timeout);
 
         if (!response.ok) {
           const errorText = await response.text();
           console.error('API error:', response.status, errorText);
-          res.status(500).json({ error: 'Processing failed', details: errorText });
+          
+          let statusCode = response.status;
+          let errorMessage = 'Processing failed';
+          let errorDetails = errorText;
+          
+          if (response.status === 413) {
+            errorMessage = 'File too large';
+            errorDetails = 'The file exceeds the maximum size limit. Please try a smaller file.';
+          } else if (response.status === 500) {
+            errorMessage = 'Server error';
+            errorDetails = 'The processing server encountered an error. Please try again.';
+          } else if (response.status === 503) {
+            errorMessage = 'Service unavailable';
+            errorDetails = 'The processing service is temporarily unavailable. Please try again later.';
+          }
+          
+          res.status(statusCode).json({ error: errorMessage, details: errorDetails });
           fs.unlinkSync(filepath);
           return resolve();
         }
@@ -82,6 +132,17 @@ export default async function handler(req, res) {
         resolve();
       } catch (error) {
         console.error('Processing error:', error);
+        
+        // Clean up file if it exists
+        if (file && (file.filepath || file.path)) {
+          const filepath = file.filepath || file.path;
+          try {
+            fs.unlinkSync(filepath);
+          } catch (cleanupError) {
+            console.error('Cleanup error:', cleanupError);
+          }
+        }
+        
         res.status(500).json({ error: 'Processing failed', details: error.message });
         resolve();
       }
