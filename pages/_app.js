@@ -29,24 +29,28 @@ function MyApp({ Component, pageProps }) {
       <ThemeProvider attribute="class">
         <Analytics/>
         <Head>
-          <title>Reversegif.com | Reverse a Gif for FREE!</title>
-          <meta name="title" content="Reverse a gif for free | reversegif.com" />
-          <meta name="description" content="Free online GIF reverser - Create backwards GIFs instantly! Now with optional watermark! No upload needed, 100% secure browser-based processing. Convert videos to reversed GIFs. No size limits. Try now!" />
-          <meta name="keywords" content="reversegif, reverse a gif, gif, backwards gif, rewind a gif, gif reverse, gifs reversed, reversing a gif" />
+          <title>Reverse GIF - Free Online GIF Reverser Tool | ReverseGIF.com</title>
+          <meta name="title" content="Reverse GIF - Free Online GIF Reverser Tool | ReverseGIF.com" />
+          <meta name="description" content="Reverse animated GIF files instantly online for free. No upload needed - secure browser-based GIF reverser. Reverse GIFs, create backwards animations, convert videos to reversed GIFs. Works with any GIF size!" />
+          <meta name="keywords" content="reverse gif, reverse animated gif, gif reverser, reverse gif online, backwards gif, reverse gif maker, reverse gif tool, gif reverse animation, flip gif backwards, reverse gif free" />
           <meta name="robots" content="index, follow" />
           <meta name="language" content="English" />
           <link rel="icon" href="/favicon.ico" />
           {/* Open Graph Meta Tags */}
-          <meta property="og:title" content="Reversegif.com | Reverse a Gif for FREE!" />
-          <meta property="og:description" content="Easily reverse GIFs in 3 steps. Now with optional watermark! Drag, drop, and click to reverse. Local secure video encoding. Try it now!" />
+          <meta property="og:title" content="Reverse GIF Online - Free GIF Reverser Tool" />
+          <meta property="og:description" content="Reverse animated GIFs instantly! Free online tool to create backwards GIF animations. No upload required - 100% secure browser-based processing. Works with any GIF size!" />
           <meta property="og:image" content="/metaimg.webp" />
           <meta property="og:url" content="https://reversegif.com" />
           <meta property="og:type" content="website" />
           {/* Twitter Card Meta Tags */}
           <meta name="twitter:card" content="summary_large_image" />
-          <meta name="twitter:title" content="Reversegif.com | Reverse a Gif for FREE!" />
-          <meta name="twitter:description" content="Easily reverse GIFs in 3 steps. Now with optional watermark! Drag, drop, and click to reverse. Local secure video encoding. Try it now!" />
+          <meta name="twitter:title" content="Reverse GIF Online - Free GIF Reverser Tool" />
+          <meta name="twitter:description" content="Reverse animated GIFs instantly! Free online tool to create backwards GIF animations. No upload required - 100% secure browser-based processing." />
           <meta name="twitter:image" content="/metaimg.webp" />
+          {/* Additional SEO Meta Tags */}
+          <link rel="canonical" href="https://reversegif.com" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <meta name="author" content="ReverseGIF.com" />
         </Head>
         <AdSenseWrapper />
         <Component {...pageProps} />

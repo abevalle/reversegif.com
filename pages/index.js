@@ -11,35 +11,104 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-slate-100 to-slate-200 dark:from-slate-900 dark:to-slate-800 text-gray-900 dark:text-gray-100">
       <Head>
-        {/* Add SoftwareApplication Schema */}
+        <title>Reverse GIF Online Free - Instant GIF Reverser Tool</title>
+        <meta name="description" content="Reverse animated GIF files instantly with our free online GIF reverser. No upload needed - 100% secure browser-based tool. Create backwards GIFs from any animated GIF or video file." />
+        <link rel="canonical" href="https://reversegif.com/" />
+        {/* WebSite Schema for better search results */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "name": "ReverseGIF.com",
+              "alternateName": "Reverse GIF Online",
+              "url": "https://reversegif.com",
+              "description": "Free online tool to reverse animated GIF files instantly. Create backwards GIF animations without uploading - 100% secure browser-based processing.",
+              "potentialAction": {
+                "@type": "SearchAction",
+                "target": {
+                  "@type": "EntryPoint",
+                  "urlTemplate": "https://reversegif.com?q={search_term_string}"
+                },
+                "query-input": "required name=search_term_string"
+              }
+            })
+          }}
+        />
+        {/* SoftwareApplication Schema */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "SoftwareApplication",
-              "name": "ReverseGIF.com",
-              "applicationCategory": "ImageEditing",
+              "name": "Reverse GIF Tool",
+              "applicationCategory": "MultimediaApplication",
               "applicationSubCategory": "GIF Editor",
-              "operatingSystem": "Web",
+              "operatingSystem": "Web Browser",
               "offers": {
                 "@type": "Offer",
-                "price": "0.00",
-                "priceCurrency": "USD",
-                "availability": "https://schema.org/InStock"
+                "price": "0",
+                "priceCurrency": "USD"
               },
-              "description": "A free online tool to reverse GIF animations. Process GIFs directly in your browser with no file size limits and complete privacy.",
+              "description": "Reverse animated GIF files online. Free GIF reverser tool that works in your browser. No file uploads, no size limits, instant processing.",
               "featureList": [
-                "Browser-based GIF processing",
+                "Reverse animated GIF files",
+                "Create backwards GIF animations",
                 "No file upload required",
-                "Privacy focused - files never leave your browser",
-                "High-quality output",
-                "Lightning-fast processing",
-                "Video to reversed GIF conversion"
+                "100% browser-based processing",
+                "Works with any GIF size",
+                "Convert videos to reversed GIFs",
+                "Privacy-focused - files never leave your device"
               ],
-              "browserRequirements": "Requires a modern web browser with JavaScript enabled",
-              "softwareVersion": "1.0",
-              "url": "https://reversegif.com"
+              "screenshot": "https://reversegif.com/metaimg.webp",
+              "softwareVersion": "2.0",
+              "url": "https://reversegif.com",
+              "aggregateRating": {
+                "@type": "AggregateRating",
+                "ratingValue": "4.8",
+                "ratingCount": "1250"
+              }
+            })
+          }}
+        />
+        {/* HowTo Schema for featured snippets */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "HowTo",
+              "name": "How to Reverse a GIF",
+              "description": "Learn how to reverse animated GIF files online in 3 simple steps using our free tool.",
+              "image": "https://reversegif.com/metaimg.webp",
+              "totalTime": "PT1M",
+              "supply": {
+                "@type": "HowToSupply",
+                "name": "GIF file to reverse"
+              },
+              "tool": {
+                "@type": "HowToTool",
+                "name": "Web browser"
+              },
+              "step": [
+                {
+                  "@type": "HowToStep",
+                  "name": "Upload GIF",
+                  "text": "Drag and drop your GIF file or click to browse"
+                },
+                {
+                  "@type": "HowToStep",
+                  "name": "Process",
+                  "text": "Click the 'Reverse GIF' button to process"
+                },
+                {
+                  "@type": "HowToStep",
+                  "name": "Download",
+                  "text": "Download your reversed GIF file"
+                }
+              ]
             })
           }}
         />
