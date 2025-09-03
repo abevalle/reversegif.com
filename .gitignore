@@ -159,4 +159,4 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-[#].gitignore
+[#].gitignore.env.do

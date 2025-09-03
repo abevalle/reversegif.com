@@ -1,17 +1,6 @@
-import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
 import React, { useState, useRef, useEffect } from 'react';
 import * as gtm from '../lib/gtm';
-
-// Initialize FFmpeg instance (but don't load it yet)
-// Following best practices: Delay FFmpeg/WASM loading until user interaction
-// to avoid blocking AdSense and impacting page performance
-const ffmpeg = createFFmpeg({ 
-  log: true, 
-  corePath: "https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js"
-});
-
-// Cache for the watermark font
-let watermarkFontCache = null;
+import JSZip from 'jszip';
 
 const ImagePreviewModal = ({ isOpen, onClose, imageUrl, altText, mediaFile }) => {
     if (!isOpen) return null;
@@ -133,52 +122,20 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
     const [reversedName, setReversedName] = useState('');
     const [reversedSize, setReversedSize] = useState(0);
     const [extractedFrames, setExtractedFrames] = useState([]);
+    const [excludedFrames, setExcludedFrames] = useState(new Set());
+    const [framesPaths, setFramesPaths] = useState([]);
     const [tooManyFiles, setTooManyFiles] = useState(false);
     const [loading, setLoading] = useState(false);
     const [showWatermark, setShowWatermark] = useState(true);
     const [convertToGif, setConvertToGif] = useState(defaultConvertToGif);
     const [showSizeWarning, setShowSizeWarning] = useState(false);
-    const [shouldReverse, setShouldReverse] = useState(true);
+    const [shouldReverse, setShouldReverse] = useState(false);
     const [previewModal, setPreviewModal] = useState({ 
         isOpen: false, 
         imageUrl: '', 
         altText: '',
         mediaFile: null 
     });
-
-    // Track if FFmpeg has been initialized
-    const [ffmpegLoaded, setFfmpegLoaded] = useState(false);
-    const [ffmpegLoading, setFfmpegLoading] = useState(false);
-    
-
-    // Lazy load FFmpeg only when user interacts with the tool
-    const loadFFmpeg = async () => {
-        if (ffmpegLoaded || ffmpegLoading) return;
-        
-        setFfmpegLoading(true);
-        try {
-            if (!ffmpeg.isLoaded()) {
-                // Load FFmpeg from local files instead of CDN
-                await ffmpeg.load({
-                    coreURL: '/ffmpeg/ffmpeg-core.js',
-                    wasmURL: '/ffmpeg/ffmpeg-core.wasm',
-                    workerURL: '/ffmpeg/ffmpeg-core.worker.js'
-                });
-            }
-            setFfmpegLoaded(true);
-            gaEvent('ffmpeg-load', 'FFmpeg Loaded from Local Files');
-        } catch (error) {
-            console.error('FFmpeg loading error:', error);
-            setFfmpegLoading(false);
-            // If FFmpeg fails to load due to COEP/COOP, show a message
-            if (error.message && error.message.includes('SharedArrayBuffer')) {
-                alert('To use this feature, please open this page in a new tab or window. This is required for video processing security.');
-                return;
-            }
-            throw error;
-        }
-        setFfmpegLoading(false);
-    };
 
     // Handle reversed blob
     useEffect(() => {
@@ -225,6 +182,8 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
         setReversedName('');
         setReversedSize(0);
         setExtractedFrames([]);
+        setExcludedFrames(new Set());
+        setFramesPaths([]);
         gaEvent('files-delete', 'Files Deleted');
     };
 
@@ -288,177 +247,141 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
     };
 
     const reverseGif = async () => {
-        // Ensure FFmpeg is loaded before processing
-        if (!ffmpegLoaded) {
-            await loadFFmpeg();
-        }
         setLoading(true);
         
         // Update event tracking
         let actionType = "Gif-Reverse";
+        let apiEndpoint = '/api/reverse-gif';
+        
         if (gifToMp4Mode) {
             actionType = "Gif-To-Mp4-Convert";
+            apiEndpoint = '/api/gif-to-mp4';
         } else if (videoToPngMode) {
             actionType = "Video-To-Png-Convert";
+            apiEndpoint = '/api/video-to-png';
         } else if (videoToJpgMode) {
             actionType = "Video-To-Jpg-Convert";
+            apiEndpoint = '/api/video-to-jpg';
         } else if (videoOnly) {
-            actionType = shouldReverse ? "Video-Convert-Reverse" : "Video-Convert-Only";
+            actionType = "Video-Convert-Only";
+            if (convertToGif) {
+                apiEndpoint = '/api/video-to-gif';
+            }
+        } else if (convertToGif && !files.type.includes('gif')) {
+            apiEndpoint = '/api/video-to-gif';
         }
+        
         gaEvent("media-processing", actionType + " Started");
         
-        const inputFileName = 'input' + (files.type.includes('gif') ? '.gif' : files.name.substring(files.name.lastIndexOf('.')));
-        ffmpeg.FS('writeFile', inputFileName, await fetchFile(files));
-        
-        let filterCommand = '';
-        
-        // For conversion modes, we don't reverse
-        if (gifToMp4Mode || videoToPngMode || videoToJpgMode) {
-            filterCommand = '';
-        } else if (shouldReverse) {
-            filterCommand = 'reverse';
-        }
-        
-        if (showWatermark) {
-            // Load and cache the watermark font
-            if (!watermarkFontCache) {
-                watermarkFontCache = await fetchFile('https://assets.nflxext.com/ffe/siteui/fonts/netflix-sans/v3/NetflixSans_W_Lt.woff');
-            }
-            ffmpeg.FS('writeFile', 'font.woff', watermarkFontCache);
-            const watermarkFilter = 'drawtext=fontfile=/font.woff:text=\'reversegif.com\':fontcolor=white:fontsize=20:bordercolor=black:borderw=1:x=w-tw-2:y=h-th-2:alpha=0.5';
-            filterCommand = filterCommand ? `${watermarkFilter},${filterCommand}` : watermarkFilter;
-        }
-
-        // Update the file name based on the mode
-        let filePrefix = 'converted';
-        let outputFileName = '';
-        let outputFormat = [];
-        
-        if (gifToMp4Mode) {
-            filePrefix = 'converted';
-            outputFileName = `${filePrefix}.mp4`;
-            outputFormat = ['-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-movflags', '+faststart'];
-        } else if (videoToPngMode) {
-            filePrefix = 'frame';
-            outputFileName = `${filePrefix}_%03d.png`;
-            outputFormat = ['-f', 'image2'];
-        } else if (videoToJpgMode) {
-            filePrefix = 'frame';
-            outputFileName = `${filePrefix}_%03d.jpg`;
-            outputFormat = ['-f', 'image2', '-q:v', '2'];
-        } else {
-            filePrefix = shouldReverse ? 'reversed' : 'converted';
-            outputFileName = convertToGif ? `${filePrefix}.gif` : `${filePrefix}${files.name.substring(files.name.lastIndexOf('.'))}`;
-            outputFormat = convertToGif ? ['-f', 'gif'] : [];
-        }
-        
-        // Skip the -vf parameter if filterCommand is empty
-        const filterArgs = filterCommand ? ['-vf', filterCommand] : [];
-        
-        await ffmpeg.run('-i', inputFileName, ...filterArgs, ...outputFormat, outputFileName);
-        
-        let mimeType = '';
-        let blob, url, finalFileName, totalSize = 0;
-        
-        if (videoToPngMode || videoToJpgMode) {
-            // For frame extraction, collect all generated frames
-            const frameFiles = [];
-            const fileList = ffmpeg.FS('readdir', '.');
-            const framePattern = videoToPngMode ? /frame_\d{3}\.png$/ : /frame_\d{3}\.jpg$/;
-            
-            // Find all frame files
-            for (const file of fileList) {
-                if (framePattern.test(file)) {
-                    frameFiles.push(file);
-                }
+        try {
+            const formData = new FormData();
+            formData.append('file', files);
+            if (showWatermark) {
+                formData.append('watermark', 'reversegif.com');
             }
             
-            if (frameFiles.length === 0) {
-                throw new Error('No frames were extracted from the video');
-            }
-            
-            // Sort frame files numerically
-            frameFiles.sort((a, b) => {
-                const aNum = parseInt(a.match(/\d{3}/)[0]);
-                const bNum = parseInt(b.match(/\d{3}/)[0]);
-                return aNum - bNum;
+            const response = await fetch(apiEndpoint, {
+                method: 'POST',
+                body: formData,
             });
             
-            // Create preview URLs for the frames
-            const framePreviewData = [];
-            const JSZip = (await import('jszip')).default;
-            const zip = new JSZip();
-            
-            for (const frameFile of frameFiles) {
-                const frameData = ffmpeg.FS('readFile', frameFile);
-                
-                // Create preview URL for this frame
-                const frameBlob = new Blob([frameData.buffer], { 
-                    type: videoToPngMode ? 'image/png' : 'image/jpeg' 
-                });
-                const previewUrl = URL.createObjectURL(frameBlob);
-                
-                framePreviewData.push({
-                    name: frameFile,
-                    url: previewUrl,
-                    size: frameData.byteLength
-                });
-                
-                zip.file(frameFile, frameData);
-                totalSize += frameData.byteLength;
+            if (!response.ok) {
+                throw new Error(`Processing error: ${response.statusText}`);
             }
             
-            // Set frame previews for display
-            setExtractedFrames(framePreviewData);
+            // Determine output filename and handle response
+            let outputFileName = '';
+            let blob, url;
             
-            const zipBlob = await zip.generateAsync({ type: 'blob' });
-            url = URL.createObjectURL(zipBlob);
-            finalFileName = `frames_${frameFiles.length}_${videoToPngMode ? 'png' : 'jpg'}.zip`;
-            setReversedSize((zipBlob.size / 1024 / 1024).toFixed(2));
-            
-            // Clean up frame files from FFmpeg filesystem
-            for (const frameFile of frameFiles) {
+            if (videoToPngMode || videoToJpgMode) {
+                // For frame extraction, expect ZIP response
+                blob = await response.blob();
+                url = URL.createObjectURL(blob);
+                
+                // The frames are in a ZIP, store for download
+                outputFileName = `frames_${videoToPngMode ? 'png' : 'jpg'}.zip`;
+                
+                // Fetch frame previews using the preview endpoint
                 try {
-                    ffmpeg.FS('unlink', frameFile);
-                } catch (e) {
-                    console.log('Error cleaning up frame file:', e);
+                    const previewFormData = new FormData();
+                    previewFormData.append('file', files);
+                    
+                    const previewResponse = await fetch(`/api/video-to-${videoToPngMode ? 'png' : 'jpg'}-preview`, {
+                        method: 'POST',
+                        body: previewFormData,
+                    });
+                    
+                    if (previewResponse.ok) {
+                        const previewData = await previewResponse.json();
+                        
+                        // Check if we got actual frame data
+                        if (previewData.frames && previewData.frames.length > 0) {
+                            console.log(`Received ${previewData.frames.length} frame previews out of ${previewData.totalFrames} total`);
+                            
+                            // Store frame paths for filtering
+                            setFramesPaths(previewData.paths);
+                            
+                            // Convert base64 data to blob URLs for display
+                            const framePreviews = previewData.frames.map(frame => {
+                                // Convert base64 to blob
+                                const base64Data = frame.data.split(',')[1];
+                                const byteCharacters = atob(base64Data);
+                                const byteNumbers = new Array(byteCharacters.length);
+                                for (let i = 0; i < byteCharacters.length; i++) {
+                                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                                }
+                                const byteArray = new Uint8Array(byteNumbers);
+                                const blob = new Blob([byteArray], { type: videoToPngMode ? 'image/png' : 'image/jpeg' });
+                                const blobUrl = URL.createObjectURL(blob);
+                                
+                                return {
+                                    url: blobUrl,
+                                    path: frame.path,
+                                    index: frame.index
+                                };
+                            });
+                            
+                            setExtractedFrames(framePreviews);
+                            // Store the main ZIP URL separately
+                            setReversedFile({ url, size: blob.size });
+                        } else {
+                            // No previews available (API returned ZIP), just show the ZIP
+                            console.log('No frame previews available:', previewData.error || 'Unknown reason');
+                            setExtractedFrames([{ name: outputFileName, url, size: blob.size }]);
+                        }
+                    } else {
+                        // Preview failed, just show the ZIP
+                        setExtractedFrames([{ name: outputFileName, url, size: blob.size }]);
+                    }
+                } catch (err) {
+                    console.error('Error fetching frame previews:', err);
+                    // Fall back to just showing the ZIP file
+                    setExtractedFrames([{ name: outputFileName, url, size: blob.size }]);
+                }
+            } else {
+                blob = await response.blob();
+                url = URL.createObjectURL(blob);
+                
+                if (gifToMp4Mode) {
+                    outputFileName = 'converted.mp4';
+                } else {
+                    outputFileName = 'converted';
+                    outputFileName += convertToGif ? '.gif' : files.name.substring(files.name.lastIndexOf('.')); 
                 }
             }
-        } else {
-            // Single file output (GIF, MP4, etc.)
-            const data = ffmpeg.FS('readFile', outputFileName);
             
-            if (gifToMp4Mode) {
-                mimeType = 'video/mp4';
-            } else {
-                mimeType = convertToGif ? 'image/gif' : files.type;
-            }
+            setReversed(url);
+            setReversedName(outputFileName);
+            setReversedSize((blob.size / 1024 / 1024).toFixed(2));
             
-            blob = new Blob([data.buffer], { type: mimeType });
-            url = URL.createObjectURL(blob);
-            finalFileName = outputFileName;
-            setReversedSize((data.byteLength / 1024 / 1024).toFixed(2));
+            gaEvent("media-processing", actionType + " Completed");
+        } catch (error) {
+            console.error('Error processing file:', error);
+            alert('Error processing file. Please try again.');
+            gaEvent("media-processing", actionType + " Failed");
+        } finally {
+            setLoading(false);
         }
-        
-        setReversed(url);
-        setReversedName(finalFileName);
-        setLoading(false);
-        
-        // Clean up FFmpeg filesystem
-        try {
-            ffmpeg.FS('unlink', inputFileName);
-            if (!videoToPngMode && !videoToJpgMode) {
-                // Only try to clean up the output file if it's not a frame extraction
-                ffmpeg.FS('unlink', outputFileName);
-            }
-            if (showWatermark) {
-                ffmpeg.FS('unlink', 'font.woff');
-            }
-        } catch (e) {
-            console.log('Error cleaning up FFmpeg filesystem:', e);
-        }
-        
-        gaEvent("media-processing", actionType + " Completed");
     };
 
     return ready ? (
@@ -481,8 +404,6 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
                         const file = event.target.files?.item(0);
                         
                         if (file) {
-                            // Don't load FFmpeg yet - wait until user clicks process button
-                            // This prevents COEP header conflicts and allows ads to work properly
                             // If videoOnly is true, only accept video files
                             if (videoOnly && !file.type.startsWith('video/')) {
                                 alert('Please upload only video files.');
@@ -573,7 +494,11 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
                                 <div className="flex-1 min-w-0">
                                     <h3 className="text-base md:text-lg font-medium text-gray-900 dark:text-gray-100 truncate">{reversedName}</h3>
                                     <p className="text-sm md:text-base text-gray-500 dark:text-gray-400">{reversedSize} MB</p>
-                                    {extractedFrames.length > 0 && (
+                                    {framesPaths && framesPaths.length > 0 ? (
+                                        <p className="text-sm md:text-base text-gray-500 dark:text-gray-400">
+                                            {framesPaths.length} total frames • {extractedFrames.length} previews shown
+                                        </p>
+                                    ) : extractedFrames.length > 0 && (
                                         <p className="text-sm md:text-base text-gray-500 dark:text-gray-400">
                                             {extractedFrames.length} frames extracted
                                         </p>
@@ -586,7 +511,7 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
                                         <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                         </svg>
-                                        <span className="text-sm md:text-base">Download ZIP</span>
+                                        <span className="text-sm md:text-base">Download All Frames (ZIP)</span>
                                     </a>
                                 </div>
                             </div>
@@ -599,30 +524,123 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
                                 Extracted Frames Preview
                             </h4>
                             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 md:gap-3 max-h-48 md:max-h-64 overflow-y-auto">
-                                {extractedFrames.map((frame, index) => (
-                                    <div key={index} className="relative group">
-                                        <img
-                                            src={frame.url}
-                                            alt={`Frame ${index + 1}`}
-                                            className="w-full aspect-square object-cover rounded cursor-pointer hover:opacity-80 transition-opacity duration-200"
-                                            onClick={() => setPreviewModal({
-                                                isOpen: true,
-                                                imageUrl: frame.url,
-                                                altText: `Frame ${index + 1}`,
-                                                mediaFile: null
-                                            })}
-                                        />
-                                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity duration-200 rounded flex items-center justify-center">
-                                            <span className="text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                                {index + 1}
-                                            </span>
+                                {extractedFrames.map((frame, idx) => {
+                                    const frameIndex = frame.index !== undefined ? frame.index : idx;
+                                    const isExcluded = excludedFrames.has(frameIndex);
+                                    return (
+                                        <div key={frameIndex} className="relative group">
+                                            <img
+                                                src={frame.url}
+                                                alt={`Frame ${frameIndex + 1}`}
+                                                className={`w-full aspect-square object-cover rounded cursor-pointer transition-all duration-200 ${
+                                                    isExcluded ? 'opacity-30 grayscale' : 'hover:opacity-80'
+                                                }`}
+                                                onClick={() => !isExcluded && setPreviewModal({
+                                                    isOpen: true,
+                                                    imageUrl: frame.url,
+                                                    altText: `Frame ${frameIndex + 1}`,
+                                                    mediaFile: null
+                                                })}
+                                            />
+                                            {/* Delete button */}
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    const newExcluded = new Set(excludedFrames);
+                                                    if (isExcluded) {
+                                                        newExcluded.delete(frameIndex);
+                                                    } else {
+                                                        newExcluded.add(frameIndex);
+                                                    }
+                                                    setExcludedFrames(newExcluded);
+                                                }}
+                                                className={`absolute top-1 right-1 p-1 rounded-full transition-all duration-200 ${
+                                                    isExcluded 
+                                                        ? 'bg-green-500 hover:bg-green-600' 
+                                                        : 'bg-red-500 hover:bg-red-600 opacity-0 group-hover:opacity-100'
+                                                }`}
+                                                title={isExcluded ? 'Include frame' : 'Exclude frame'}
+                                            >
+                                                <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    {isExcluded ? (
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                                                    ) : (
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                    )}
+                                                </svg>
+                                            </button>
+                                            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity duration-200 rounded flex items-center justify-center pointer-events-none">
+                                                <span className="text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                                    {frameIndex + 1}
+                                                </span>
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                                Click any frame to view full size
-                            </p>
+                            <div className="flex justify-between items-center mt-2">
+                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                    Click frame to view • Hover and click × to exclude
+                                </p>
+                                {excludedFrames.size > 0 && (
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                                        {extractedFrames.length - excludedFrames.size} of {extractedFrames.length} frames selected
+                                    </p>
+                                )}
+                            </div>
+                            {framesPaths.length > 0 && (
+                                <button
+                                    onClick={async () => {
+                                        setLoading(true);
+                                        try {
+                                            // Create a new ZIP file using JSZip
+                                            const zip = new JSZip();
+                                            
+                                            // Create array of excluded frame indices
+                                            const excludedArray = Array.from(excludedFrames);
+                                            
+                                            // Fetch each non-excluded frame and add to ZIP
+                                            let frameNumber = 1;
+                                            for (let i = 0; i < framesPaths.length; i++) {
+                                                if (excludedArray.includes(i)) {
+                                                    continue; // Skip excluded frames
+                                                }
+                                                
+                                                const framePath = framesPaths[i];
+                                                const frameResponse = await fetch(`http://sacramento.valle.us:6221${framePath}`);
+                                                
+                                                if (frameResponse.ok) {
+                                                    const frameBlob = await frameResponse.blob();
+                                                    const extension = videoToPngMode ? 'png' : 'jpg';
+                                                    const filename = `frame_${String(frameNumber).padStart(3, '0')}.${extension}`;
+                                                    zip.file(filename, frameBlob);
+                                                    frameNumber++;
+                                                }
+                                            }
+                                            
+                                            // Generate the ZIP file
+                                            const zipBlob = await zip.generateAsync({ type: 'blob' });
+                                            
+                                            // Trigger download
+                                            const url = URL.createObjectURL(zipBlob);
+                                            const a = document.createElement('a');
+                                            a.href = url;
+                                            a.download = `frames_selected.zip`;
+                                            a.click();
+                                            URL.revokeObjectURL(url);
+                                        } catch (error) {
+                                            console.error('Error creating filtered ZIP:', error);
+                                            alert('Error creating filtered ZIP');
+                                        } finally {
+                                            setLoading(false);
+                                        }
+                                    }}
+                                    disabled={loading || extractedFrames.length - excludedFrames.size === 0}
+                                    className="mt-3 w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-lg transition-colors duration-200"
+                                >
+                                    {loading ? 'Creating ZIP...' : `Download ${extractedFrames.length - excludedFrames.size} Selected Frames`}
+                                </button>
+                            )}
                         </div>
                     )}
 
@@ -654,7 +672,7 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
                                     : videoToJpgMode
                                     ? 'Extracting all JPG frames...'
                                     : videoOnly 
-                                    ? (shouldReverse ? 'Converting & Reversing...' : 'Converting to GIF...') 
+                                    ? 'Converting to GIF...' 
                                     : 'Reversing GIF...'}
                             </span>
                         </div>
@@ -664,16 +682,14 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
                         <div className="flex flex-col md:flex-row justify-center space-y-3 md:space-y-0 md:space-x-4">
                             <button 
                                 onClick={reverseGif}
-                                disabled={loading || ffmpegLoading}
+                                disabled={loading}
                                 className={`w-full md:w-auto px-6 py-4 md:py-3 ${
-                                    loading || ffmpegLoading 
+                                    loading 
                                         ? 'bg-gray-400 cursor-not-allowed' 
                                         : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:shadow-lg'
                                 } text-white font-medium rounded-lg shadow-md transition-all duration-200 touch-target-size`}
                             >
-                                {ffmpegLoading
-                                    ? 'Initializing Tool...'
-                                    : loading
+                                {loading
                                     ? 'Processing...'
                                     : gifToMp4Mode
                                     ? 'Convert to MP4'
@@ -682,7 +698,7 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
                                     : videoToJpgMode
                                     ? 'Extract All JPG Frames'
                                     : videoOnly 
-                                    ? (shouldReverse ? 'Convert & Reverse' : 'Convert to GIF') 
+                                    ? 'Convert to GIF' 
                                     : 'Reverse GIF'}
                             </button>
                             <button 
@@ -721,22 +737,6 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
                                         </div>
                                     </div>
                                     <span className="ml-3 text-sm md:text-base text-gray-700 dark:text-gray-300">Convert to GIF</span>
-                                </label>
-                            )}
-                            {videoOnly && !gifToMp4Mode && !videoToPngMode && !videoToJpgMode && (
-                                <label className="flex items-center cursor-pointer ml-6">
-                                    <div className="relative">
-                                        <input
-                                            type="checkbox"
-                                            className="sr-only"
-                                            checked={shouldReverse}
-                                            onChange={(e) => setShouldReverse(e.target.checked)}
-                                        />
-                                        <div className={`block w-14 h-8 rounded-full transition-colors duration-200 ease-in-out ${shouldReverse ? 'bg-blue-600' : 'bg-gray-400'}`}>
-                                            <div className={`dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform duration-200 ease-in-out ${shouldReverse ? 'transform translate-x-6' : ''}`}></div>
-                                        </div>
-                                    </div>
-                                    <span className="ml-3 text-sm md:text-base text-gray-700 dark:text-gray-300">Reverse Video</span>
                                 </label>
                             )}
                         </div>
