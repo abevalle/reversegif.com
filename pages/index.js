@@ -114,7 +114,7 @@ export default function Home() {
         />
       </Head>
       <Header />
-      <main className="flex-grow container mx-auto px-4 py-6 md:p-4 max-w-5xl">
+      <main className="flex-grow container mx-auto px-4 py-6 md:p-4 max-w-7xl">
         {/* Mobile-only heading section */}
         <div className="block md:hidden text-center mb-6">
           <div className="relative">
@@ -199,16 +199,6 @@ export default function Home() {
           {/* Mobile-optimized dropzone */}
           <div id="dropzone" className="order-1 md:order-2 md:sticky md:top-4 -mx-4 md:mx-0 rounded-none md:rounded-xl overflow-hidden">
             <DropZone />
-            
-            {/* Ad between dropzone and ExampleGifs */}
-            <div className="mt-4 md:mt-6 px-4 md:px-0 flex justify-center">
-              <AdsenseAd 
-                adSlot="8440382746"
-                adFormat=""
-                style={{ display: 'inline-block', width: '728px', height: '90px' }}
-                fullWidthResponsive={false}
-              />
-            </div>
             
             <div className="mt-4 md:mt-6 px-4 md:px-0">
               <ExampleGifs />
