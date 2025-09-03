@@ -41,9 +41,6 @@ export default function Footer() {
                   style={{ height: '60px', width: '217px' }}
                 />
               </a>
-              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                Keep reversegif.com ad free
-              </p>
             </div>
           </div>
 

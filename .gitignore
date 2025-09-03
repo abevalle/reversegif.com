@@ -159,4 +159,7 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-[#].gitignore.env.do
+# Environment files with secrets
+.env.do
+.env.local
+.env.production
