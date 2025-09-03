@@ -66,7 +66,7 @@ export default function FAQ() {
                   "name": "Are my GIFs stored on your servers?",
                   "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "No, we prioritize your privacy. All GIF processing is done locally in your browser. We do not store or transmit your GIF files to our servers when you use our free reverse GIF tool."
+                    "text": "No, we prioritize your privacy. We do not store your GIF files on our servers when you use our free reverse GIF tool."
                   }
                 },
                 {
@@ -100,6 +100,14 @@ export default function FAQ() {
                     "@type": "Answer",
                     "text": "If you experience any problems, please contact us at hello@reversegif.com. Our support team will be happy to assist you."
                   }
+                },
+                {
+                  "@type": "Question",
+                  "name": "How do I convert a video to GIF?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "To convert a video to GIF using ReverseGIF.com, visit our Video to GIF converter page and upload your video file (MP4, MOV, AVI, WebM, or other formats). The tool will automatically convert your video into a high-quality animated GIF. You can also reverse the GIF in the same process. Our video to GIF converter supports various video formats and creates optimized GIFs perfect for sharing on social media, messaging apps, and websites."
+                  }
                 }
               ]
             })
@@ -119,7 +127,7 @@ export default function FAQ() {
           </div>
 
           <div className="space-y-4 mb-12">
-            {[1, 2, 3, 4, 5, 6, 7].map((qNum) => (
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((qNum) => (
               <div key={qNum} className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
                 <button
                   className="w-full px-6 py-4 text-left focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 hover:bg-gray-50 dark:hover:bg-gray-700"
@@ -134,6 +142,7 @@ export default function FAQ() {
                       {qNum === 5 && "Are there any costs associated with using ReverseGIF.com?"}
                       {qNum === 6 && "Can I use reversed GIFs on social media?"}
                       {qNum === 7 && "What if I encounter an issue while using the tool?"}
+                      {qNum === 8 && "How do I convert a video to GIF?"}
                     </span>
                     <svg
                       className={`w-5 h-5 transform transition-transform duration-200 ${
@@ -162,7 +171,7 @@ export default function FAQ() {
                       <p className="mb-4">Yes, the maximum file size for uploading a GIF is 50MB. This ensures quick processing and optimal performance when you reverse a GIF.</p>
                     )}
                     {qNum === 3 && (
-                      <p className="mb-4">No, we prioritize your privacy. All GIF processing is done locally in your browser. We do not store or transmit your GIF files to our servers when you use our free reverse GIF tool.</p>
+                      <p className="mb-4">No, we prioritize your privacy. We do not store your GIF files on our servers when you use our free reverse GIF tool.</p>
                     )}
                     {qNum === 4 && (
                       <p className="mb-4">Yes, when you upload a video to our tool, it will be automatically converted to a reversed GIF. This makes it easy to create fun and engaging reversed animations from your video files.</p>
@@ -175,6 +184,19 @@ export default function FAQ() {
                     )}
                     {qNum === 7 && (
                       <p className="mb-4">If you experience any problems, please contact us at <a href="mailto:hello@reversegif.com" className="text-blue-500 dark:text-blue-400">hello@reversegif.com</a>. Our support team will be happy to assist you.</p>
+                    )}
+                    {qNum === 8 && (
+                      <div className="mb-4">
+                        <p className="mb-3">To convert a video to GIF using ReverseGIF.com, follow these simple steps:</p>
+                        <ol className="list-decimal list-inside space-y-2 ml-4">
+                          <li>Visit our <a href="/video-2-gif" className="text-blue-500 dark:text-blue-400 hover:underline">Video to GIF converter</a> page</li>
+                          <li>Upload your video file (MP4, MOV, AVI, WebM, or other formats)</li>
+                          <li>The tool will automatically convert your video into a high-quality animated GIF</li>
+                          <li>Optional: Check the "Reverse" option to create a reversed GIF</li>
+                          <li>Click "Download" to save your new GIF file</li>
+                        </ol>
+                        <p className="mt-3">Our video to GIF converter supports various video formats and creates optimized GIFs perfect for sharing on social media platforms like Twitter, Facebook, Instagram, messaging apps like WhatsApp and Telegram, and embedding in websites. The tool maintains high quality while keeping file sizes manageable.</p>
+                      </div>
                     )}
                   </div>
                 </div>

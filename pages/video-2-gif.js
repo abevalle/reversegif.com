@@ -46,7 +46,7 @@ export default function VideoToGif() {
               "featureList": [
                 "Browser-based video processing",
                 "No file upload required",
-                "Privacy focused - files never leave your browser",
+                "Privacy focused processing",
                 "High-quality output",
                 "Lightning-fast processing",
                 "Video to GIF conversion"

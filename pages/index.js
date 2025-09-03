@@ -4,10 +4,10 @@ import Header from '../components/header.js';
 import Footer from '../components/footer.js';
 import Head from 'next/head';
 import ExampleGifs from './exmaplegifs.js';
+import AdsenseAd from '../components/AdsenseAd.js';
 
 
 export default function Home() {
-
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-slate-100 to-slate-200 dark:from-slate-900 dark:to-slate-800 text-gray-900 dark:text-gray-100">
       <Head>
@@ -60,7 +60,7 @@ export default function Home() {
                 "100% browser-based processing",
                 "Works with any GIF size",
                 "Convert videos to reversed GIFs",
-                "Privacy-focused - files never leave your device"
+                "Privacy-focused processing"
               ],
               "screenshot": "https://reversegif.com/metaimg.webp",
               "softwareVersion": "2.0",
@@ -114,7 +114,7 @@ export default function Home() {
         />
       </Head>
       <Header />
-      <main className="flex-grow container mx-auto px-4 py-6 md:p-4">
+      <main className="flex-grow container mx-auto px-4 py-6 md:p-4 max-w-5xl">
         {/* Mobile-only heading section */}
         <div className="block md:hidden text-center mb-6">
           <div className="relative">
@@ -127,7 +127,7 @@ export default function Home() {
           </h2>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 items-start">
           {/* Desktop left column */}
           <div className="space-y-4 md:space-y-6 order-2 md:order-1">
             <div className="hidden md:block text-center md:text-left px-2 md:px-0">
@@ -159,7 +159,7 @@ export default function Home() {
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
                   </span>
-                  100% Private - Files never leave your browser
+                  100% Private processing
                 </li>
                 <li className="flex items-center">
                   <span className="bg-green-100 dark:bg-green-900 p-1 rounded-full mr-3">
@@ -199,6 +199,16 @@ export default function Home() {
           {/* Mobile-optimized dropzone */}
           <div id="dropzone" className="order-1 md:order-2 md:sticky md:top-4 -mx-4 md:mx-0 rounded-none md:rounded-xl overflow-hidden">
             <DropZone />
+            
+            {/* Ad between dropzone and ExampleGifs */}
+            <div className="mt-4 md:mt-6 px-4 md:px-0 flex justify-center">
+              <AdsenseAd 
+                adSlot="8440382746"
+                adFormat=""
+                style={{ display: 'inline-block', width: '728px', height: '90px' }}
+                fullWidthResponsive={false}
+              />
+            </div>
             
             <div className="mt-4 md:mt-6 px-4 md:px-0">
               <ExampleGifs />
