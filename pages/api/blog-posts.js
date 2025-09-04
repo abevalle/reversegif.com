@@ -14,7 +14,7 @@ export default async function handler(req, res) {
       httpsAgent: new https.Agent({
         rejectUnauthorized: false // For development - allows self-signed certificates
       }),
-      timeout: 10000,
+      timeout: 8000, // Reduced to stay within Vercel's limits
       headers: {
         'Authorization': `Bearer ${STRAPI_API_TOKEN}`,
         'Accept': 'application/json',
