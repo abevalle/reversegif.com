@@ -255,24 +255,24 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
         
         // Update event tracking
         let actionType = "Gif-Reverse";
-        let apiEndpoint = '/api/reverse-gif';
+        let apiEndpoint = 'https://api.reversegif.com/reverse-gif';
         
         if (gifToMp4Mode) {
             actionType = "Gif-To-Mp4-Convert";
-            apiEndpoint = '/api/gif-to-mp4';
+            apiEndpoint = 'https://api.reversegif.com/gif-to-mp4';
         } else if (videoToPngMode) {
             actionType = "Video-To-Png-Convert";
-            apiEndpoint = '/api/video-to-png';
+            apiEndpoint = 'https://api.reversegif.com/video-to-png';
         } else if (videoToJpgMode) {
             actionType = "Video-To-Jpg-Convert";
-            apiEndpoint = '/api/video-to-jpg';
+            apiEndpoint = 'https://api.reversegif.com/video-to-jpg';
         } else if (videoOnly) {
             actionType = "Video-Convert-Only";
             if (convertToGif) {
-                apiEndpoint = '/api/video-to-gif';
+                apiEndpoint = 'https://api.reversegif.com/video-to-gif';
             }
         } else if (convertToGif && !files.type.includes('gif')) {
-            apiEndpoint = '/api/video-to-gif';
+            apiEndpoint = 'https://api.reversegif.com/video-to-gif';
         }
         
         gaEvent("media-processing", actionType + " Started");
@@ -320,7 +320,7 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
                     const previewFormData = new FormData();
                     previewFormData.append('file', files);
                     
-                    const previewResponse = await fetch(`/api/video-to-${videoToPngMode ? 'png' : 'jpg'}-preview`, {
+                    const previewResponse = await fetch(`https://api.reversegif.com/video-to-${videoToPngMode ? 'png' : 'jpg'}-preview`, {
                         method: 'POST',
                         body: previewFormData,
                     });
