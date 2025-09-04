@@ -546,7 +546,11 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
                                         <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                         </svg>
-                                        <span className="text-sm md:text-base">Download All Frames (ZIP)</span>
+                                        <span className="text-sm md:text-base">
+                                            {(videoToPngMode || videoToJpgMode) ? 'Download All Frames (ZIP)' : 
+                                             convertToGif ? 'Download GIF' : 
+                                             'Download Video'}
+                                        </span>
                                     </a>
                                 </div>
                             </div>
