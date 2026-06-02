@@ -32,11 +32,18 @@ When making changes, run these commands to ensure code quality:
 ### FFmpeg.wasm Integration
 FFmpeg is loaded lazily when users click process buttons to avoid COEP conflicts. The FFmpeg files are served from `/public/ffmpeg/`.
 
+**IMPORTANT: Before changing anything related to FFmpeg loading, cross-origin
+headers, SharedArrayBuffer, or the `/download` page, read
+[`docs/FFMPEG_LOADING.md`](docs/FFMPEG_LOADING.md).** It documents the
+cross-origin-isolation rules (and the SPA-navigation gotcha) that prevent the
+`SharedArrayBuffer is not defined` / "open this page in a new tab" errors.
+
 ### CORS and Header Management
 The `middleware.js` file handles complex header requirements:
 - FFmpeg pages need `Cross-Origin-Embedder-Policy: credentialless` for SharedArrayBuffer support
-- Blog and other pages have permissive headers for external resources (AdSense, images)
-- Headers are conditionally applied based on the page path
+- COOP is set to `same-origin` uniformly on every page to avoid Firefox's COOP-mismatch interstitial; only COEP is toggled to control isolation
+- Other pages omit COEP so AdSense can load
+- Full details and troubleshooting: [`docs/FFMPEG_LOADING.md`](docs/FFMPEG_LOADING.md)
 
 ### Strapi API Integration
 - API client is in `/lib/strapi-api.js`
