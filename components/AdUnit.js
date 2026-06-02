@@ -1,15 +1,23 @@
 import React, { useEffect, useRef } from 'react';
 
-const AdUnit = ({ className = "", style = {} }) => {
+const AD_CLIENT = 'ca-pub-7359270153499473';
+
+const AdUnit = ({
+  className = "",
+  style = {},
+  slot = "8440382746",
+  width = 728,
+  height = 90,
+}) => {
   const adRef = useRef(null);
   const hasInitialized = useRef(false);
 
   useEffect(() => {
     const initializeAd = () => {
       if (
-        typeof window !== 'undefined' && 
-        window.adsbygoogle && 
-        adRef.current && 
+        typeof window !== 'undefined' &&
+        window.adsbygoogle &&
+        adRef.current &&
         !hasInitialized.current
       ) {
         try {
@@ -24,7 +32,7 @@ const AdUnit = ({ className = "", style = {} }) => {
 
     // Delay initialization to ensure AdSense script is loaded
     const timer = setTimeout(initializeAd, 100);
-    
+
     return () => {
       clearTimeout(timer);
     };
@@ -32,17 +40,17 @@ const AdUnit = ({ className = "", style = {} }) => {
 
   return (
     <div className={`flex justify-center ${className}`}>
-      <ins 
+      <ins
         ref={adRef}
         className="adsbygoogle"
         style={{
-          display: 'inline-block', 
-          width: '728px', 
-          height: '90px',
+          display: 'inline-block',
+          width: `${width}px`,
+          height: `${height}px`,
           ...style
         }}
-        data-ad-client="ca-pub-7359270153499473"
-        data-ad-slot="8440382746"
+        data-ad-client={AD_CLIENT}
+        data-ad-slot={slot}
       />
     </div>
   );

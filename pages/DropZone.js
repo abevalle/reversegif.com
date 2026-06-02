@@ -1,6 +1,8 @@
 import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
 import React, { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import * as gtm from '../lib/gtm';
+import { storeDownload } from '../lib/download-cache';
 
 // Initialize FFmpeg instance (but don't load it yet)
 // Following best practices: Delay FFmpeg/WASM loading until user interaction
@@ -125,6 +127,7 @@ const MediaPreview = ({ file, className, onClick }) => {
 };
 
 const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, videoOnly = false, gifToMp4Mode = false, videoToPngMode = false, videoToJpgMode = false }) => {
+    const router = useRouter();
     const [files, setFiles] = useState(null);
     const inputRef = useRef();
     const [ready, setReady] = useState(true); // Dropzone is ready to accept files immediately
@@ -359,6 +362,9 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
         
         let mimeType = '';
         let blob, url, finalFileName, totalSize = 0;
+        // Unified handle on the processed output so we can cache it regardless of mode.
+        let outputBlob = null;
+        let frameCount = 0;
         
         if (videoToPngMode || videoToJpgMode) {
             // For frame extraction, collect all generated frames
@@ -415,6 +421,8 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
             url = URL.createObjectURL(zipBlob);
             finalFileName = `frames_${frameFiles.length}_${videoToPngMode ? 'png' : 'jpg'}.zip`;
             setReversedSize((zipBlob.size / 1024 / 1024).toFixed(2));
+            outputBlob = zipBlob;
+            frameCount = frameFiles.length;
             
             // Clean up frame files from FFmpeg filesystem
             for (const frameFile of frameFiles) {
@@ -438,12 +446,9 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
             url = URL.createObjectURL(blob);
             finalFileName = outputFileName;
             setReversedSize((data.byteLength / 1024 / 1024).toFixed(2));
+            outputBlob = blob;
         }
-        
-        setReversed(url);
-        setReversedName(finalFileName);
-        setLoading(false);
-        
+
         // Clean up FFmpeg filesystem
         try {
             ffmpeg.FS('unlink', inputFileName);
@@ -457,8 +462,33 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
         } catch (e) {
             console.log('Error cleaning up FFmpeg filesystem:', e);
         }
-        
+
         gaEvent("media-processing", actionType + " Completed");
+
+        // Cache the result in the browser and send the user to the ad-supported
+        // /download page. That page has permissive COEP/COOP headers (unlike this
+        // FFmpeg tool page), so AdSense can run there. We keep the loading state
+        // active through navigation so the button stays disabled.
+        try {
+            const id = await storeDownload({
+                blob: outputBlob,
+                name: finalFileName,
+                mimeType: outputBlob.type,
+                size: outputBlob.size,
+                frameCount,
+            });
+            // The blob lives in IndexedDB now; release the in-memory object URL.
+            URL.revokeObjectURL(url);
+            gaEvent('download-redirect', actionType + ' Cached');
+            router.push(`/download?id=${encodeURIComponent(id)}`);
+            return;
+        } catch (e) {
+            console.error('Failed to cache download, showing inline download instead:', e);
+            // Fallback: behave as before and show the download link on this page.
+            setReversed(url);
+            setReversedName(finalFileName);
+            setLoading(false);
+        }
     };
 
     return ready ? (
