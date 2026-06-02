@@ -24,25 +24,18 @@ const AdUnit = ({
   const hasInitialized = useRef(false);
 
   useEffect(() => {
-    const initializeAd = () => {
-      if (
-        typeof window !== 'undefined' &&
-        window.adsbygoogle &&
-        adRef.current &&
-        !hasInitialized.current
-      ) {
-        try {
-          (window.adsbygoogle = window.adsbygoogle || []).push({});
-          hasInitialized.current = true;
-        } catch (err) {
-          console.log('AdSense initialization error:', err);
-        }
-      }
-    };
-
-    // Delay slightly so the AdSense script and layout are ready.
-    const timer = setTimeout(initializeAd, 100);
-    return () => clearTimeout(timer);
+    if (typeof window === 'undefined' || hasInitialized.current) return;
+    try {
+      // Canonical AdSense pattern: push onto the queue array unconditionally.
+      // If adsbygoogle.js hasn't loaded yet, this creates the stub array and the
+      // request is processed once the script arrives — so the ad fills
+      // regardless of script-load timing (which is why a one-shot, script-gated
+      // push intermittently left blanks on subsequent page loads).
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+      hasInitialized.current = true;
+    } catch (err) {
+      console.log('AdSense initialization error:', err);
+    }
   }, []);
 
   return (
