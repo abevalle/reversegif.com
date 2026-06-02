@@ -43,28 +43,26 @@ export function middleware(request) {
     '/video-to-jpg'   // Video to JPG frame extractor
   ].includes(pathname);
   
-  // Check if this is a blog page
-  const isBlogPage = pathname.startsWith('/blog');
-  
+  // COEP is the header that actually blocks AdSense: it gates how cross-origin
+  // subresources (ad scripts/iframes) load. Cross-origin isolation, and thus
+  // SharedArrayBuffer (which FFmpeg needs), requires BOTH COEP and
+  // COOP: same-origin. So we apply COEP ONLY on the FFmpeg tool pages and
+  // remove it everywhere else, which is what lets ads run on /download, /faq, etc.
   if (needsFFmpeg) {
-    // FFmpeg pages: Apply headers for SharedArrayBuffer support
-    // WARNING: This will block AdSense auto ads on these pages
     // Using 'credentialless' allows loading cross-origin resources without credentials
     response.headers.set('Cross-Origin-Embedder-Policy', 'credentialless');
-    response.headers.set('Cross-Origin-Opener-Policy', 'same-origin');
-  } else if (isBlogPage) {
-    // Blog pages: Explicitly remove restrictive headers to ensure images load properly
-    response.headers.delete('Cross-Origin-Embedder-Policy');
-    response.headers.delete('Cross-Origin-Opener-Policy');
-    // Ensure permissive CORP for blog images
-    response.headers.set('Cross-Origin-Resource-Policy', 'cross-origin');
   } else {
-    // Other non-FFmpeg pages: Remove restrictive headers to allow AdSense auto ads
-    // This enables full AdSense functionality on FAQ, and other pages
     response.headers.delete('Cross-Origin-Embedder-Policy');
-    response.headers.delete('Cross-Origin-Opener-Policy');
   }
-  
+
+  // COOP is kept IDENTICAL (same-origin) on every page. COOP does not block ads
+  // on its own — it only controls the browsing-context/opener relationship — but
+  // a COOP *mismatch* between two pages triggers Firefox/LibreWolf's "the
+  // security configuration doesn't match the previous page" warning on full
+  // navigations (e.g. the tool page -> /download download hand-off). Keeping it
+  // uniform avoids that warning entirely; isolation stays gated solely by COEP.
+  response.headers.set('Cross-Origin-Opener-Policy', 'same-origin');
+
   // Global headers applied to all pages:
   
   // Remove X-Frame-Options to allow AdSense and other services to embed content

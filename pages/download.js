@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
-import Link from 'next/link';
 import Header from '../components/header.js';
 import Footer from '../components/footer.js';
 import AdUnit from '../components/AdUnit';
@@ -154,12 +153,12 @@ export default function DownloadPage() {
                   cached locally and are never uploaded, so they can&apos;t be recovered here — just run the
                   tool again to create a new one.
                 </p>
-                <Link
+                <a
                   href="/"
                   className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
                 >
                   Back to the tools
-                </Link>
+                </a>
               </div>
             )}
 
@@ -199,12 +198,12 @@ export default function DownloadPage() {
                     </svg>
                     Download
                   </a>
-                  <Link
+                  <a
                     href="/"
                     className="inline-flex items-center justify-center px-6 py-3 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-100 font-medium rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
                   >
                     Make another
-                  </Link>
+                  </a>
                 </div>
               </div>
             )}

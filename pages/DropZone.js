@@ -1,6 +1,5 @@
 import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
 import React, { useState, useRef, useEffect } from 'react';
-import { useRouter } from 'next/router';
 import * as gtm from '../lib/gtm';
 import { storeDownload } from '../lib/download-cache';
 
@@ -127,7 +126,6 @@ const MediaPreview = ({ file, className, onClick }) => {
 };
 
 const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, videoOnly = false, gifToMp4Mode = false, videoToPngMode = false, videoToJpgMode = false }) => {
-    const router = useRouter();
     const [files, setFiles] = useState(null);
     const inputRef = useRef();
     const [ready, setReady] = useState(true); // Dropzone is ready to accept files immediately
@@ -152,7 +150,26 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
     // Track if FFmpeg has been initialized
     const [ffmpegLoaded, setFfmpegLoaded] = useState(false);
     const [ffmpegLoading, setFfmpegLoading] = useState(false);
-    
+
+    // FFmpeg needs cross-origin isolation (SharedArrayBuffer), which only exists
+    // when THIS document was loaded with the COOP/COEP headers that middleware
+    // sends for tool pages. If the user reached this page via a client-side
+    // navigation from a non-isolated page (e.g. /download, /blog, a hard-
+    // refreshed download page), window.crossOriginIsolated is still false and
+    // processing would fail with the "open in a new tab" alert. A full document
+    // load re-applies the headers, so reload once to recover. The sessionStorage
+    // guard prevents an infinite loop if the headers are genuinely missing.
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        if (window.crossOriginIsolated === false) {
+            if (!sessionStorage.getItem('coi-reload')) {
+                sessionStorage.setItem('coi-reload', '1');
+                window.location.reload();
+            }
+        } else if (window.crossOriginIsolated) {
+            sessionStorage.removeItem('coi-reload');
+        }
+    }, []);
 
     // Lazy load FFmpeg only when user interacts with the tool
     const loadFFmpeg = async () => {
@@ -466,9 +483,12 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
         gaEvent("media-processing", actionType + " Completed");
 
         // Cache the result in the browser and send the user to the ad-supported
-        // /download page. That page has permissive COEP/COOP headers (unlike this
-        // FFmpeg tool page), so AdSense can run there. We keep the loading state
-        // active through navigation so the button stays disabled.
+        // /download page. We use a FULL navigation (not a client-side router
+        // push) on purpose: cross-origin isolation is fixed at document-load
+        // time, so a SPA navigation would keep this tool page's COEP context and
+        // suppress ads on /download. A real navigation loads /download fresh,
+        // without COEP, so AdSense runs. The blob lives in IndexedDB, so it
+        // survives the page load.
         try {
             const id = await storeDownload({
                 blob: outputBlob,
@@ -480,7 +500,7 @@ const DropZone = ({ defaultConvertToGif = false, forceConvertToGif = false, vide
             // The blob lives in IndexedDB now; release the in-memory object URL.
             URL.revokeObjectURL(url);
             gaEvent('download-redirect', actionType + ' Cached');
-            router.push(`/download?id=${encodeURIComponent(id)}`);
+            window.location.assign(`/download?id=${encodeURIComponent(id)}`);
             return;
         } catch (e) {
             console.error('Failed to cache download, showing inline download instead:', e);
