@@ -8,13 +8,29 @@ import AdUnit from '../components/AdUnit';
 import { getDownload } from '../lib/download-cache';
 
 // AdSense ad-unit slot ids for this page.
-// NOTE: For best performance/reporting, create dedicated ad units in your
-// AdSense account (one wide-skyscraper for the sidebars, one square for the
-// mobile placements, one leaderboard for the center) and replace these ids.
-// They currently fall back to the site's existing display unit.
-const SIDEBAR_AD_SLOT = '8440382746'; // desktop left/right (160x600)
-const CENTER_AD_SLOT = '8440382746';  // desktop center (728x90)
-const SQUARE_AD_SLOT = '8440382746';  // mobile top/bottom (300x250)
+//
+// REQUIRED: create three *responsive* "Display ad" units in your AdSense
+// account and paste their slot ids below. A single slot reused for all three
+// placements will not reliably fill. Until you replace them, all three point at
+// the site's existing display unit as a fallback.
+const SIDEBAR_AD_SLOT = '8440382746'; // desktop left/right sidebars
+const CENTER_AD_SLOT = '8440382746';  // desktop center, under the download
+const SQUARE_AD_SLOT = '8440382746';  // mobile top/bottom
+
+// Mirrors Tailwind's `lg` breakpoint. Returns null until mounted so we never
+// render ad units during SSR or before we know the viewport — and crucially so
+// we never render them inside a hidden container (which breaks AdSense).
+function useIsDesktop() {
+  const [isDesktop, setIsDesktop] = useState(null);
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1024px)');
+    const update = () => setIsDesktop(mq.matches);
+    update();
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
+  return isDesktop;
+}
 
 function formatSize(bytes) {
   if (!bytes && bytes !== 0) return '';
@@ -58,6 +74,7 @@ const Preview = ({ url, mimeType, frameCount }) => {
 
 export default function DownloadPage() {
   const router = useRouter();
+  const isDesktop = useIsDesktop();
   const [status, setStatus] = useState('loading'); // loading | ready | missing
   const [record, setRecord] = useState(null);
   const [objectUrl, setObjectUrl] = useState('');
@@ -103,19 +120,20 @@ export default function DownloadPage() {
       <Header />
 
       <main className="flex-grow container mx-auto px-4 py-6 md:py-10">
-        {/* Mobile top square ad */}
-        <AdUnit
-          className="lg:hidden mb-4"
-          slot={SQUARE_AD_SLOT}
-          width={300}
-          height={250}
-        />
+        {/* Mobile top square ad — only mounted on mobile so it's never hidden */}
+        {isDesktop === false && (
+          <div className="mb-4 mx-auto max-w-[336px]">
+            <AdUnit slot={SQUARE_AD_SLOT} />
+          </div>
+        )}
 
         <div className="lg:grid lg:grid-cols-[160px_minmax(0,1fr)_160px] lg:gap-6 lg:items-start">
           {/* Desktop left sidebar ad */}
-          <aside className="hidden lg:flex justify-center lg:sticky lg:top-4">
-            <AdUnit slot={SIDEBAR_AD_SLOT} width={160} height={600} />
-          </aside>
+          {isDesktop === true && (
+            <aside className="flex justify-center lg:sticky lg:top-4">
+              <AdUnit slot={SIDEBAR_AD_SLOT} style={{ minHeight: '600px' }} />
+            </aside>
+          )}
 
           {/* Center content */}
           <div className="max-w-2xl mx-auto w-full">
@@ -192,27 +210,25 @@ export default function DownloadPage() {
             )}
 
             {/* Desktop center ad */}
-            <AdUnit
-              className="hidden lg:flex mt-6"
-              slot={CENTER_AD_SLOT}
-              width={728}
-              height={90}
-            />
+            {isDesktop === true && (
+              <AdUnit className="mt-6" slot={CENTER_AD_SLOT} />
+            )}
           </div>
 
           {/* Desktop right sidebar ad */}
-          <aside className="hidden lg:flex justify-center lg:sticky lg:top-4">
-            <AdUnit slot={SIDEBAR_AD_SLOT} width={160} height={600} />
-          </aside>
+          {isDesktop === true && (
+            <aside className="flex justify-center lg:sticky lg:top-4">
+              <AdUnit slot={SIDEBAR_AD_SLOT} style={{ minHeight: '600px' }} />
+            </aside>
+          )}
         </div>
 
-        {/* Mobile bottom square ad */}
-        <AdUnit
-          className="lg:hidden mt-4"
-          slot={SQUARE_AD_SLOT}
-          width={300}
-          height={250}
-        />
+        {/* Mobile bottom square ad — only mounted on mobile */}
+        {isDesktop === false && (
+          <div className="mt-4 mx-auto max-w-[336px]">
+            <AdUnit slot={SQUARE_AD_SLOT} />
+          </div>
+        )}
       </main>
 
       <Footer />
